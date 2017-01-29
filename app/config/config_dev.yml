@@ -1,15 +1,21 @@
 imports:
     - { resource: config.yml }
+    - { resource: nelmio.yml }
 
 framework:
     router:
         resource: "%kernel.root_dir%/config/routing_dev.yml"
         strict_requirements: true
     profiler: { only_exceptions: false }
+    templating:
+        engines: ['twig']
 
 web_profiler:
-    toolbar: true
+    toolbar: false
     intercept_redirects: false
+    excluded_ajax_paths:  ^/api_doc
+
+nelmio_api_doc: ~
 
 monolog:
     handlers:

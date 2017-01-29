@@ -1,2 +1,2 @@
-# SIL-backend
-backend of project Smart Investment Loan(SIL)
+# SIL-server
+server of project Smart Investment Loan(SIL)

@@ -1,0 +1,35 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: wangyibo
+ * Date: 1/26/17
+ * Time: 04:29
+ */
+
+namespace AppBundle;
+
+use Symfony\Component\HttpFoundation\Request;
+
+class JsonRequest extends Request
+{
+    private $data = null;
+
+    public function initialize(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null)
+    {
+        parent::initialize($query, $request, $attributes, $cookies, $files, $server, $content);
+        if (!empty($content)) {
+            $this->data = json_decode($content, true);
+        }
+    }
+
+    public function getData()
+    {
+        if ($this->data == null) {
+            $content = parent::getContent();
+            if (!empty($content)) {
+                $this->data = json_decode($content, true);
+            }
+        }
+        return $this->data;
+    }
+}
