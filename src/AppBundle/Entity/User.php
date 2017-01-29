@@ -27,7 +27,7 @@ class User implements AdvancedUserInterface
 
     /**
      *
-     * @ORM\Column(type="string", unique=true)
+     * @ORM\Column(type="string", length=31, unique=true)
      */
     private $phone;
 
