@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\ApiJsonResponse;
 use AppBundle\Entity\Sms;
 use AppBundle\Entity\User;
 use AppBundle\JsonRequest;
@@ -25,7 +26,7 @@ class AuthController extends Controller
      *     headers={
      *         {
      *             "name"="extra",
-     *             "default"="{""token""=""iamsuperman""}"
+     *             "default"="{""token"":""iamsuperman""}"
      *         }
      *     },
      *     statusCodes={
@@ -37,33 +38,15 @@ class AuthController extends Controller
      * @Route("/auth/send_login_sms")
      * @Method("POST")
      * @param JsonRequest $request
-     * @return JsonResponse
+     * @return ApiJsonResponse
      */
     public function sendSmsAction(JsonRequest $request)
     {
         $data = $request->getData();
         //check notnull data fields
-        if (empty($data['phone'])) {
-            return new JsonResponse(['code' => 1003, 'info' => 'need phone', 'data' => new \stdClass()]);
-        }
-        $phone = $data['phone'];
-        $user = $this->getDoctrine()->getRepository('AppBundle:User')->findOneByPhone($phone);
-        if (empty($user)) {
-            return new JsonResponse(['code' => 2007, 'info' => 'phone not exist', 'data' => new \stdClass()]);
-        }
-
-        $lastSms = $this->getDoctrine()->getRepository('AppBundle:Sms')->findBy(['phone' => $phone], ['created' => 'desc'], 1);
-        if (!empty($lastSms)) {
-            $lastSms = $lastSms[0];
-        }
-        if (!empty($lastSms) || $lastSms instanceof Sms) {
-            if ($lastSms->getCreated()->getTimestamp() > (time() - 60)) {
-                return new JsonResponse(['code' => 2004, 'info' => 'to many sms to one phone', 'data' => new \stdClass()]);
-            }
-        }
 
         $newSms = new Sms();
-        $newSms->setPhone($phone);
+        $newSms->setPhone($data['phone']);
         $code = rand(0, 9) . rand(0, 9) . rand(0, 9) . rand(0, 9);
         if (in_array($this->container->get('kernel')->getEnvironment(), ['dev'], true)) {
             $code = '6666';
@@ -71,10 +54,33 @@ class AuthController extends Controller
         $newSms->setCode($code);
         $newSms->setType('login');
         $newSms->setCreated(new \DateTime());
+        /**
+         * @var \Symfony\Component\Validator\Validator\ValidatorInterface $validator
+         */
+        $validator = $this->get('validator');
+        $errors = $validator->validate($newSms);
+        if (count($errors) > 0) {
+            $errorsString = (string)$errors[0]->getMessage();
+            return new ApiJsonResponse(1003, $errorsString);
+        }
+        $user = $this->getDoctrine()->getRepository('AppBundle:User')->findOneByPhone($data['phone']);
+        if (empty($user)) {
+            return new ApiJsonResponse(2007, 'phone not exist');
+        }
+
+        $lastSms = $this->getDoctrine()->getRepository('AppBundle:Sms')->findBy(['phone' => $data['phone']], ['created' => 'desc'], 1);
+        if (!empty($lastSms)) {
+            $lastSms = $lastSms[0];
+        }
+        if (!empty($lastSms) || $lastSms instanceof Sms) {
+            if ($lastSms->getCreated()->getTimestamp() > (time() - 60)) {
+                return new ApiJsonResponse(2004, 'to many sms to one phone');
+            }
+        }
         $em = $this->getDoctrine()->getManager();
         $em->persist($newSms);
         $em->flush();
-        return new JsonResponse(['code' => 0, 'info' => 'send success', 'data' => new \stdClass()]);
+        return new ApiJsonResponse(0, 'send success');
     }
 
     /**
@@ -88,7 +94,7 @@ class AuthController extends Controller
      *     headers={
      *         {
      *             "name"="extra",
-     *             "default"="{""token""=""iamsuperman""}"
+     *             "default"="{""token"":""iamsuperman""}"
      *         }
      *     },
      *     statusCodes={
@@ -101,43 +107,46 @@ class AuthController extends Controller
      * @Route("/auth/sms_login")
      * @Method("POST")
      * @param JsonRequest $request
-     * @return JsonResponse
+     * @return ApiJsonResponse
      */
     public function smsLoginAction(JsonRequest $request)
     {
         $data = $request->getData();
         //check notnull data fields
         if (empty($data['phone']) || empty($data['code'])) {
-            return new JsonResponse(['code' => 1003, 'info' => 'need phone and code', 'data' => new \stdClass()]);
+            return new ApiJsonResponse(1003, 'need phone and code');
         }
         $sms = $this->getDoctrine()->getRepository('AppBundle:Sms')->findBy(
-            ['phone' => $data['phone'], 'code' => $data['code']], ['created' => 'desc'], 1
+            ['phone' => $data['phone'], 'code' => $data['code']], ['id' => 'desc'], 1
         );
 
-        if (empty($sms) || !$sms[0] instanceof Sms || strcmp($sms[0]->getType(), 'login') !== 0) {
-            return new JsonResponse(['code' => 2005, 'info' => 'sms code error', 'data' => new \stdClass()]);
+        if (empty($sms)) {
+            return new ApiJsonResponse(2005, 'sms code error');
         }
         $sms = $sms[0];
+        if (!$sms instanceof Sms || strcmp($sms->getType(), 'login') !== 0) {
+            return new ApiJsonResponse(2005, 'sms code type error');
+        }
         if ($sms->getUsed() != null) {
-            return new JsonResponse(['code' => 2006, 'info' => 'sms used', 'data' => new \stdClass()]);
+            return new ApiJsonResponse(2006, 'sms used');
         }
         $user = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(['phone' => $data['phone']]);
         if (empty($user) || !($user instanceof User)) {
-            return new JsonResponse(['code' => 2007, 'info' => 'user not exist', 'data' => new \stdClass()]);
+            return new ApiJsonResponse(2007, 'user not exist');
         }
         $loginResult = $this->loginProcess($user);
         if (!$loginResult) {
-            return new JsonResponse(['code' => 500, 'info' => 'login process error', 'data' => new \stdClass()]);
+            return new ApiJsonResponse(500, 'login process error');
         }
-        $sms->setCreated(new \DateTime());
+        $sms->setUsed(new \DateTime());
         $em = $this->getDoctrine()->getManager();
         $em->persist($sms);
         try {
             $em->flush();
         } catch (Exception $e) {
-            return new JsonResponse(['code' => 500, 'info' => 'save code used error!', 'data' => new \stdClass()]);
+            return new ApiJsonResponse(500, 'mark code used error');
         }
-        return new JsonResponse(['code' => 0, 'info' => 'login success', 'data' => $loginResult->getSelfArr()]);
+        return new ApiJsonResponse(0, 'login success', $loginResult->getSelfArr());
 
     }
 
@@ -152,7 +161,7 @@ class AuthController extends Controller
      *     headers={
      *         {
      *             "name"="extra",
-     *             "default"="{""token""=""iamsuperman""}"
+     *             "default"="{""token"":""iamsuperman""}"
      *         }
      *     },
      *     statusCodes={
@@ -164,31 +173,29 @@ class AuthController extends Controller
      * @Route("/auth/password_login")
      * @Method("POST")
      * @param JsonRequest $request
-     * @return JsonResponse
+     * @return ApiJsonResponse
      */
     public function passwordLoginAction(JsonRequest $request)
     {
         $data = $request->getData();
         //check notnull data fields
         if (empty($data['phone']) || empty($data['password'])) {
-            return new JsonResponse(['code' => 1003, 'info' => 'need phone and password', 'data' => new \stdClass()]);
+            return new ApiJsonResponse(1003, 'need phone and password');
         }
         $user = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(['phone' => $data['phone']]);
         if (empty($user) || !($user instanceof User)) {
-            return new JsonResponse(['code' => 2007, 'info' => 'user not exist', 'data' => new \stdClass()]);
+            return new ApiJsonResponse(2007, 'user not exist');
         }
 
-        $plainPassword = $data['password'];
-
-        if (!password_verify($data['password'], $user->getPassword())) {
-            return new JsonResponse(['code' => 2003, 'info' => 'password error', 'data' => new \stdClass()]);
+        if (!$user->checkPassword($data['password'])) {
+            return new ApiJsonResponse(2003, 'password error');
         }
 
         $loginResult = $this->loginProcess($user);
         if (!$loginResult) {
-            return new JsonResponse(['code' => 500, 'info' => 'login process error', 'data' => new \stdClass()]);
+            return new ApiJsonResponse(500, 'login process error');
         }
-        return new JsonResponse(['code' => 0, 'info' => 'login success', 'data' => $loginResult->getSelfArr()]);
+        return new ApiJsonResponse(0, 'login success', $loginResult->getSelfArr());
 
     }
 
@@ -198,8 +205,11 @@ class AuthController extends Controller
      */
     public function loginProcess(User $user)
     {
-        $token = md5(random_bytes(32));
+        $token = md5(uniqid());
         $user->setToken($token);
+        if ($user->getState() == 0) {
+            $user->setState(1);
+        }
         $em = $this->getDoctrine()->getManager();
         $em->persist($user);
         try {

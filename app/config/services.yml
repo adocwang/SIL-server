@@ -7,6 +7,19 @@ services:
     app.token_authenticator:
         class: AppBundle\Security\TokenAuthenticator
         arguments: ["@doctrine.orm.entity_manager"]
+    app.user_voter:
+        class: AppBundle\Voter\UserVoter
+        tags:
+            - { name: security.voter }
+        # small performance boost
+        public: false
+    app.excel_io:
+        class: AppBundle\Service\ExcelIOService
+        arguments: ['@phpexcel']
+    app.file_uploader:
+        class: AppBundle\Service\FileUploader
+        arguments: ['%uploaded_directory%']
+#        arguments: ["@doctrine.orm.entity_manager"]
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]

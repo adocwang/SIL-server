@@ -9,9 +9,7 @@
 namespace AppBundle\DataFixtures\ORM;
 
 
-use AppBundle\Entity\Bank;
 use AppBundle\Entity\Role;
-use AppBundle\Entity\User;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
@@ -20,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
-class LoadUserData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface, FixtureInterface
+class LoadRoleData implements ContainerAwareInterface, OrderedFixtureInterface, FixtureInterface
 {
     private $container;
 
@@ -31,28 +29,15 @@ class LoadUserData extends AbstractFixture implements OrderedFixtureInterface, C
      */
     public function load(ObjectManager $manager)
     {
-        $adminRole = new Role();
-        $adminRole->setName('管理员');
-        $adminRole->setRole('ROLE_ADMIN');
-        $bank = new Bank();
-        $bank->setName('总行');
-        $bank->setSuperior($bank);
-        $userAdmin = new User();
-        $userAdmin->setTrueName('王一博');
-        $encoder = $this->container->get('security.password_encoder');
-        $encoded = $encoder->encodePassword($userAdmin, '12348765');
-        $userAdmin->setPhone('15828516285');
-        $userAdmin->setPassword($encoded);
-        $userAdmin->setToken('test_token');
-        $userAdmin->setCreated(new \DateTime());
-        $userAdmin->setModified(new \DateTime());
-        $userAdmin->setRole($adminRole);
-        $userAdmin->setBank($bank);
-        $userAdmin->setState(0);
 
-        $manager->persist($adminRole);
-        $manager->persist($bank);
-        $manager->persist($userAdmin);
+        $role = new Role('ROLE_PRESIDENT');
+        $role->setName('行长');
+        $manager->persist($role);
+        $manager->flush();
+
+        $role = new Role('ROLE_CUSTOMER_MANAGER');
+        $role->setName('客户经理');
+        $manager->persist($role);
         $manager->flush();
     }
 
@@ -73,6 +58,6 @@ class LoadUserData extends AbstractFixture implements OrderedFixtureInterface, C
      */
     public function getOrder()
     {
-        return 1;
+        return 2;
     }
 }

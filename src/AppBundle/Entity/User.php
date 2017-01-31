@@ -8,9 +8,10 @@
 
 namespace AppBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Security\Core\User\AdvancedUserInterface;
+use AppBundle\Validator\Constraints as MyAssert;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
@@ -27,6 +28,7 @@ class User implements AdvancedUserInterface
 
     /**
      *
+     * @MyAssert\ContainsPhone
      * @ORM\Column(type="string", length=31, unique=true)
      */
     private $phone;
@@ -37,40 +39,144 @@ class User implements AdvancedUserInterface
     private $trueName;
 
     /**
-     * @ORM\Column(type="string", length=63, unique=true)
+     * @ORM\Column(type="string", length=63, unique=true, nullable=true)
      */
     private $token;
     /**
-     * @ORM\Column(type="string", length=63)
+     * @ORM\Column(type="string", length=63, nullable=true)
      */
     private $password;
+
     /**
+     * @var \DateTime $created
+     *
+     * @Gedmo\Timestampable(on="create")
      * @ORM\Column(type="datetime")
      */
-    protected $created;
+    private $created;
+
     /**
+     * @var \DateTime $modified
+     *
+     * @Gedmo\Timestampable(on="update")
      * @ORM\Column(type="datetime")
      */
-    protected $modified;
+    private $modified;
+
     /**
      * 0待激活1正常2冻结3删除
      *
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true, options={"default":0})
      */
     protected $state;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Role")
-     * @ORM\JoinTable(name="users_roles",
-     *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id")}
-     *      )
+     * Many Users have one Role.
+     * @ORM\ManyToOne(targetEntity="Role")
+     * @ORM\JoinColumn(name="role_id", referencedColumnName="id")
      */
-    private $roles;
+    private $role;
 
-    public function __construct()
+    /**
+     * Many Users in one Bank.
+     * @ORM\ManyToOne(targetEntity="Bank")
+     * @ORM\JoinColumn(name="bank_id", referencedColumnName="id")
+     */
+    private $bank;
+
+
+    function getSelfArr()
     {
-        $this->roles = new ArrayCollection();
+        return [
+            'id' => $this->getId(),
+            'phone' => $this->getPhone(),
+            'true_name' => $this->getTrueName(),
+            'token' => $this->getToken(),
+            'created' => $this->getCreated()->getTimestamp(),
+            'role' => $this->getRole() ? $this->getRole()->getName() : "",
+            'bank' => $this->getBank() ? $this->getBank()->getName() : "",
+        ];
+    }
+
+    function getOtherArr()
+    {
+        return [
+            'id' => $this->getId(),
+            'phone' => $this->getPhone(),
+            'true_name' => $this->getTrueName(),
+            'created' => $this->getCreated()->getTimestamp(),
+            'role_name' => $this->getRole() ? $this->getRole()->getName() : "",
+            'bank_name' => $this->getBank() ? $this->getBank()->getName() : "",
+        ];
+    }
+
+    /**
+     * @param $password
+     * @return bool
+     */
+    public function checkPassword($password)
+    {
+        return password_verify($password, $this->getPassword());
+    }
+
+    /**
+     * Checks whether the user's account has expired.
+     *
+     * Internally, if this method returns false, the authentication system
+     * will throw an AccountExpiredException and prevent login.
+     *
+     * @return bool true if the user's account is non expired, false otherwise
+     *
+     * @see AccountExpiredException
+     */
+    public function isAccountNonExpired()
+    {
+        return true;
+    }
+
+    /**
+     * Checks whether the user is locked.
+     *
+     * Internally, if this method returns false, the authentication system
+     * will throw a LockedException and prevent login.
+     *
+     * @return bool true if the user is not locked, false otherwise
+     *
+     * @see LockedException
+     */
+    public function isAccountNonLocked()
+    {
+        return true;
+    }
+
+    /**
+     * Checks whether the user's credentials (password) has expired.
+     *
+     * Internally, if this method returns false, the authentication system
+     * will throw a CredentialsExpiredException and prevent login.
+     *
+     * @return bool true if the user's credentials are non expired, false otherwise
+     *
+     * @see CredentialsExpiredException
+     */
+    public function isCredentialsNonExpired()
+    {
+        return true;
+    }
+
+    /**
+     * Checks whether the user is enabled.
+     *
+     * Internally, if this method returns false, the authentication system
+     * will throw a DisabledException and prevent login.
+     *
+     * @return bool true if the user is enabled, false otherwise
+     *
+     * @see DisabledException
+     */
+    public function isEnabled()
+    {
+        return ($this->getState() == 1 || $this->getState() == 0);
     }
 
     /**
@@ -91,7 +197,7 @@ class User implements AdvancedUserInterface
      */
     public function getRoles()
     {
-        return $this->roles;
+        return [$this->role];
     }
 
     /**
@@ -116,7 +222,7 @@ class User implements AdvancedUserInterface
      */
     public function getSalt()
     {
-        return null;
+        // TODO: Implement getSalt() method.
     }
 
     /**
@@ -137,7 +243,7 @@ class User implements AdvancedUserInterface
      */
     public function eraseCredentials()
     {
-        // TODO: Implement eraseCredentials() method.
+        $this->setToken('');
     }
 
     /**
@@ -148,30 +254,6 @@ class User implements AdvancedUserInterface
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set uuid
-     *
-     * @param string $uuid
-     *
-     * @return User
-     */
-    public function setUuid($uuid)
-    {
-        $this->uuid = $uuid;
-
-        return $this;
-    }
-
-    /**
-     * Get uuid
-     *
-     * @return string
-     */
-    public function getUuid()
-    {
-        return $this->uuid;
     }
 
     /**
@@ -256,6 +338,7 @@ class User implements AdvancedUserInterface
     public function setPassword($password)
     {
         $this->password = $password;
+
         return $this;
     }
 
@@ -332,109 +415,59 @@ class User implements AdvancedUserInterface
     }
 
     /**
-     * Checks whether the user's account has expired.
-     *
-     * Internally, if this method returns false, the authentication system
-     * will throw an AccountExpiredException and prevent login.
-     *
-     * @return bool true if the user's account is non expired, false otherwise
-     *
-     * @see AccountExpiredException
-     */
-    public function isAccountNonExpired()
-    {
-        return true;
-    }
-
-    /**
-     * Checks whether the user is locked.
-     *
-     * Internally, if this method returns false, the authentication system
-     * will throw a LockedException and prevent login.
-     *
-     * @return bool true if the user is not locked, false otherwise
-     *
-     * @see LockedException
-     */
-    public function isAccountNonLocked()
-    {
-        return $this->getState() !== 2 ? true : false;
-    }
-
-    /**
-     * Checks whether the user's credentials (password) has expired.
-     *
-     * Internally, if this method returns false, the authentication system
-     * will throw a CredentialsExpiredException and prevent login.
-     *
-     * @return bool true if the user's credentials are non expired, false otherwise
-     *
-     * @see CredentialsExpiredException
-     */
-    public function isCredentialsNonExpired()
-    {
-        return true;
-    }
-
-    /**
-     * Checks whether the user is enabled.
-     *
-     * Internally, if this method returns false, the authentication system
-     * will throw a DisabledException and prevent login.
-     *
-     * @return bool true if the user is enabled, false otherwise
-     *
-     * @see DisabledException
-     */
-    public function isEnabled()
-    {
-        return $this->getState() !== 3 ? true : false;
-    }
-
-    /**
-     * Add role
+     * Set role
      *
      * @param \AppBundle\Entity\Role $role
      *
      * @return User
      */
-    public function addRole(\AppBundle\Entity\Role $role)
+    public function setRole(\AppBundle\Entity\Role $role = null)
     {
-        $this->roles[] = $role;
+        $this->role = $role;
 
         return $this;
     }
 
     /**
-     * Remove role
+     * Get role
      *
-     * @param \AppBundle\Entity\Role $role
+     * @return \AppBundle\Entity\Role
      */
-    public function removeRole(\AppBundle\Entity\Role $role)
+    public function getRole()
     {
-        $this->roles->removeElement($role);
+        return $this->role;
     }
 
-    public function getSelfArr()
+    /**
+     * Set bank
+     *
+     * @param \AppBundle\Entity\Bank $bank
+     *
+     * @return User
+     */
+    public function setBank(\AppBundle\Entity\Bank $bank = null)
     {
-        return [
-            'id' => $this->getId(),
-            'phone' => $this->getPhone(),
-            'true_name' => $this->getTrueName(),
-            'token' => $this->getToken(),
-            'created' => $this->getCreated()->getTimestamp(),
-            'state' => $this->getState(),
-//            'password' => $this->getPassword(),
-        ];
+        $this->bank = $bank;
+
+        return $this;
     }
 
-    public function getOtherArr()
+    /**
+     * Get bank
+     *
+     * @return \AppBundle\Entity\Bank
+     */
+    public function getBank()
     {
-        return [
-            'id' => $this->getId(),
-            'phone' => $this->getPhone(),
-            'true_name' => $this->getTrueName(),
-            'state' => $this->getState(),
-        ];
+        return $this->bank;
     }
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->subordinate = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
 }

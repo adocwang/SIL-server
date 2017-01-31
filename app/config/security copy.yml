@@ -7,10 +7,8 @@ security:
             cost: 13
     # http://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
     providers:
-        mysql_provider:
-            entity:
-                class: AppBundle:User
-                property: token
+        api_key_user_provider:
+            id: api_key_user_provider
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
@@ -21,10 +19,14 @@ security:
             pattern: ^/((auth/)|(api_doc)|(_profiler))
             anonymous: ~
         main:
-            guard:
-                authenticators:
-                    - app.token_authenticator
+            stateless: true
+            provider: api_key_user_provider
+            simple_preauth:
+                authenticator: app.token_authenticator
+            # activate different ways to authenticate
 
-    role_hierarchy:
-            ROLE_PRESIDENT:  [ROLE_CM]
-            ROLE_SUPERADMIN: [ROLE_ADMIN,ROLE_PRESIDENT]
+            # http_basic: ~
+            # http://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
+
+            # form_login: ~
+            # http://symfony.com/doc/current/cookbook/security/form_login_setup.html

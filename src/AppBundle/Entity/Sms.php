@@ -3,6 +3,9 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use AppBundle\Validator\Constraints as MyAssert;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Role
@@ -23,29 +26,33 @@ class Sms
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank()
+     * @MyAssert\ContainsPhone
      * @ORM\Column(type="string", length=31)
      */
-    private $phone;
+    protected $phone;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank()
      * @ORM\Column(type="string", length=31)
      */
     private $type;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank()
      * @ORM\Column(type="string", length=31)
      */
     private $code;
 
     /**
+     * @var \DateTime $created
+     *
+     * @Gedmo\Timestampable(on="create")
      * @ORM\Column(type="datetime")
      */
-    protected $created;
+    private $created;
 
     /**
      * @ORM\Column(type="datetime",nullable=true)
