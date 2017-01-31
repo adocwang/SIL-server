@@ -268,4 +268,37 @@ class UserController extends Controller
         $em->flush();
         return new ApiJsonResponse(0, 'update success', $targetUser->getSelfArr());
     }
+
+
+    /**
+     *
+     *
+     * @ApiDoc(
+     *     section="user",
+     *     description="注销登录",
+     *     parameters={
+     *     },
+     *     headers={
+     *         {
+     *             "name"="extra",
+     *             "default"="{""token"":""iamsuperman:15828516285""}"
+     *         }
+     *     }
+     * )
+     *
+     * @Route("/user/logout")
+     * @Method("GET")
+     * @param JsonRequest $request
+     * @return ApiJsonResponse
+     */
+    public function logoutAction(JsonRequest $request)
+    {
+
+        $targetUser = $this->getUser();
+        $targetUser->setToken(md5(uniqid()));
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($targetUser);
+        $em->flush();
+        return new ApiJsonResponse(0, 'logout success');
+    }
 }
