@@ -66,9 +66,9 @@ class User implements AdvancedUserInterface
     /**
      * 0待激活1正常2冻结3删除
      *
-     * @ORM\Column(type="integer", nullable=true, options={"default":0})
+     * @ORM\Column(type="integer", nullable=false)
      */
-    protected $state;
+    protected $state=0;
 
     /**
      * Many Users have one Role.

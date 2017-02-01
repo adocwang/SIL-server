@@ -15,6 +15,48 @@ class UserController extends Controller
 {
 
     /**
+     * @ApiDoc(
+     *     section="user",
+     *     description="获取用户",
+     *     parameters={
+     *     },
+     *     headers={
+     *         {
+     *             "name"="extra",
+     *             "default"="{""token"":""iamsuperman:15828516285""}"
+     *         }
+     *     },
+     *     statusCodes={
+     *         1003="缺少参数",
+     *         2007="用户不存在",
+     *         407="无权限",
+     *     }
+     * )
+     *
+     * @Route("/user/{id}")
+     * @Method("GET")
+     * @param integer $id
+     * @return ApiJsonResponse
+     */
+    public function getAction($id)
+    {
+        /**
+         * @var User $user
+         */
+        if (empty($id)) {
+            return new ApiJsonResponse(1003, 'need id');
+        }
+        $user = $this->getDoctrine()->getRepository('AppBundle:User')->find($id);
+        if (empty($user)) {
+            return new ApiJsonResponse(2007, 'user not exists');
+        }
+//        if ($user->getId() == $this->getUser()->getId()) {
+//            return new ApiJsonResponse(0, 'ok', $user->getSelfArr());
+//        }
+        return new ApiJsonResponse(0, 'ok', $user->getOtherArr());
+    }
+
+    /**
      * 用户state 0:未激活,1:正常,2:已冻结,3:已删除
      * @ApiDoc(
      *     section="user",

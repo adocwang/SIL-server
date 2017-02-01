@@ -22,7 +22,7 @@ class ExcelIOService
         $this->phpexcel = $phpexcel;
     }
 
-    public function getUserExcelData($filePath)
+    public function getExcelData($filePath, $startLine = 2)
     {
         if (!file_exists($filePath)) {
             return null;
@@ -34,7 +34,7 @@ class ExcelIOService
 
         /** 循环读取每个单元格的数据 */
         $lines = [];
-        for ($row = 2; $row <= $highestRow; $row++) {//行数是以第1行开始
+        for ($row = $startLine; $row <= $highestRow; $row++) {//行数是以第1行开始
             $dataset = [];
             for ($column = 'A'; $column <= $highestColumn; $column++) {//列数是以A列开始
                 $dataset[] = $sheet->getCell($column . $row)->getValue();
@@ -43,5 +43,28 @@ class ExcelIOService
         }
 
         return $lines;
+    }
+
+    /**
+     * @param $name string
+     * @param $lines array
+     * @return \PHPExcel_Writer_IWriter
+     */
+    public function exportExcel($name, $lines)
+    {
+        $objPHPExcel = $this->phpexcel->createPHPExcelObject();
+        $objPHPExcel->getProperties()->setCreator("project_sil")
+            ->setLastModifiedBy("project_sil")
+            ->setTitle($name)
+            ->setSubject($name)
+            ->setDescription($name);
+
+        $objPHPExcel->setActiveSheetIndex(0);
+        $objWorksheet = $objPHPExcel->getActiveSheet();
+        $objWorksheet->fromArray($lines);
+        $objPHPExcel->getActiveSheet()->setTitle($name);
+        $objPHPExcel->setActiveSheetIndex(0);
+        $objWriter = $this->phpexcel->createWriter($objPHPExcel, 'Excel2007');
+        return $objWriter;
     }
 }

@@ -45,7 +45,7 @@ class ImportController extends Controller
          * @var ExcelIOService $excelIO
          */
         $excelIO = $this->get('app.excel_io');
-        $lines = $excelIO->getUserExcelData($this->getParameter('uploaded_directory') . '/' . $file->getPath());
+        $lines = $excelIO->getExcelData($this->getParameter('uploaded_directory') . '/' . $file->getPath());
 //        print_r($lines);exit;
         $em = $this->getDoctrine()->getManager();
         $bankRepository = $this->getDoctrine()->getRepository('AppBundle:Bank');
@@ -83,6 +83,46 @@ class ImportController extends Controller
             "successCount" => (count($lines) - count($errorLines)),
             "errors" => $errorLines
         ]);
+
+    }
+
+    /**
+     * @ApiDoc(
+     *     section="import",
+     *     description="下载用户导入模板",
+     *     parameters={
+     *     },
+     *     headers={
+     *         {
+     *             "name"="extra",
+     *             "default"="{""token"":""iamsuperman:15828516285""}"
+     *         }
+     *     }
+     * )
+     *
+     * @Route("/import/userTemplate")
+     * @Method("GET")
+     * @return null
+     */
+    public function downloadUserTemplateAction()
+    {
+
+        /**
+         * @var ExcelIOService $excelIO
+         */
+        $excelIO = $this->get('app.excel_io');
+        $name = '用户导入模板';
+        $header = ['手机', '真实姓名', '所属银行', '角色'];
+        $excelWriter = $excelIO->exportExcel($name, [$header]);
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $name . '.xlsx"');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        $excelWriter->save('php://output');
+        exit;
+//        print_r($lines);exit;
+
 
     }
 }
