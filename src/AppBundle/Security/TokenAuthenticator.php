@@ -81,17 +81,15 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     public function getCredentials(Request $request)
     {
         if (!$request->headers->has('extra')) {
-            return null;
+            return ['token' => ''];
         }
         // 这里你返回的值，将被作为$credentials传入getUser()
         $extra = $request->headers->get('extra');
         $extra_arr = json_decode($extra, true);
         if (empty($extra_arr['token'])) {
-            return null;
+            return ['token' => ''];
         }
-        return array(
-            'token' => $extra_arr['token'],
-        );
+        return ['token' => $extra_arr['token']];
     }
 
     /**

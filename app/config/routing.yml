@@ -1,9 +1,3 @@
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation
-
-access:
-    path: /message/list
-    methods:
-        - OPTIONS
-    defaults: { _controller: AppBundle:Default:access }

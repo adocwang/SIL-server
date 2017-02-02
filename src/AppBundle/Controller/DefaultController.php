@@ -21,18 +21,4 @@ class DefaultController extends Controller
             'base_dir' => realpath($this->getParameter('kernel.root_dir') . '/..') . DIRECTORY_SEPARATOR,
         ]);
     }
-
-    /**
-     * @Route("*")
-     * @Method("OPTIONS")
-     * @return Response
-     */
-    public function accessAction()
-    {
-        return new Response('', 200, [
-            'Access-Control-Allow-Origin' => $_SERVER['HTTP_ORIGIN'],
-            'Access-Control-Allow-Methods' => 'POST, GET, OPTIONS',
-            'Access-Control-Allow-Headers' => 'extra,content-type',
-        ]);
-    }
 }

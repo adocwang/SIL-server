@@ -57,10 +57,6 @@ class ApiJsonResponse extends JsonResponse
             'info' => $info,
             'data' => $data
         ];
-        parent::__construct($return, 200, [
-            'Access-Control-Allow-Origin' => $_SERVER['HTTP_ORIGIN'],
-            'Access-Control-Allow-Methods' => 'POST, GET, OPTIONS',
-            'Access-Control-Allow-Headers' => 'extra,content-type',
-        ]);
+        parent::__construct($return, 200);
     }
 }

@@ -19,6 +19,10 @@ services:
     app.file_uploader:
         class: AppBundle\Service\FileUploader
         arguments: ['%uploaded_directory%']
+    app.response_listener:
+            class: AppBundle\Listener\ResponseListener
+            tags:
+                - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
 #        arguments: ["@doctrine.orm.entity_manager"]
 #    service_name:
 #        class: AppBundle\Directory\ClassName
