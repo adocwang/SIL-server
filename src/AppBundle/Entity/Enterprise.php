@@ -26,7 +26,7 @@ class Enterprise
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255, unique=true, nullable=false)
+     * @ORM\Column(type="string", length=127, unique=true, nullable=false)
      */
     private $name;
 
@@ -36,7 +36,7 @@ class Enterprise
     private $legalMan;
 
     /**
-     * @ORM\Column(type="string", length=255, unique=true, nullable=false)
+     * @ORM\Column(type="string", length=127, unique=true, nullable=false)
      */
     private $objId;
     /**
