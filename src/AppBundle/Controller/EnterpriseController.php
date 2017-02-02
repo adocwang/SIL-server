@@ -130,8 +130,8 @@ class EnterpriseController extends Controller
      *     parameters={
      *         {"name"="id", "dataType"="integer", "required"=true, "description"="企业id"},
      *         {"name"="bank_id", "dataType"="integer", "required"=false, "description"="银行id"},
-     *         {"name"="role_a_id", "dataType"="integer", "required"=false, "description"="A角id"},
-     *         {"name"="role_b_id", "dataType"="integer", "required"=false, "description"="B角id"},
+     *         {"name"="role_a_id", "dataType"="integer", "required"=false, "description"="A角user_id"},
+     *         {"name"="role_b_id", "dataType"="integer", "required"=false, "description"="B角user_id"},
      *     },
      *     headers={
      *         {
@@ -142,8 +142,8 @@ class EnterpriseController extends Controller
      *     statusCodes={
      *         1003="缺少参数",
      *         2007="银行不存在",
-     *         2008="A角不存在",
-     *         2009="B角不存在",
+     *         2008="角不存在",
+     *         2009="角不是客户经理",
      *         407="无权限",
      *     }
      * )
@@ -178,7 +178,7 @@ class EnterpriseController extends Controller
              */
             $bank = $this->getDoctrine()->getRepository('AppBundle:Bank')->find($data['bank_id']);
             if (empty($bank)) {
-                return new ApiJsonResponse('2007', 'bank not exists');
+                return new ApiJsonResponse(2007, 'bank not exists');
             }
 
             $right = false;
@@ -206,21 +206,29 @@ class EnterpriseController extends Controller
         if (!empty($data['role_a_id'])) {
             $roleA = $this->getDoctrine()->getRepository('AppBundle:User')->find($data['role_a_id']);
             if (empty($roleA)) {
-                return new ApiJsonResponse('2008', 'role_b not exists');
+                return new ApiJsonResponse(2008, 'role_a not exists');
             }
             if ($roleA->getBank() != $nowUserBank) {
                 return new ApiJsonResponse(407, 'no permission to set role_a');
             }
+            if ($roleA->getRole()->getRole() != 'ROLE_CUSTOMER_MANAGER') {
+                return new ApiJsonResponse(2009, 'role a not customer manager');
+            }
+            $enterprise->setRoleA($roleA);
         }
 
         if (!empty($data['role_b_id'])) {
             $roleB = $this->getDoctrine()->getRepository('AppBundle:User')->find($data['role_b_id']);
             if (empty($roleB)) {
-                return new ApiJsonResponse('2008', 'role_b not exists');
+                return new ApiJsonResponse(2008, 'role_b not exists');
             }
             if ($roleB->getBank() != $nowUserBank) {
-                return new ApiJsonResponse(407, 'no permission to set role_b');
+                return new ApiJsonResponse(407, 'no permission to set role b');
             }
+            if ($roleB->getRole()->getRole() != 'ROLE_CUSTOMER_MANAGER') {
+                return new ApiJsonResponse(2009, 'role b not customer manager');
+            }
+            $enterprise->setRoleB($roleB);
         }
 
         $em = $this->getDoctrine()->getManager();

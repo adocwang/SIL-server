@@ -43,6 +43,9 @@ class ImportController extends Controller
          */
         $fileUploader = $this->get('app.file_uploader');
         $file = $fileUploader->upload($request);
+        if (empty($file)) {
+            return new ApiJsonResponse(1003, 'file empty');
+        }
         /**
          * @var ExcelIOService $excelIO
          */
@@ -123,6 +126,9 @@ class ImportController extends Controller
          */
         $fileUploader = $this->get('app.file_uploader');
         $file = $fileUploader->upload($request);
+        if (empty($file)) {
+            return new ApiJsonResponse(1003, 'file empty');
+        }
         /**
          * @var ExcelIOService $excelIO
          */
@@ -149,13 +155,15 @@ class ImportController extends Controller
             if (empty($line[1])) {
                 $superior = $bankRepository->find(1);
             } else {
-                $superior = $bankRepository->findByName($line[1]);
+                $superior = $bankRepository->findOneByName($line[1]);
                 if (empty($superior)) {
                     $errorLines[] = ['data' => $line, 'reason' => '上级银行不存在'];
                     continue;
                 }
             }
-            $bank->setSuperior($superior);
+            if (!empty($superior)) {
+                $bank->setSuperior($superior);
+            }
             $bank->setState(0);
             $em->persist($bank);
             $em->flush();
@@ -193,6 +201,9 @@ class ImportController extends Controller
          */
         $fileUploader = $this->get('app.file_uploader');
         $file = $fileUploader->upload($request);
+        if (empty($file)) {
+            return new ApiJsonResponse(1003, 'file empty');
+        }
         /**
          * @var ExcelIOService $excelIO
          */

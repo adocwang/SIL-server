@@ -120,7 +120,7 @@ class Bank
             'id' => $this->getId(),
             'name' => $this->getName(),
             'state' => $this->getState(),
-            'subordinate' => !empty($subordinate) ? $subordinate : []
+            'subordinate' => $subordinate,
         ];
     }
 

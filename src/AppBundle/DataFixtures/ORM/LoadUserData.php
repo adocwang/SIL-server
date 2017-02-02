@@ -36,7 +36,6 @@ class LoadUserData extends AbstractFixture implements OrderedFixtureInterface, C
         $adminRole->setRole('ROLE_ADMIN');
         $bank = new Bank();
         $bank->setName('总行');
-        $bank->setSuperior($bank);
         $userAdmin = new User();
         $userAdmin->setTrueName('王一博');
         $encoder = $this->container->get('security.password_encoder');

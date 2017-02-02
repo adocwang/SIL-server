@@ -34,23 +34,17 @@ class BankController extends Controller
      *
      * @Route("/bank/list")
      * @Method("GET")
-     * @param JsonRequest $request
      * @return ApiJsonResponse
      */
-    public function list(JsonRequest $request)
+    public function list()
     {
-        $data = $request->getData();
-        if (empty($data['page']) || $data['page'] < 1) {
-            $data['page'] = 1;
-        }
-
         /**
          * @var User $nowUser
          */
         $nowUser = $this->getUser();
 
         if ($nowUser->getRole()->getRole() != 'ROLE_ADMIN') {
-            return new ApiJsonResponse('403');
+            return new ApiJsonResponse(403);
         }
 
         $bankList = $nowUser->getBank()->toArray();

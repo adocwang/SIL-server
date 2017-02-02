@@ -31,6 +31,9 @@ class FileUploader
          * @var \Symfony\Component\HttpFoundation\File\UploadedFile $file
          */
         $file = $request->files->get('file');
+        if (empty($file)) {
+            return;
+        }
         $fileName = md5(uniqid()) . '.' . $file->getClientOriginalExtension();
         $fileEntity = new File();
         $fileEntity->setFileName($file->getClientOriginalName());
