@@ -18,7 +18,7 @@ security:
 #            pattern: ^/(_(profiler|wdt)|css|images|js)/
 #            security: false
         login:
-            pattern: ^/((auth/)|(api_doc)|(export/)|(_profiler))
+            pattern: ^/((auth/)|(api_doc)|(message/list)|(export/)|(_profiler))
             anonymous: ~
         main:
             guard:
