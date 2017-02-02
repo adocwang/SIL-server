@@ -462,12 +462,4 @@ class User implements AdvancedUserInterface
         return $this->bank;
     }
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->subordinate = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
 }

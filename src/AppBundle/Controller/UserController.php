@@ -9,53 +9,9 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\BrowserKit\Request;
 
 class UserController extends Controller
 {
-
-    /**
-     * @ApiDoc(
-     *     section="user",
-     *     description="获取用户",
-     *     parameters={
-     *     },
-     *     headers={
-     *         {
-     *             "name"="extra",
-     *             "default"="{""token"":""iamsuperman:15828516285""}"
-     *         }
-     *     },
-     *     statusCodes={
-     *         1003="缺少参数",
-     *         2007="用户不存在",
-     *         407="无权限",
-     *     }
-     * )
-     *
-     * @Route("/user/{id}")
-     * @Method("GET")
-     * @param integer $id
-     * @return ApiJsonResponse
-     */
-    public function getAction($id)
-    {
-        /**
-         * @var User $user
-         */
-        if (empty($id)) {
-            return new ApiJsonResponse(1003, 'need id');
-        }
-        $user = $this->getDoctrine()->getRepository('AppBundle:User')->find($id);
-        if (empty($user)) {
-            return new ApiJsonResponse(2007, 'user not exists');
-        }
-//        if ($user->getId() == $this->getUser()->getId()) {
-//            return new ApiJsonResponse(0, 'ok', $user->getSelfArr());
-//        }
-        return new ApiJsonResponse(0, 'ok', $user->getOtherArr());
-    }
-
     /**
      * 用户state 0:未激活,1:正常,2:已冻结,3:已删除
      * @ApiDoc(
@@ -65,7 +21,7 @@ class UserController extends Controller
      *         {"name"="page", "dataType"="string", "required"=false, "description"="页码"},
      *         {"name"="phone", "dataType"="string", "required"=false, "description"="手机号码"},
      *         {"name"="true_name", "dataType"="string", "required"=false, "description"="真实姓名"},
-     *         {"name"="bank_name", "dataType"="string", "required"=false, "description"="银行名称"},
+     *         {"name"="bank_name", "dataType"="string", "required"=false, "description"="银行名称(非管理员用户会自动通过当前用户的银行覆盖这个字段)"},
      *         {"name"="state", "dataType"="string", "required"=false, "description"="状态"},
      *     },
      *     headers={
@@ -73,6 +29,9 @@ class UserController extends Controller
      *             "name"="extra",
      *             "default"="{""token"":""iamsuperman:15828516285""}"
      *         }
+     *     },
+     *     statusCodes={
+     *         407="无权限",
      *     }
      * )
      *
@@ -87,6 +46,7 @@ class UserController extends Controller
         if (empty($data['page']) || $data['page'] < 1) {
             $data['page'] = 1;
         }
+
         if (!empty($data['bank_name'])) {
             /**
              * @var \AppBundle\Entity\Bank $bank
@@ -96,6 +56,19 @@ class UserController extends Controller
         } else {
             $data['bank'] = null;
         }
+
+        /**
+         * @var User $nowUser
+         */
+        $nowUser = $this->getUser();
+        if (!in_array($nowUser->getRole()->getRole(), ['ROLE_ADMIN', 'ROLE_PRESIDENT'])) {
+            return new ApiJsonResponse(407, 'no permission');
+        }
+
+        if ($nowUser->getRole()->getRole() != 'ROLE_ADMIN') {
+            $data['bank'] = $nowUser->getBank();
+        }
+
         /**
          * @var \Doctrine\ORM\Tools\Pagination\Paginator $paginator
          * @var \AppBundle\Entity\User $user

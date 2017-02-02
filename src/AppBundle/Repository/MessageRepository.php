@@ -19,7 +19,7 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
             $queryBuilder->andWhere('m.toUser = :to_user');
             $queryBuilder->setParameter('to_user', $condition['to_user']);
         }
-        $queryBuilder->andWhere('m.state != 2');
+        $queryBuilder->andWhere('m.state != 3');
         $query = $queryBuilder->addOrderBy('m.state', 'ASC')->addOrderBy('m.id', 'DESC')
             ->getQuery();
         $query->setFirstResult(($page - 1) * $pageLimit)

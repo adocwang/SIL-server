@@ -35,6 +35,18 @@ class Bank
     private $superior;
 
     /**
+     * @ORM\OneToMany(targetEntity="Bank", mappedBy="superior")
+     */
+    private $subordinate;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(type="integer")
+     */
+    private $state = 1;
+
+    /**
      * Get id
      *
      * @return integer
@@ -90,5 +102,101 @@ class Bank
     public function getSuperior()
     {
         return $this->superior;
+    }
+
+    public function toArray()
+    {
+        $subordinateObjs = $this->getSubordinate();
+        $subordinate = [];
+        /**
+         * @var Bank $subordinateObj
+         */
+        if (!empty($subordinateObjs)) {
+            foreach ($subordinateObjs as $subordinateObj) {
+                $subordinate[] = $subordinateObj->toArray();
+            }
+        }
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'state' => $this->getState(),
+            'subordinate' => !empty($subordinate) ? $subordinate : []
+        ];
+    }
+
+    public function toArrayNoSubordinate()
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'state' => $this->getState(),
+            'superior_id' => $this->getSuperior()->getId()
+        ];
+    }
+
+    /**
+     * Set state
+     *
+     * @param integer $state
+     *
+     * @return Bank
+     */
+    public function setState($state)
+    {
+        $this->state = $state;
+
+        return $this;
+    }
+
+    /**
+     * Get state
+     *
+     * @return integer
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->subordinate = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add subordinate
+     *
+     * @param \AppBundle\Entity\Bank $subordinate
+     *
+     * @return Bank
+     */
+    public function addSubordinate(\AppBundle\Entity\Bank $subordinate)
+    {
+        $this->subordinate[] = $subordinate;
+
+        return $this;
+    }
+
+    /**
+     * Remove subordinate
+     *
+     * @param \AppBundle\Entity\Bank $subordinate
+     */
+    public function removeSubordinate(\AppBundle\Entity\Bank $subordinate)
+    {
+        $this->subordinate->removeElement($subordinate);
+    }
+
+    /**
+     * Get subordinate
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getSubordinate()
+    {
+        return $this->subordinate;
     }
 }

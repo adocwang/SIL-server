@@ -18,13 +18,9 @@ security:
 #            pattern: ^/(_(profiler|wdt)|css|images|js)/
 #            security: false
         login:
-            pattern: ^/((auth/)|(api_doc)|(_profiler))
+            pattern: ^/((auth/)|(api_doc)|(export/)|(_profiler))
             anonymous: ~
         main:
             guard:
                 authenticators:
                     - app.token_authenticator
-
-    role_hierarchy:
-            ROLE_PRESIDENT:  [ROLE_CM]
-            ROLE_SUPERADMIN: [ROLE_ADMIN,ROLE_PRESIDENT]
