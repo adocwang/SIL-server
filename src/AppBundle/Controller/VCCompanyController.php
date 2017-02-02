@@ -18,7 +18,7 @@ class VCCompanyController extends Controller
     /**
      * state 1:正常,3:已删除
      * @ApiDoc(
-     *     section="vc_company",
+     *     section="投资机构",
      *     description="获取vc机构的基金或者投资机构列表",
      *     parameters={
      *     },
@@ -59,7 +59,7 @@ class VCCompanyController extends Controller
     /**
      * 添加投资公司
      * @ApiDoc(
-     *     section="vc_company",
+     *     section="投资机构",
      *     description="添加投资公司",
      *     parameters={
      *         {"name"="name", "dataType"="string", "required"=true, "description"="公司名称"},
@@ -109,7 +109,7 @@ class VCCompanyController extends Controller
      * 修改投资公司
      * state:1正常, 2冻结，3已删除
      * @ApiDoc(
-     *     section="bank",
+     *     section="投资机构",
      *     description="修改投资公司",
      *     parameters={
      *         {"name"="id", "dataType"="integer", "required"=true, "description"="id"},

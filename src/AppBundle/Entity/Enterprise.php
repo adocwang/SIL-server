@@ -26,26 +26,26 @@ class Enterprise
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255, unique=true, nullable=true)
+     * @ORM\Column(type="string", length=255, unique=true, nullable=false)
      */
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=63)
+     * @ORM\Column(type="string", length=63, nullable=true)
      */
     private $legalMan;
 
     /**
-     * @ORM\Column(type="string", length=255, unique=true, nullable=true)
+     * @ORM\Column(type="string", length=255, unique=true, nullable=false)
      */
     private $objId;
     /**
-     * @ORM\Column(type="date")
+     * @ORM\Column(type="date", nullable=true)
      */
     private $start;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $address;
 
@@ -100,11 +100,11 @@ class Enterprise
             'name' => $this->getName(),
             'legal_man' => $this->getLegalMan(),
             'obj_id' => $this->getObjId(),
-            'start' => $this->getStart()->format('Y-m-d'),
+            'start' => $this->getStart() ? $this->getStart()->format('Y-m-d') : "",
             'address' => $this->getAddress(),
-            'bank' => $this->getBank() ? $this->getBank()->toArrayNoSubordinate() : new \stdClass(),
-            'role_a' => $this->getRoleA()->getOtherArr(),
-            'role_b' => $this->getRoleB()->getOtherArr(),
+            'bank' => $this->getBank() ? $this->getBank()->toArrayNoSubordinate() : null,
+            'role_a' => $this->getRoleA() ? $this->getRoleA()->getOtherArr() : null,
+            'role_b' => $this->getRoleB() ? $this->getRoleB()->getOtherArr() : null,
             'state' => $this->getState(),
         ];
     }

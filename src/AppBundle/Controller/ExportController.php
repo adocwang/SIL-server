@@ -19,7 +19,7 @@ class ExportController extends Controller
 
     /**
      * @ApiDoc(
-     *     section="export",
+     *     section="导出",
      *     description="下载用户导入模板",
      *     parameters={
      *     },
@@ -59,7 +59,7 @@ class ExportController extends Controller
 
     /**
      * @ApiDoc(
-     *     section="export",
+     *     section="导出",
      *     description="下载银行导入模板",
      *     parameters={
      *     },
@@ -99,7 +99,7 @@ class ExportController extends Controller
 
     /**
      * @ApiDoc(
-     *     section="export",
+     *     section="导出",
      *     description="下载投资公司导入模板",
      *     parameters={
      *     },

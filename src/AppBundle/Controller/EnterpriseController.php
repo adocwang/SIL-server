@@ -17,8 +17,8 @@ class EnterpriseController extends Controller
     /**
      * 用户state 0:未通过筛选,1:正常,2:已冻结,3:已删除
      * @ApiDoc(
-     *     section="enterprise",
-     *     description="获取企业列表",
+     *     section="企业",
+     *     description="获取当前用户能够处理的企业列表",
      *     parameters={
      *         {"name"="page", "dataType"="string", "required"=false, "description"="页码"},
      *         {"name"="name", "dataType"="string", "required"=false, "description"="企业名称"},
@@ -83,7 +83,7 @@ class EnterpriseController extends Controller
     /**
      * 企业state 0:未激活,1:正常,2:已冻结,3:已删除
      * @ApiDoc(
-     *     section="enterprise",
+     *     section="企业",
      *     description="获取一个企业",
      *     parameters={
      *     },
@@ -101,21 +101,20 @@ class EnterpriseController extends Controller
      *
      * @Route("/enterprise/{id}")
      * @Method("GET")
-     * @param JsonRequest $request
+     * @param integer $id
      * @return ApiJsonResponse
      */
-    public function getEnterpriseAction(JsonRequest $request)
+    public function getEnterpriseAction($id)
     {
-        $data = $request->getData();
-        if (empty($data['id']) && empty($data['phone'])) {
-            return new ApiJsonResponse(1003, 'need id or phone');
+        if (empty($id)) {
+            return new ApiJsonResponse(1003, 'need id');
         }
         /**
          * @var \AppBundle\Repository\EnterpriseRepository $enterpriseRepository
          * @var \AppBundle\Entity\Enterprise $enterprise
          */
         $enterpriseRepository = $this->getDoctrine()->getRepository('AppBundle:Enterprise');
-        $enterprise = $enterpriseRepository->find($data['id']);
+        $enterprise = $enterpriseRepository->find($id);
         if (empty($enterprise)) {
             return new ApiJsonResponse(2007, 'user not exists');
         }
@@ -126,7 +125,7 @@ class EnterpriseController extends Controller
      *
      * 修改企业，用于分配企业，分配AB角
      * @ApiDoc(
-     *     section="enterprise",
+     *     section="企业",
      *     description="修改企业",
      *     parameters={
      *         {"name"="id", "dataType"="integer", "required"=true, "description"="企业id"},
@@ -168,10 +167,11 @@ class EnterpriseController extends Controller
             return new ApiJsonResponse(2007, 'enterprise not exist');
         }
 
-        if (!$this->isGranted('edit', $enterprise)) {
+        if (!in_array($this->getUser()->getRole()->getRole(), ['ROLE_ADMIN', 'ROLE_PRESIDENT'])) {
             return new ApiJsonResponse(407, 'no permission');
         }
 
+        $nowUserBank = $this->getUser()->getBank();
         if (!empty($data['bank_id'])) {
             /**
              * @var Bank $bank
@@ -180,8 +180,24 @@ class EnterpriseController extends Controller
             if (empty($bank)) {
                 return new ApiJsonResponse('2007', 'bank not exists');
             }
+
+            $right = false;
+            $nowSuperior = $bank;
+            do {
+                if (!empty($nowSuperior)) {
+                    if ($nowSuperior == $nowUserBank) {
+                        $right = true;
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            } while ($nowSuperior = $nowSuperior->getSuperior());
+            if (!$right) {
+                return new ApiJsonResponse(407, 'no permission to set bank');
+            }
+            $enterprise->setBank($bank);
         }
-        $nowUserBank = $this->getUser()->getBank();
 
         /**
          * @var User $roleA $roleB
@@ -206,23 +222,8 @@ class EnterpriseController extends Controller
                 return new ApiJsonResponse(407, 'no permission to set role_b');
             }
         }
-        $right = false;
-        $nowSuperior = $bank;
-        do {
-            if (!empty($nowSuperior)) {
-                if ($nowSuperior == $nowUserBank) {
-                    $right = true;
-                    break;
-                }
-            } else {
-                break;
-            }
-        } while ($nowSuperior = $nowSuperior->getSuperior());
-        if (!$right) {
-            return new ApiJsonResponse(407, 'no permission to set bank');
-        }
 
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $em->persist($enterprise);
         $em->flush();
         return new ApiJsonResponse(0, 'update success', $enterprise->toArray());

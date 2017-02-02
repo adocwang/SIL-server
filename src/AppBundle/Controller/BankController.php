@@ -17,8 +17,8 @@ class BankController extends Controller
     /**
      * state 1:正常,3:已删除
      * @ApiDoc(
-     *     section="bank",
-     *     description="获取当前用户能够处理的银行列表",
+     *     section="银行",
+     *     description="获取银行列表",
      *     parameters={
      *     },
      *     headers={
@@ -60,7 +60,7 @@ class BankController extends Controller
     /**
      * 添加银行
      * @ApiDoc(
-     *     section="bank",
+     *     section="银行",
      *     description="添加银行",
      *     parameters={
      *         {"name"="name", "dataType"="string", "required"=true, "description"="银行"}
@@ -108,7 +108,7 @@ class BankController extends Controller
      * 修改银行
      * state:1正常, 3已删除
      * @ApiDoc(
-     *     section="bank",
+     *     section="银行",
      *     description="修改银行",
      *     parameters={
      *         {"name"="id", "dataType"="integer", "required"=true, "description"="银行"},

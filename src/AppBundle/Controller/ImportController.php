@@ -18,7 +18,7 @@ class ImportController extends Controller
 {
     /**
      * @ApiDoc(
-     *     section="import",
+     *     section="导入",
      *     description="导入用户",
      *     parameters={
      *         {"name"="file", "dataType"="file", "required"=true, "description"="用户账号列表文件"},
@@ -98,7 +98,7 @@ class ImportController extends Controller
 
     /**
      * @ApiDoc(
-     *     section="import",
+     *     section="导入",
      *     description="导入银行",
      *     parameters={
      *         {"name"="file", "dataType"="file", "required"=true, "description"="银行列表文件"},
@@ -168,7 +168,7 @@ class ImportController extends Controller
 
     /**
      * @ApiDoc(
-     *     section="import",
+     *     section="导入",
      *     description="导入投资公司",
      *     parameters={
      *         {"name"="file", "dataType"="file", "required"=true, "description"="投资公司列表文件"},

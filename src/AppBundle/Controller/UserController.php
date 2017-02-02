@@ -15,7 +15,7 @@ class UserController extends Controller
     /**
      * 用户state 0:未激活,1:正常,2:已冻结,3:已删除
      * @ApiDoc(
-     *     section="user",
+     *     section="用户",
      *     description="获取用户列表",
      *     parameters={
      *         {"name"="page", "dataType"="string", "required"=false, "description"="页码"},
@@ -85,7 +85,7 @@ class UserController extends Controller
     /**
      * 用户state 0:未激活,1:正常,2:已冻结,3:已删除
      * @ApiDoc(
-     *     section="user",
+     *     section="用户",
      *     description="获取一个用户",
      *     parameters={
      *         {"name"="id", "dataType"="string", "required"=false, "description"="用户id"},
@@ -138,7 +138,7 @@ class UserController extends Controller
      *
      * 角色名称：管理员，行长，客户经理
      * @ApiDoc(
-     *     section="user",
+     *     section="用户",
      *     description="添加用户",
      *     parameters={
      *         {"name"="true_name", "dataType"="string", "required"=true, "description"="真实姓名"},
@@ -206,7 +206,7 @@ class UserController extends Controller
      * 角色名称：管理员，行长，客户经理
      * 用户state 0:未激活,1:正常,2:已冻结,3:已删除
      * @ApiDoc(
-     *     section="user",
+     *     section="用户",
      *     description="修改用户资料",
      *     parameters={
      *         {"name"="user_id", "dataType"="integer", "required"=true, "description"="用户id"},
@@ -289,7 +289,7 @@ class UserController extends Controller
      *
      *
      * @ApiDoc(
-     *     section="user",
+     *     section="用户",
      *     description="注销登录",
      *     parameters={
      *     },

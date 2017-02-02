@@ -25,10 +25,10 @@ class EnterpriseRepository extends \Doctrine\ORM\EntityRepository
             $queryBuilder->setParameter('state', $condition['state']);
         }
         if (!empty($condition['bank'])) {
-            $queryBuilder->andWhere('e.bank = :bank');
+            $queryBuilder->andWhere('a.bank = :bank');
             $queryBuilder->setParameter('bank', $condition['bank']);
         }
-        $query = $queryBuilder->orderBy('e.id', 'DESC')->getQuery();
+        $query = $queryBuilder->orderBy('a.id', 'ASC')->getQuery();
         $query->setFirstResult(($page - 1) * $pageLimit)->setMaxResults($pageLimit);
         $paginator = new Paginator($query, $fetchJoinCollection = true);
 

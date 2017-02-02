@@ -11,14 +11,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 
 class AuthController extends Controller
 {
     /**
      * @ApiDoc(
-     *     section="auth",
+     *     section="身份认证",
      *     description="发送登录短信验证码",
      *     parameters={
      *         {"name"="phone", "dataType"="string", "required"=true, "description"="手机号码"}
@@ -85,7 +84,7 @@ class AuthController extends Controller
 
     /**
      * @ApiDoc(
-     *     section="auth",
+     *     section="身份认证",
      *     description="通过短信登录",
      *     parameters={
      *         {"name"="phone", "dataType"="string", "required"=true, "description"="手机号码"},
@@ -152,7 +151,7 @@ class AuthController extends Controller
 
     /**
      * @ApiDoc(
-     *     section="auth",
+     *     section="身份认证",
      *     description="通过密码登录",
      *     parameters={
      *         {"name"="phone", "dataType"="string", "required"=true, "description"="手机号码"},

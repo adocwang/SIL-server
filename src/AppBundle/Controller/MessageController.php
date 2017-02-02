@@ -14,7 +14,7 @@ class MessageController extends Controller
 {
     /**
      * @ApiDoc(
-     *     section="message",
+     *     section="消息",
      *     description="获取消息",
      *     parameters={
      *     },
@@ -57,7 +57,7 @@ class MessageController extends Controller
     /**
      * 用户state 0:未激活,1:正常,2:已冻结,3:已删除
      * @ApiDoc(
-     *     section="message",
+     *     section="消息",
      *     description="获取消息列表",
      *     parameters={
      *         {"name"="page", "dataType"="string", "required"=false, "description"="页码"}
@@ -99,7 +99,7 @@ class MessageController extends Controller
      * 可用于设置已读，删除消息
      * state:0,未读，1已读，2已删除
      * @ApiDoc(
-     *     section="message",
+     *     section="消息",
      *     description="设置消息状态",
      *     parameters={
      *         {"name"="id", "dataType"="string", "required"=true, "description"="消息id"},
