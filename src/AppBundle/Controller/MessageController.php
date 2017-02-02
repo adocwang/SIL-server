@@ -48,7 +48,7 @@ class MessageController extends Controller
         if (empty($message)) {
             return new ApiJsonResponse(2007, 'message not exists');
         }
-        if ($message->getToUser()->getId() != $this->getUser()->getId()) {
+        if ($message->getToUser() != $this->getUser()) {
             return new ApiJsonResponse(407);
         }
         return new ApiJsonResponse(0, 'ok', $message->getArr());
@@ -118,12 +118,12 @@ class MessageController extends Controller
      *     }
      * )
      *
-     * @Route("/message/delete")
+     * @Route("/message/set")
      * @Method("POST")
      * @param JsonRequest $request
      * @return ApiJsonResponse
      */
-    public function deleteAction(JsonRequest $request)
+    public function setMessageAction(JsonRequest $request)
     {
         /**
          * @var Message $message

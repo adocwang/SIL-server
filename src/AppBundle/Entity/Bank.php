@@ -130,7 +130,7 @@ class Bank
             'id' => $this->getId(),
             'name' => $this->getName(),
             'state' => $this->getState(),
-            'superior_id' => $this->getSuperior()->getId()
+            'superior_id' => $this->getSuperior() ? $this->getSuperior()->getId() : 0,
         ];
     }
 

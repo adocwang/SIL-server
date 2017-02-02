@@ -17,6 +17,7 @@ class VCCompanyController extends Controller
 
     /**
      * state 1:正常,3:已删除
+     * 这个接口会列出所有的VC机构
      * @ApiDoc(
      *     section="投资机构",
      *     description="获取vc机构的基金或者投资机构列表",
@@ -49,9 +50,9 @@ class VCCompanyController extends Controller
         }
 
         $cvCompanyList = $this->getDoctrine()->getRepository('AppBundle:VCCompany')->findAll();
-        $list=[];
-        foreach ($cvCompanyList as $VCCompany){
-            $list[]=$VCCompany->toArray();
+        $list = [];
+        foreach ($cvCompanyList as $VCCompany) {
+            $list[] = $VCCompany->toArray();
         }
         return new ApiJsonResponse(0, 'ok', $list);
     }
@@ -144,14 +145,14 @@ class VCCompanyController extends Controller
             return new ApiJsonResponse(1003, 'need id');
         }
         $VCCompanyRepository = $this->getDoctrine()->getRepository('AppBundle:VCCompany');
-        if (empty($VCCompanyRepository->find($data['id']))) {
+        $VCCompany = $VCCompanyRepository->find($data['id']);
+        if (empty($VCCompany)) {
             return new ApiJsonResponse(2007, 'bank not exist');
         }
         if (!in_array($this->getUser()->getRole()->getRole(), ['ROLE_ADMIN'])) {
             return new ApiJsonResponse(407, 'no permission');
         }
 
-        $VCCompany = new VCCompany();
         if (!empty($data['name'])) {
             $VCCompany->setName($data['name']);
         }
