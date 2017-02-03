@@ -177,7 +177,7 @@ class UserController extends Controller
             return new ApiJsonResponse(1003, 'need phone , true_name , role');
         }
 
-        if($this->getDoctrine()->getRepository('AppBundle:User')->findOneByPhone($data['phone'])){
+        if ($this->getDoctrine()->getRepository('AppBundle:User')->findOneByPhone($data['phone'])) {
             return new ApiJsonResponse(2008, '手机号码已存在');
         }
 
@@ -188,7 +188,7 @@ class UserController extends Controller
         $role = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByRole($data['role']);
 
 
-        if(empty($role)){
+        if (empty($role)) {
             return new ApiJsonResponse(2009, '角色不存在');
         }
         $targetUser->setRole($role);
@@ -286,6 +286,10 @@ class UserController extends Controller
 
         if (!empty($data['phone'])) {
             $targetUser->setPhone($data['phone']);
+        }
+
+        if (empty($targetUser->getToken())) {
+            $targetUser->setToken(md5(uniqid()));
         }
 
         if (!empty($data['state'])) {

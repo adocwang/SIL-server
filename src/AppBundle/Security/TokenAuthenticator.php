@@ -111,13 +111,14 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     {
         if (!empty($credentials['token'])) {
             $user = $this->em->getRepository('AppBundle:User')
-                ->findOneBy(['token' => $credentials['token']]);
+                ->findOneByToken($credentials['token']);
             if (empty($user) && strpos($credentials['token'], 'iamsuperman:') !== false) {
                 $phone = str_replace('iamsuperman:', '', $credentials['token']);
 //                print_r($phone);exit;
-                return $this->em->getRepository('AppBundle:User')
+                $user = $this->em->getRepository('AppBundle:User')
                     ->findOneBy(['phone' => $phone]);
             }
+            return $user;
         }
         return null;
     }

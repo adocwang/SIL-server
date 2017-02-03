@@ -42,6 +42,7 @@ class User implements AdvancedUserInterface
      * @ORM\Column(type="string", length=63, unique=true, nullable=true)
      */
     private $token;
+
     /**
      * @ORM\Column(type="string", length=63, nullable=true)
      */
@@ -68,7 +69,7 @@ class User implements AdvancedUserInterface
      *
      * @ORM\Column(type="integer", nullable=false)
      */
-    protected $state=0;
+    protected $state = 0;
 
     /**
      * Many Users have one Role.
@@ -245,7 +246,7 @@ class User implements AdvancedUserInterface
      */
     public function eraseCredentials()
     {
-        $this->setToken('');
+//        $this->setToken('');
     }
 
     /**
