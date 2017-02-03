@@ -84,7 +84,7 @@ class BankController extends Controller
         if (empty($data['name'])) {
             return new ApiJsonResponse(1003, 'need name');
         }
-        if (!in_array($this->getUser()->getRole()->getRole(), ['ROLE_ADMIN', 'ROLE_PRESIDENT'])) {
+        if (!in_array($this->getUser()->getRole()->getRole(), ['ROLE_ADMIN', 'ROLE_BRANCH_PRESIDENT'])) {
             return new ApiJsonResponse(407, 'no permission');
         }
 
@@ -140,7 +140,7 @@ class BankController extends Controller
         if (empty($bankRepository->find($data['id']))) {
             return new ApiJsonResponse(2007, 'bank not exist');
         }
-        if (!in_array($this->getUser()->getRole()->getRole(), ['ROLE_ADMIN', 'ROLE_PRESIDENT'])) {
+        if (!in_array($this->getUser()->getRole()->getRole(), ['ROLE_ADMIN', 'ROLE_BRANCH_PRESIDENT'])) {
             return new ApiJsonResponse(407, 'no permission');
         }
 

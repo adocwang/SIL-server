@@ -61,7 +61,7 @@ class UserController extends Controller
          * @var User $nowUser
          */
         $nowUser = $this->getUser();
-        if (!in_array($nowUser->getRole()->getRole(), ['ROLE_ADMIN', 'ROLE_PRESIDENT'])) {
+        if (!in_array($nowUser->getRole()->getRole(), ['ROLE_ADMIN', 'ROLE_END_PRESIDENT'])) {
             return new ApiJsonResponse(407, 'no permission');
         }
 
@@ -136,14 +136,18 @@ class UserController extends Controller
 
     /**
      *
-     * 角色名称：管理员，行长，客户经理
+     * 角色：
+     *   管理员：ROLE_ADMIN
+     *   分行行长：ROLE_BRANCH_ADMIN
+     *   支行行长：ROLE_END_ADMIN
+     *   客户经理：ROLE_CUSTOMER_MANAGER
      * @ApiDoc(
      *     section="用户",
      *     description="添加用户",
      *     parameters={
      *         {"name"="true_name", "dataType"="string", "required"=true, "description"="真实姓名"},
      *         {"name"="phone", "dataType"="string", "required"=true, "description"="手机号码"},
-     *         {"name"="role_name", "dataType"="string", "required"=true, "description"="角色名称"}
+     *         {"name"="role", "dataType"="string", "required"=true, "description"="角色"}
      *     },
      *     headers={
      *         {
@@ -153,7 +157,8 @@ class UserController extends Controller
      *     },
      *     statusCodes={
      *         1003="缺少参数",
-     *         2007="用户不存在",
+     *         2009="role不存在",
+     *         2008="手机号码已存在",
      *         407="无权限",
      *     }
      * )
@@ -168,15 +173,24 @@ class UserController extends Controller
         $data = $request->getData();
         //check notnull data fields
 //        print_r($data);exit;
-        if (empty($data['phone']) || empty($data['true_name']) || empty($data['role_name'])) {
-            return new ApiJsonResponse(1003, 'need phone , true_name , role_name');
+        if (empty($data['phone']) || empty($data['true_name']) || empty($data['role'])) {
+            return new ApiJsonResponse(1003, 'need phone , true_name , role');
+        }
+
+        if($this->getDoctrine()->getRepository('AppBundle:User')->findOneByPhone($data['phone'])){
+            return new ApiJsonResponse(2008, '手机号码已存在');
         }
 
         $targetUser = new User();
 
         $targetUser->setPhone($data['phone']);
         $targetUser->setTrueName($data['true_name']);
-        $role = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByName($data['role_name']);
+        $role = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByRole($data['role']);
+
+
+        if(empty($role)){
+            return new ApiJsonResponse(2009, '角色不存在');
+        }
         $targetUser->setRole($role);
 
         $targetUser->setBank($this->getUser()->getBank());

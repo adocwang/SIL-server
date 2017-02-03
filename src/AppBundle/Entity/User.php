@@ -93,8 +93,9 @@ class User implements AdvancedUserInterface
             'true_name' => $this->getTrueName(),
             'token' => $this->getToken(),
             'created' => $this->getCreated()->getTimestamp(),
-            'role' => $this->getRole() ? $this->getRole()->getName() : "",
-            'bank' => $this->getBank() ? $this->getBank()->getName() : "",
+            'role' => $this->getRole() ? $this->getRole()->getRole() : "",
+            'role_name' => $this->getRole() ? $this->getRole()->getName() : "",
+            'bank_name' => $this->getBank() ? $this->getBank()->getName() : "",
         ];
     }
 
@@ -105,6 +106,7 @@ class User implements AdvancedUserInterface
             'phone' => $this->getPhone(),
             'true_name' => $this->getTrueName(),
             'created' => $this->getCreated()->getTimestamp(),
+            'role' => $this->getRole() ? $this->getRole()->getRole() : "",
             'role_name' => $this->getRole() ? $this->getRole()->getName() : "",
             'bank_name' => $this->getBank() ? $this->getBank()->getName() : "",
         ];

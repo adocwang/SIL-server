@@ -116,7 +116,7 @@ class EnterpriseController extends Controller
         $enterpriseRepository = $this->getDoctrine()->getRepository('AppBundle:Enterprise');
         $enterprise = $enterpriseRepository->find($id);
         if (empty($enterprise)) {
-            return new ApiJsonResponse(2007, 'user not exists');
+            return new ApiJsonResponse(2007, 'enterprise not exists');
         }
         return new ApiJsonResponse(0, 'ok', $enterprise->toArray());
     }
@@ -167,7 +167,7 @@ class EnterpriseController extends Controller
             return new ApiJsonResponse(2007, 'enterprise not exist');
         }
 
-        if (!in_array($this->getUser()->getRole()->getRole(), ['ROLE_ADMIN', 'ROLE_PRESIDENT'])) {
+        if (!in_array($this->getUser()->getRole()->getRole(), ['ROLE_ADMIN', 'ROLE_END_PRESIDENT'])) {
             return new ApiJsonResponse(407, 'no permission');
         }
 

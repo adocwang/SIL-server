@@ -30,8 +30,13 @@ class LoadRoleData implements ContainerAwareInterface, OrderedFixtureInterface, 
     public function load(ObjectManager $manager)
     {
 
-        $role = new Role('ROLE_PRESIDENT');
-        $role->setName('行长');
+        $role = new Role('ROLE_BRANCH_PRESIDENT');
+        $role->setName('分行行长');
+        $manager->persist($role);
+        $manager->flush();
+
+        $role = new Role('ROLE_END_PRESIDENT');
+        $role->setName('支行行长');
         $manager->persist($role);
         $manager->flush();
 
