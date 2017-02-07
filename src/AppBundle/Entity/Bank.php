@@ -29,6 +29,20 @@ class Bank
     private $name;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $address;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $coordinates;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Bank", inversedBy="subordinate")
      * @ORM\JoinColumn(name="superior_id", referencedColumnName="id")
      */
@@ -119,6 +133,8 @@ class Bank
         return [
             'id' => $this->getId(),
             'name' => $this->getName(),
+            'address' => $this->getAddress(),
+            'coordinates' => $this->getCoordinates(),
             'state' => $this->getState(),
             'subordinate' => $subordinate,
         ];
@@ -129,6 +145,8 @@ class Bank
         return [
             'id' => $this->getId(),
             'name' => $this->getName(),
+            'address' => $this->getAddress(),
+            'coordinates' => $this->getCoordinates(),
             'state' => $this->getState(),
             'superior_id' => $this->getSuperior() ? $this->getSuperior()->getId() : 0,
         ];
@@ -198,5 +216,53 @@ class Bank
     public function getSubordinate()
     {
         return $this->subordinate;
+    }
+
+    /**
+     * Set address
+     *
+     * @param string $address
+     *
+     * @return Bank
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    /**
+     * Get address
+     *
+     * @return string
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * Set coordinates
+     *
+     * @param string $coordinates
+     *
+     * @return Bank
+     */
+    public function setCoordinates($coordinates)
+    {
+        $this->coordinates = $coordinates;
+
+        return $this;
+    }
+
+    /**
+     * Get coordinates
+     *
+     * @return string
+     */
+    public function getCoordinates()
+    {
+        return $this->coordinates;
     }
 }

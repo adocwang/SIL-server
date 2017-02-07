@@ -74,6 +74,7 @@ class VCCompanyController extends Controller
      *     },
      *     statusCodes={
      *         1003="缺少参数",
+     *         2007="相同 name 的 VCCompany 已存在",
      *         407="无权限",
      *     }
      * )
@@ -96,6 +97,9 @@ class VCCompanyController extends Controller
             return new ApiJsonResponse(407, 'no permission');
         }
 
+        if ($this->getDoctrine()->getRepository('AppBundle:VCCompany')->findByName($data['name'])) {
+            return new ApiJsonResponse(2007, 'vc company exists');
+        }
         $vcCompany = new VCCompany();
         $vcCompany->setName($data['name']);
         $vcCompany->setVcName($data['vc_name']);
@@ -145,6 +149,9 @@ class VCCompanyController extends Controller
             return new ApiJsonResponse(1003, 'need id');
         }
         $VCCompanyRepository = $this->getDoctrine()->getRepository('AppBundle:VCCompany');
+        /**
+         * @var VCCompany $VCCompany
+         */
         $VCCompany = $VCCompanyRepository->find($data['id']);
         if (empty($VCCompany)) {
             return new ApiJsonResponse(2007, 'bank not exist');

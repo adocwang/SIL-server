@@ -45,6 +45,7 @@ class VCCompany
     public function toArray()
     {
         return [
+            'id' => $this->getId(),
             'name' => $this->getName(),
             'vc_name' => $this->getVcName(),
             'state' => $this->getState()
