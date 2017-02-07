@@ -93,7 +93,7 @@ class BankController extends Controller
         $bank->setSuperior($this->getUser()->getBank());
 
         $em = $this->getDoctrine()->getManager();
-        $em->persist($data);
+        $em->persist($bank);
         $em->flush();
         return new ApiJsonResponse(0, 'add success', $bank->toArray());
     }
@@ -107,6 +107,8 @@ class BankController extends Controller
      *     parameters={
      *         {"name"="id", "dataType"="integer", "required"=true, "description"="银行"},
      *         {"name"="name", "dataType"="string", "required"=false, "description"="银行"},
+     *         {"name"="address", "dataType"="string", "required"=false, "description"="地址"},
+     *         {"name"="coordinates", "dataType"="string", "required"=false, "description"="坐标"},
      *         {"name"="state", "dataType"="string", "required"=false, "description"="状态"},
      *         {"name"="superior_id", "dataType"="integer", "required"=false, "description"="上级id"}
      *     },
@@ -143,10 +145,18 @@ class BankController extends Controller
         if (!in_array($this->getUser()->getRole()->getRole(), ['ROLE_ADMIN', 'ROLE_BRANCH_PRESIDENT'])) {
             return new ApiJsonResponse(407, 'no permission');
         }
-
-        $bank = new Bank();
+        /**
+         * @var Bank $bank
+         */
+        $bank = $bankRepository->find($data['id']);
         if (!empty($data['name'])) {
             $bank->setName($data['name']);
+        }
+        if (!empty($data['address'])) {
+            $bank->setAddress($data['address']);
+        }
+        if (!empty($data['coordinates'])) {
+            $bank->setCoordinates($data['coordinates']);
         }
 
         if (!empty($data['state'])) {
@@ -154,7 +164,6 @@ class BankController extends Controller
         }
 
         if (!empty($data['superior_id'])) {
-            $bankRepository = $this->getDoctrine()->getRepository('AppBundle:Bank');
             /**
              * @var Bank $superior
              */
