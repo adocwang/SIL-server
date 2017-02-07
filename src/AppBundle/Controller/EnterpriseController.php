@@ -21,6 +21,7 @@ class EnterpriseController extends Controller
      *     description="获取当前用户能够处理的企业列表",
      *     parameters={
      *         {"name"="page", "dataType"="string", "required"=false, "description"="页码"},
+     *         {"name"="page_limit", "dataType"="integer", "required"=false, "description"="每页size"},
      *         {"name"="name", "dataType"="string", "required"=false, "description"="企业名称"},
      *         {"name"="bank_name", "dataType"="string", "required"=false, "description"="所属银行名称(非管理员用户会自动通过当前用户的银行覆盖这个字段)"},
      *         {"name"="state", "dataType"="string", "required"=false, "description"="状态"},
@@ -66,18 +67,26 @@ class EnterpriseController extends Controller
             $data['bank'] = $nowUser->getBank();
             $data['state'] = 1;
         }
+        $pageLimit = $this->getParameter('page_limit');
+        if (!empty($data['page_limit']) && $data['page_limit'] > 0) {
+            $pageLimit = $data['page_limit'];
+        }
 
         /**
          * @var \Doctrine\ORM\Tools\Pagination\Paginator $paginator
          * @var \AppBundle\Entity\Enterprise $enterprise
          */
-        $pageData = $this->getDoctrine()->getRepository('AppBundle:Enterprise')->listPage($data['page'],
-            $this->getParameter('page_count'), $data);
+        $pageData = $this->getDoctrine()->getRepository('AppBundle:Enterprise')->listPage($data['page'], $pageLimit, $data);
         $enterprises = [];
         foreach ($pageData['data'] as $enterprise) {
             $enterprises[] = $enterprise->toArray();
         }
-        return new ApiJsonResponse(0, 'ok', ['page_count' => $pageData['pageCount'], 'enterprises' => $enterprises]);
+        return new ApiJsonResponse(0, 'ok', [
+            'count' => $pageData['count'],
+            'page_limit' => $pageLimit,
+            'page_count' => $pageData['pageCount'],
+            'enterprises' => $enterprises
+        ]);
     }
 
     /**

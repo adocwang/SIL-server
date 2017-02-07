@@ -8,7 +8,7 @@ imports:
 parameters:
     locale: en
     uploaded_directory: '%kernel.root_dir%/../var/uploaded'
-    page_count: 5
+    page_limit: 5
 
 framework:
     #esi:             ~
@@ -80,5 +80,15 @@ stof_doctrine_extensions:
         default:
             tree: true
             timestampable: true
+
+doctrine_mongodb:
+    connections:
+        default:
+            server: "%mongodb_server%"
+            options: {}
+    default_database: sil
+    document_managers:
+        default:
+            auto_mapping: true
 
 

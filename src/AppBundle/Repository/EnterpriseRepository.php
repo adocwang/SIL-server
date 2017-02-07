@@ -33,6 +33,7 @@ class EnterpriseRepository extends \Doctrine\ORM\EntityRepository
         $paginator = new Paginator($query, $fetchJoinCollection = true);
 
         $result = [
+            'count' => $paginator->count(),
             'pageCount' => ceil($paginator->count() / $pageLimit),
             'data' => $paginator->getIterator()
         ];

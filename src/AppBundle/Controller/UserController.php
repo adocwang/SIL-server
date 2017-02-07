@@ -19,6 +19,7 @@ class UserController extends Controller
      *     description="获取用户列表",
      *     parameters={
      *         {"name"="page", "dataType"="string", "required"=false, "description"="页码"},
+     *         {"name"="page_limit", "dataType"="integer", "required"=false, "description"="每页size"},
      *         {"name"="phone", "dataType"="string", "required"=false, "description"="手机号码"},
      *         {"name"="true_name", "dataType"="string", "required"=false, "description"="真实姓名"},
      *         {"name"="bank_name", "dataType"="string", "required"=false, "description"="银行名称(非管理员用户会自动通过当前用户的银行覆盖这个字段)"},
@@ -68,18 +69,27 @@ class UserController extends Controller
         if ($nowUser->getRole()->getRole() != 'ROLE_ADMIN') {
             $data['bank'] = $nowUser->getBank();
         }
+        $pageLimit = $this->getParameter('page_limit');
+        if (!empty($data['page_limit']) && $data['page_limit'] > 0) {
+            $pageLimit = $data['page_limit'];
+        }
+
 
         /**
          * @var \Doctrine\ORM\Tools\Pagination\Paginator $paginator
          * @var \AppBundle\Entity\User $user
          */
-        $pageData = $this->getDoctrine()->getRepository('AppBundle:User')->listPage($data['page'],
-            $this->getParameter('page_count'), $data);
+        $pageData = $this->getDoctrine()->getRepository('AppBundle:User')->listPage($data['page'], $pageLimit, $data);
         $users = [];
         foreach ($pageData['data'] as $user) {
             $users[] = $user->getOtherArr();
         }
-        return new ApiJsonResponse(0, 'ok', ['page_count' => $pageData['pageCount'], 'users' => $users]);
+        return new ApiJsonResponse(0, 'ok', [
+            'count' => $pageData['count'],
+            'page_limit' => $pageLimit,
+            'page_count' => $pageData['pageCount'],
+            'users' => $users
+        ]);
     }
 
     /**
@@ -296,7 +306,7 @@ class UserController extends Controller
             $targetUser->setState($data['state']);
         }
 
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $em->persist($targetUser);
         $em->flush();
         return new ApiJsonResponse(0, 'update success', $targetUser->getSelfArr());

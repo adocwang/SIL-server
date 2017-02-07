@@ -15,7 +15,7 @@ class ResponseListener
 {
     public function onKernelResponse(FilterResponseEvent $event)
     {
-        $event->getResponse()->headers->set('Access-Control-Allow-Headers', 'origin, content-type, accept, extra');
+        $event->getResponse()->headers->set('Access-Control-Allow-Headers', "*");
         $event->getResponse()->headers->set('Access-Control-Allow-Origin', '*');
         $event->getResponse()->headers->set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
     }

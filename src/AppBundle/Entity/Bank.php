@@ -149,6 +149,7 @@ class Bank
             'coordinates' => $this->getCoordinates(),
             'state' => $this->getState(),
             'superior_id' => $this->getSuperior() ? $this->getSuperior()->getId() : 0,
+            'superior_name' => $this->getSuperior() ? $this->getSuperior()->getName() : "",
         ];
     }
 

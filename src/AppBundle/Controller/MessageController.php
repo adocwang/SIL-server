@@ -87,12 +87,17 @@ class MessageController extends Controller
          * @var \AppBundle\Entity\Message $message
          */
         $pageData = $this->getDoctrine()->getRepository('AppBundle:Message')->listPage($data['page'],
-            $this->getParameter('page_count'), $data);
+            $this->getParameter('page_limit'), $data);
         $messages = [];
         foreach ($pageData['data'] as $message) {
             $messages[] = $message->getArr();
         }
-        return new ApiJsonResponse(0, 'ok', ['page_count' => $pageData['pageCount'], 'messages' => $messages]);
+        return new ApiJsonResponse(0, 'ok', [
+            'count' => $pageData['count'],
+            'page_limit' => $this->getParameter('page_limit'),
+            'page_count' => $pageData['pageCount'],
+            'messages' => $messages
+        ]);
     }
 
     /**
