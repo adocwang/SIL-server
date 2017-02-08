@@ -24,7 +24,7 @@ class ClientConfig
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=63)
+     * @ORM\Column(type="string", length=63, unique=true)
      */
     private $configKey;
 

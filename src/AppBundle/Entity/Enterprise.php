@@ -86,7 +86,7 @@ class Enterprise
     protected $state = 1;
 
     /**
-     * Many Users in one Bank.
+     * Many Enterprises in one Bank.
      * @ORM\ManyToOne(targetEntity="Bank")
      * @ORM\JoinColumn(name="bank_id", referencedColumnName="id")
      */
@@ -105,6 +105,12 @@ class Enterprise
      * @ORM\JoinColumn(name="role_b_id", referencedColumnName="id")
      */
     private $roleB;
+
+    /**
+     * One Customer has One Cart.
+     * @ORM\OneToOne(targetEntity="Finding", mappedBy="enterprise")
+     */
+    private $finding;
 
     function toArray()
     {
@@ -357,9 +363,9 @@ class Enterprise
      */
     public function setRoleA(\AppBundle\Entity\User $roleA = null)
     {
-        if ($this->getRoleB() == $roleA) {
-            return $this;
-        }
+//        if ($this->getRoleB() == $roleA) {
+//            return $this;
+//        }
         $this->roleA = $roleA;
         return $this;
     }
@@ -383,9 +389,9 @@ class Enterprise
      */
     public function setRoleB(\AppBundle\Entity\User $roleB = null)
     {
-        if ($this->getRoleA() == $roleB) {
-            return $this;
-        }
+//        if ($this->getRoleA() == $roleB) {
+//            return $this;
+//        }
         $this->roleB = $roleB;
         return $this;
     }
@@ -456,5 +462,29 @@ class Enterprise
     public function getDetailSynced()
     {
         return $this->detailSynced;
+    }
+
+    /**
+     * Set finding
+     *
+     * @param \AppBundle\Entity\Finding $finding
+     *
+     * @return Enterprise
+     */
+    public function setFinding(\AppBundle\Entity\Finding $finding = null)
+    {
+        $this->finding = $finding;
+
+        return $this;
+    }
+
+    /**
+     * Get finding
+     *
+     * @return \AppBundle\Entity\Finding
+     */
+    public function getFinding()
+    {
+        return $this->finding;
     }
 }

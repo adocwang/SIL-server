@@ -44,6 +44,9 @@ class ApiJsonResponse extends JsonResponse
                 case 406:
                     $info = 'token error';
                     break;
+                case 407:
+                    $info = 'no permission';
+                    break;
                 case 500:
                     $info = 'unexpected server error';
                     break;

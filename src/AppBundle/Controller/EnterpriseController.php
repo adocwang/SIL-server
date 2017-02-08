@@ -5,6 +5,8 @@ namespace AppBundle\Controller;
 use AppBundle\ApiJsonResponse;
 use AppBundle\Entity\Bank;
 use AppBundle\Entity\Enterprise;
+use AppBundle\Entity\Finding;
+use AppBundle\Entity\Loan;
 use AppBundle\Entity\User;
 use AppBundle\JsonRequest;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -122,6 +124,7 @@ class EnterpriseController extends Controller
         /**
          * @var \AppBundle\Repository\EnterpriseRepository $enterpriseRepository
          * @var \AppBundle\Entity\Enterprise $enterprise
+         * @var Loan $loan
          */
         $enterpriseRepository = $this->getDoctrine()->getRepository('AppBundle:Enterprise');
         $enterprise = $enterpriseRepository->find($id);
@@ -130,6 +133,14 @@ class EnterpriseController extends Controller
         }
         $enterpriseResult = $enterprise->toArray();
         $enterpriseResult['detail'] = json_decode($enterprise->getDetail(), true);
+        $enterpriseResult['loan'] = new \stdClass();
+        $loanRepository = $this->getDoctrine()->getRepository('AppBundle:Loan');
+        $loans = $loanRepository->findBy(['enterprise' => $enterprise], ['id' => 'DESC'], 1);
+        if (!empty($loans)) {
+            $loan = $loans[0];
+            $enterpriseResult['loan'] = $loan->toArray();
+        }
+
         return new ApiJsonResponse(0, 'ok', $enterpriseResult);
     }
 
@@ -212,7 +223,7 @@ class EnterpriseController extends Controller
         }
 
         /**
-         * @var User $roleA $roleB
+         * @var User $roleA,$roleB
          */
 
         if (!empty($data['role_a_id'])) {
@@ -235,7 +246,7 @@ class EnterpriseController extends Controller
                 return new ApiJsonResponse(2008, 'role_b not exists');
             }
             if ($roleB->getBank() != $nowUserBank) {
-                return new ApiJsonResponse(407, 'no permission to set role b');
+                return new ApiJsonResponse(407, 'no permission to set role_b');
             }
             if ($roleB->getRole()->getRole() != 'ROLE_CUSTOMER_MANAGER') {
                 return new ApiJsonResponse(2009, 'role b not customer manager');
@@ -247,5 +258,69 @@ class EnterpriseController extends Controller
         $em->persist($enterprise);
         $em->flush();
         return new ApiJsonResponse(0, 'update success', $enterprise->toArray());
+    }
+
+    /**
+     *
+     * 修改企业调查结果
+     * @ApiDoc(
+     *     section="企业",
+     *     description="修改企业调查结果",
+     *     parameters={
+     *         {"name"="id", "dataType"="integer", "required"=true, "description"="企业id"},
+     *         {"name"="data", "dataType"="string", "required"=false, "description"="调查结果数据"},
+     *     },
+     *     headers={
+     *         {
+     *             "name"="extra",
+     *             "default"="{""token"":""iamsuperman:15828516285""}"
+     *         }
+     *     },
+     *     statusCodes={
+     *         1003="缺少参数",
+     *         2007="企业不存在",
+     *         407="无权限",
+     *     }
+     * )
+     *
+     * @Route("/enterprise/set_finding")
+     * @Method("POST")
+     * @param JsonRequest $request
+     * @return ApiJsonResponse
+     */
+    public function setEnterpriseFindingAction(JsonRequest $request)
+    {
+        $data = $request->getData();
+        //check notnull data fields
+//        print_r($data);exit;
+        if (empty($data['id']) || empty($data['data'])) {
+            return new ApiJsonResponse(1003, 'need id and data');
+        }
+
+        /**
+         * @var Enterprise $enterprise
+         */
+        $enterprise = $this->getDoctrine()->getRepository('AppBundle:Enterprise')->find($data['id']);
+        if (empty($enterprise) || !$enterprise instanceof Enterprise) {
+            return new ApiJsonResponse(2007, 'enterprise not exist');
+        }
+
+        $finding = $enterprise->getFinding();
+        if (empty($finding)) {
+            $finding = new Finding();
+            $finding->setEnterprise($enterprise);
+        }
+        $finding->setData($data['data']);
+
+        //权限判断
+        $nowUser = $this->getUser();
+        if ($nowUser != $enterprise->getRoleA()) {
+            return new ApiJsonResponse(407, 'only role A can set finding');
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($finding);
+        $em->flush();
+        return new ApiJsonResponse(0, 'set success', $finding);
     }
 }

@@ -16,7 +16,7 @@ class ClientConfigController extends Controller
 {
 
     /**
-     * 类型:web,ios,android
+     * 类型:web,ios,android,all
      * @ApiDoc(
      *     section="配置",
      *     description="获取配置",
@@ -49,6 +49,8 @@ class ClientConfigController extends Controller
         } elseif ($type == 'android') {
             $types[] = 2;
             $types[] = 4;
+        } elseif ($type == 'all') {
+            $types = [0, 1, 2, 3, 4, 5];
         }
 
         $configs = $this->getDoctrine()->getRepository('AppBundle:ClientConfig')->findBy(['type' => $types]);
@@ -61,5 +63,91 @@ class ClientConfigController extends Controller
             $configArr[($config->getConfigKey())] = $config->getConfigValue();
         }
         return new ApiJsonResponse(0, 'ok', $configArr);
+    }
+
+    /**
+     * 类型:web,ios,android,all
+     * @ApiDoc(
+     *     section="配置",
+     *     description="获取配置",
+     *     parameters={
+     *     },
+     *     headers={
+     *         {
+     *             "name"="extra",
+     *             "default"="{""token"":""iamsuperman:15828516285""}"
+     *         }
+     *     },
+     *     statusCodes={
+     *         404="参数type 错误",
+     *     }
+     * )
+     *
+     * @Route("/client_config/get_special/{key}")
+     * @Method("GET")
+     * @param integer $key
+     * @return ApiJsonResponse
+     */
+    public function getSpecialConfigAction($key)
+    {
+        if (empty($key)) {
+            return new ApiJsonResponse(1003, 'need key');
+        }
+
+        /**
+         * @var ClientConfig $config
+         */
+        $config = $this->getDoctrine()->getRepository('AppBundle:ClientConfig')->findOneByConfigKey($key);
+
+        if (empty($config)) {
+            return new ApiJsonResponse(2007, 'key not exist');
+        }
+        return new ApiJsonResponse(0, 'ok', $config);
+    }
+
+    /**
+     * @ApiDoc(
+     *     section="配置",
+     *     description="设置配置",
+     *     parameters={
+     *         {"name"="key", "dataType"="string", "required"=true, "description"="key"},
+     *         {"name"="value", "dataType"="string", "required"=true, "description"="value"},
+     *     },
+     *     headers={
+     *         {
+     *             "name"="extra",
+     *             "default"="{""token"":""iamsuperman:15828516285""}"
+     *         }
+     *     },
+     *     statusCodes={
+     *         404="参数type 错误",
+     *     }
+     * )
+     *
+     * @Route("/client_config/set_special")
+     * @Method("POST")
+     * @param JsonRequest $request
+     * @return ApiJsonResponse
+     */
+    public function setSpecialConfigAction(JsonRequest $request)
+    {
+        $data = $request->getData();
+        if (empty($data['key']) || empty($data['value'])) {
+            return new ApiJsonResponse(1003, 'need key and value');
+        }
+
+        /**
+         * @var ClientConfig $config
+         */
+        $config = $this->getDoctrine()->getRepository('AppBundle:ClientConfig')->findOneByConfigKey($data['key']);
+        if (empty($config)) {
+            $config = new ClientConfig();
+        }
+        $config->setConfigKey($data['key']);
+        $config->setConfigValue($data['value']);
+        $config->setType(5);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($config);
+        $em->flush();
     }
 }

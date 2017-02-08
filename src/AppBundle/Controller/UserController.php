@@ -204,6 +204,7 @@ class UserController extends Controller
         $targetUser->setRole($role);
 
         $targetUser->setBank($this->getUser()->getBank());
+        $targetUser->setToken(md5(uniqid()));
         $targetUser->setState(0);
         /**
          * @var \Symfony\Component\Validator\Validator\ValidatorInterface $validator

@@ -43,12 +43,13 @@ class BankController extends Controller
          */
         $nowUser = $this->getUser();
 
-        if ($nowUser->getRole()->getRole() != 'ROLE_ADMIN') {
-            return new ApiJsonResponse(403);
+        if ($nowUser->getRole()->getRole() == 'ROLE_ADMIN') {
+            $banks = $this->getDoctrine()->getRepository('AppBundle:Bank')->findAll();
+        } else {
+            $banks = $this->getDoctrine()->getRepository('AppBundle:Bank')->findBy(['superior' => $nowUser->getBank()]);
         }
-        $banks=$this->getDoctrine()->getRepository('AppBundle:Bank')->findAll();
-        foreach ($banks as $bank){
-            $bankList[]=$bank->toArrayNoSubordinate();
+        foreach ($banks as $bank) {
+            $bankList[] = $bank->toArrayNoSubordinate();
         }
         return new ApiJsonResponse(0, 'ok', $bankList);
     }
