@@ -11,7 +11,9 @@ namespace AppBundle\Command;
 
 use AppBundle\Entity\Enterprise;
 use AppBundle\Repository\EnterpriseRepository;
+use AppBundle\Service\QiXinApi;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use GuzzleHttp\Exception\ConnectException;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -39,9 +41,11 @@ class SyncCompanyDetailCommand extends ContainerAwareCommand
          * @var Registry $doctrine
          * @var EnterpriseRepository $enterpriseRepository
          * @var Enterprise $enterprise
+         * @var QiXinApi $qixinApi
          */
         $doctrine = $this->getContainer()->get('doctrine');
         $enterpriseRepository = $doctrine->getRepository('AppBundle:Enterprise');
+        $em = $doctrine->getManager();
         $enterprises = $enterpriseRepository->findAll();
 
         // outputs multiple lines to the console (adding "\n" at the end of each line)
@@ -51,7 +55,28 @@ class SyncCompanyDetailCommand extends ContainerAwareCommand
             '============',
             '',
         ]);
+        $qixinApi = $this->getContainer()->get('app.qixin_api');
         foreach ($enterprises as $enterprise) {
+            $i = 0;
+            do {
+                try {
+                    $detail = $qixinApi->getGongShangInfo($enterprise->getName());
+                } catch (ConnectException $e) {
+                    continue;
+                }
+            } while (++$i < 5);
+
+            if (!empty($detail)) {
+                $enterprise->setDetail(json_encode($detail));
+                $enterprise->setStart(new \DateTime($detail['start_date']));
+                $enterprise->setLegalMan($detail['oper_name']);
+                $enterprise->setAddress($detail['address']);
+            } else {
+                $enterprise->setDetail("");
+            }
+            $enterprise->setDetailSynced(new \DateTime());
+            $em->persist($enterprise);
+            $em->flush();
             $output->writeln($enterprise->getName() . ":" . $enterprise->getObjId());
         }
     }

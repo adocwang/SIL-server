@@ -9,6 +9,7 @@ parameters:
     locale: en
     uploaded_directory: '%kernel.root_dir%/../var/uploaded'
     page_limit: 5
+    qixin_appkey: 'ada44bd0070711e6b8a865678b483fde'
 
 framework:
     #esi:             ~
@@ -90,5 +91,13 @@ doctrine_mongodb:
     document_managers:
         default:
             auto_mapping: true
+
+guzzle:
+    logging: false
+    clients:
+        api_qixin007:
+            base_url: "http://api.qixin007.com/APITestService/"
+            headers:
+                Accept: "application/json"
 
 

@@ -14,6 +14,7 @@ use AppBundle\Entity\Enterprise;
 use AppBundle\Entity\Message;
 use AppBundle\Entity\Role;
 use AppBundle\Entity\User;
+use AppBundle\Entity\VCCompany;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
@@ -33,7 +34,13 @@ class LoadEnterpriseData extends AbstractFixture implements OrderedFixtureInterf
      */
     public function load(ObjectManager $manager)
     {
-        for ($i = 1; $i < 20; $i++) {
+
+        $vcCompany = new VCCompany();
+        $vcCompany->setName('小米科技有限责任公司');
+        $vcCompany->setVcName('小米资本');
+        $manager->persist($vcCompany);
+        $manager->flush();
+        for ($i = 1; $i < 2; $i++) {
             $enterprise = new Enterprise();
             $enterprise->setName('测试' . $i . '科技有限公司');
             $enterprise->setAddress('时间戳市' . $i . '秒');

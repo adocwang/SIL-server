@@ -31,6 +31,18 @@ class Enterprise
     private $name;
 
     /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $detail;
+
+    /**
+     * @var \DateTime $detailSynced
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $detailSynced;
+
+    /**
      * @ORM\Column(type="string", length=63, nullable=true)
      */
     private $legalMan;
@@ -39,6 +51,7 @@ class Enterprise
      * @ORM\Column(type="string", length=127, unique=true, nullable=false)
      */
     private $objId;
+
     /**
      * @ORM\Column(type="date", nullable=true)
      */
@@ -395,5 +408,53 @@ class Enterprise
     public function getRoleB()
     {
         return $this->roleB;
+    }
+
+    /**
+     * Set detail
+     *
+     * @param string $detail
+     *
+     * @return Enterprise
+     */
+    public function setDetail($detail)
+    {
+        $this->detail = $detail;
+
+        return $this;
+    }
+
+    /**
+     * Get detail
+     *
+     * @return string
+     */
+    public function getDetail()
+    {
+        return $this->detail;
+    }
+
+    /**
+     * Set detailSynced
+     *
+     * @param \DateTime $detailSynced
+     *
+     * @return Enterprise
+     */
+    public function setDetailSynced($detailSynced)
+    {
+        $this->detailSynced = $detailSynced;
+
+        return $this;
+    }
+
+    /**
+     * Get detailSynced
+     *
+     * @return \DateTime
+     */
+    public function getDetailSynced()
+    {
+        return $this->detailSynced;
     }
 }

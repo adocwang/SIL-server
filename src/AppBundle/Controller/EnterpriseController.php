@@ -24,6 +24,7 @@ class EnterpriseController extends Controller
      *         {"name"="page_limit", "dataType"="integer", "required"=false, "description"="每页size"},
      *         {"name"="name", "dataType"="string", "required"=false, "description"="企业名称"},
      *         {"name"="bank_name", "dataType"="string", "required"=false, "description"="所属银行名称(非管理员用户会自动通过当前用户的银行覆盖这个字段)"},
+     *         {"name"="role_a_disable", "dataType"="boolean", "required"=false, "description"="roleA是否不可用：1，0"},
      *         {"name"="state", "dataType"="string", "required"=false, "description"="状态"},
      *     },
      *     headers={
@@ -127,7 +128,9 @@ class EnterpriseController extends Controller
         if (empty($enterprise)) {
             return new ApiJsonResponse(2007, 'enterprise not exists');
         }
-        return new ApiJsonResponse(0, 'ok', $enterprise->toArray());
+        $enterpriseResult = $enterprise->toArray();
+        $enterpriseResult['detail'] = json_decode($enterprise->getDetail(), true);
+        return new ApiJsonResponse(0, 'ok', $enterpriseResult);
     }
 
     /**

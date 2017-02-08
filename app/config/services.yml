@@ -23,7 +23,9 @@ services:
             class: AppBundle\Listener\ResponseListener
             tags:
                 - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
-#        arguments: ["@doctrine.orm.entity_manager"]
+    app.qixin_api:
+        class: AppBundle\Service\QiXinApi
+        arguments: ["@guzzle.client.api_qixin007",'%qixin_appkey%']
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]

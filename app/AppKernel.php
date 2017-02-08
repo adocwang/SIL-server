@@ -20,6 +20,7 @@ class AppKernel extends Kernel
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new Liuggio\ExcelBundle\LiuggioExcelBundle(),
             new Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
+            new EightPoints\Bundle\GuzzleBundle\GuzzleBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

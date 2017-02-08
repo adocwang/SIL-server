@@ -1,6 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
+
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
@@ -27,6 +28,12 @@ class EnterpriseRepository extends \Doctrine\ORM\EntityRepository
         if (!empty($condition['bank'])) {
             $queryBuilder->andWhere('a.bank = :bank');
             $queryBuilder->setParameter('bank', $condition['bank']);
+        }
+        if (!empty($condition['role_a_disable'])) {
+            if ($condition['role_a_disable'] == 1) {
+                $queryBuilder->leftJoin('a.roleA', 'r', 'WITH', 'r.state IN (0,2,3)');
+                $queryBuilder->andWhere('r.state IN (0,2,3)');
+            }
         }
         $query = $queryBuilder->orderBy('a.id', 'ASC')->getQuery();
         $query->setFirstResult(($page - 1) * $pageLimit)->setMaxResults($pageLimit);

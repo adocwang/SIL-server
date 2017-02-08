@@ -36,6 +36,13 @@ class VCCompany
     private $vcName;
 
     /**
+     * @var \DateTime $childrenSynced
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $childrenSynced;
+
+    /**
      * @var integer
      *
      * @ORM\Column(type="integer")
@@ -132,5 +139,29 @@ class VCCompany
     public function getState()
     {
         return $this->state;
+    }
+
+    /**
+     * Set childrenSynced
+     *
+     * @param \DateTime $childrenSynced
+     *
+     * @return VCCompany
+     */
+    public function setChildrenSynced($childrenSynced)
+    {
+        $this->childrenSynced = $childrenSynced;
+
+        return $this;
+    }
+
+    /**
+     * Get childrenSynced
+     *
+     * @return \DateTime
+     */
+    public function getChildrenSynced()
+    {
+        return $this->childrenSynced;
     }
 }
