@@ -11,6 +11,7 @@ namespace AppBundle\Command;
 
 use AppBundle\Entity\Enterprise;
 use AppBundle\Entity\VCCompany;
+use AppBundle\Repository\EnterpriseRepository;
 use AppBundle\Repository\VCCompanyRepository;
 use AppBundle\Service\HttpClient;
 use AppBundle\Service\QiXinApi;
@@ -45,12 +46,14 @@ class SyncVCCompanyCommand extends ContainerAwareCommand
         /**
          * @var Registry $doctrine
          * @var VCCompanyRepository $enterpriseRepository
+         * @var EnterpriseRepository $enterpriseRepository
          * @var VCCompany $vcCompany
          * @var QiXinApi $qixinApi
          * @var ManagerRegistry $mongo
          */
         $doctrine = $this->getContainer()->get('doctrine');
         $vcCompanyRepository = $doctrine->getRepository('AppBundle:VCCompany');
+        $enterpriseRepository = $doctrine->getRepository('AppBundle:Enterprise');
         $em = $doctrine->getManager();
         $vcCompanies = $vcCompanyRepository->findAll();
 
@@ -74,6 +77,9 @@ class SyncVCCompanyCommand extends ContainerAwareCommand
 //            print_r($enterprisesArr);exit;
             if (!empty($enterprisesArr)) {
                 foreach ($enterprisesArr as $enterpriseArr) {
+                    if ($enterpriseRepository->findOneByName($enterpriseArr['name'])) {
+                        continue;
+                    }
                     $enterprise = new Enterprise();
                     $enterprise->setName($enterpriseArr['name']);
                     $enterprise->setStart(new \DateTime($enterpriseArr['start_date']));
@@ -82,6 +88,8 @@ class SyncVCCompanyCommand extends ContainerAwareCommand
                     $em->persist($enterprise);
                     $em->flush();
                 }
+            }else{
+                $output->writeln($vcCompany->getName().'is empty');
             }
             $vcCompany->setChildrenSynced(new \DateTime());
             $em->persist($vcCompany);
