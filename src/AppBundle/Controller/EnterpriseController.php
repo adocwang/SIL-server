@@ -28,6 +28,7 @@ class EnterpriseController extends Controller
      *         {"name"="bank_name", "dataType"="string", "required"=false, "description"="所属银行名称(非管理员用户会自动通过当前用户的银行覆盖这个字段)"},
      *         {"name"="role_a_disable", "dataType"="boolean", "required"=false, "description"="roleA是否不可用：1，0"},
      *         {"name"="state", "dataType"="string", "required"=false, "description"="状态"},
+     *         {"name"="in_black_list", "dataType"="boolean", "required"=false, "description"="是否在黑名单"},
      *     },
      *     headers={
      *         {
@@ -147,6 +148,7 @@ class EnterpriseController extends Controller
     /**
      *
      * 修改企业，用于分配企业，分配AB角
+     * state 0:未激活,1:正常,2:已冻结,3:已删除
      * @ApiDoc(
      *     section="企业",
      *     description="修改企业",
@@ -155,6 +157,8 @@ class EnterpriseController extends Controller
      *         {"name"="bank_id", "dataType"="integer", "required"=false, "description"="银行id"},
      *         {"name"="role_a_id", "dataType"="integer", "required"=false, "description"="A角user_id"},
      *         {"name"="role_b_id", "dataType"="integer", "required"=false, "description"="B角user_id"},
+     *         {"name"="state", "dataType"="integer", "required"=false, "description"="企业状态"},
+     *         {"name"="in_black_list", "dataType"="boolean", "required"=false, "description"="是否在黑名单"},
      *     },
      *     headers={
      *         {
@@ -252,6 +256,14 @@ class EnterpriseController extends Controller
                 return new ApiJsonResponse(2009, 'role b not customer manager');
             }
             $enterprise->setRoleB($roleB);
+        }
+
+        if (!empty($data['state'])) {
+            $enterprise->setState($data['state']);
+        }
+
+        if (!empty($data['in_black_list'])) {
+            $enterprise->setInBlackList($data['in_black_list']);
         }
 
         $em = $this->getDoctrine()->getManager();

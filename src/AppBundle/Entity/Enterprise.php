@@ -79,6 +79,13 @@ class Enterprise
     private $modified;
 
     /**
+     * 是否在黑名单
+     *
+     * @ORM\Column(type="integer", nullable=false)
+     */
+    protected $inBlackList = 0;
+
+    /**
      * 1正常2冻结3删除
      *
      * @ORM\Column(type="integer", nullable=false)
@@ -125,6 +132,7 @@ class Enterprise
             'role_a' => $this->getRoleA() ? $this->getRoleA()->getOtherArr() : null,
             'role_b' => $this->getRoleB() ? $this->getRoleB()->getOtherArr() : null,
             'state' => $this->getState(),
+            'in_black_list' => $this->getInBlackList(),
         ];
     }
 
@@ -486,5 +494,29 @@ class Enterprise
     public function getFinding()
     {
         return $this->finding;
+    }
+
+    /**
+     * Set inBlackList
+     *
+     * @param boolean $inBlackList
+     *
+     * @return Enterprise
+     */
+    public function setInBlackList($inBlackList)
+    {
+        $this->inBlackList = $inBlackList;
+
+        return $this;
+    }
+
+    /**
+     * Get inBlackList
+     *
+     * @return boolean
+     */
+    public function getInBlackList()
+    {
+        return $this->inBlackList;
     }
 }

@@ -25,6 +25,10 @@ class EnterpriseRepository extends \Doctrine\ORM\EntityRepository
             $queryBuilder->andWhere('a.state = :state');
             $queryBuilder->setParameter('state', $condition['state']);
         }
+        if (!empty($condition['in_black_list'])) {
+            $queryBuilder->andWhere('a.inBlackList = :in_black_list');
+            $queryBuilder->setParameter('in_black_list', $condition['in_black_list']);
+        }
         if (!empty($condition['bank'])) {
             $queryBuilder->andWhere('a.bank = :bank');
             $queryBuilder->setParameter('bank', $condition['bank']);
