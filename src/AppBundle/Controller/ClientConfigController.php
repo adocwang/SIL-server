@@ -149,5 +149,6 @@ class ClientConfigController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($config);
         $em->flush();
+        return new ApiJsonResponse(0,'ok');
     }
 }

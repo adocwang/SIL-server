@@ -27,10 +27,6 @@
         "stof/doctrine-extensions-bundle": "^1.2",
         "liuggio/excelbundle": "^2.1",
         "pagerfanta/pagerfanta": "^1.0",
-        "alcaeus/mongo-php-adapter": "^1.0",
-        "doctrine/mongodb-odm": "^1.0",
-        "doctrine/mongodb-odm-bundle": "^3.1",
-        "symfony/browser-kit": "^3.2",
         "eightpoints/guzzle-bundle": "^4.5"
     },
     "require-dev": {

@@ -82,16 +82,6 @@ stof_doctrine_extensions:
             tree: true
             timestampable: true
 
-doctrine_mongodb:
-    connections:
-        default:
-            server: "%mongodb_server%"
-            options: {}
-    default_database: sil
-    document_managers:
-        default:
-            auto_mapping: true
-
 guzzle:
     logging: false
     clients:

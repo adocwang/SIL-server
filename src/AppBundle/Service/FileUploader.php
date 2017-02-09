@@ -36,8 +36,9 @@ class FileUploader
         }
         $fileName = md5(uniqid()) . '.' . $file->getClientOriginalExtension();
         $fileEntity = new File();
-        $fileEntity->setFileName($file->getClientOriginalName());
+        $fileEntity->setOriginalName($file->getClientOriginalName());
         $fileEntity->setPath($fileName);
+        $fileEntity->setMimeType($file->getMimeType());
 
         $file->move($this->targetDir, $fileName);
         return $fileEntity;

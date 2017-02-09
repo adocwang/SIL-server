@@ -14,14 +14,13 @@ use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\FileRepository")
- * @ORM\Table(name="file")
  */
 class File
 {
     /**
      * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="string")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -35,9 +34,15 @@ class File
     /**
      * @var string
      * @ORM\Column(type="string", length=255)
+     */
+    private $mimeType;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
      */
-    private $fileName;
+    private $originalName;
 
     /**
      * @ORM\Column(type="datetime")
@@ -46,12 +51,11 @@ class File
      */
     private $uploaded;
 
-    
 
     /**
      * Get id
      *
-     * @return integer
+     * @return string
      */
     public function getId()
     {
@@ -83,27 +87,27 @@ class File
     }
 
     /**
-     * Set fileName
+     * Set originalName
      *
-     * @param string $fileName
+     * @param string $originalName
      *
      * @return File
      */
-    public function setFileName($fileName)
+    public function setOriginalName($originalName)
     {
-        $this->fileName = $fileName;
+        $this->originalName = $originalName;
 
         return $this;
     }
 
     /**
-     * Get fileName
+     * Get originalName
      *
      * @return string
      */
-    public function getFileName()
+    public function getOriginalName()
     {
-        return $this->fileName;
+        return $this->originalName;
     }
 
     /**
@@ -128,5 +132,29 @@ class File
     public function getUploaded()
     {
         return $this->uploaded;
+    }
+
+    /**
+     * Set mimeType
+     *
+     * @param string $mimeType
+     *
+     * @return File
+     */
+    public function setMimeType($mimeType)
+    {
+        $this->mimeType = $mimeType;
+
+        return $this;
+    }
+
+    /**
+     * Get mimeType
+     *
+     * @return string
+     */
+    public function getMimeType()
+    {
+        return $this->mimeType;
     }
 }
