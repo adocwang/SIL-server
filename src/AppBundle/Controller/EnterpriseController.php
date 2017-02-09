@@ -68,7 +68,7 @@ class EnterpriseController extends Controller
          */
         $nowUser = $this->getUser();
         if ($nowUser->getRole()->getRole() != 'ROLE_ADMIN') {
-            $data['bank'] = $nowUser->getBank();
+//            $data['bank'] = $nowUser->getBank();
             $data['state'] = 1;
         }
         $pageLimit = $this->getParameter('page_limit');
@@ -158,7 +158,7 @@ class EnterpriseController extends Controller
      *         {"name"="role_a_id", "dataType"="integer", "required"=false, "description"="A角user_id"},
      *         {"name"="role_b_id", "dataType"="integer", "required"=false, "description"="B角user_id"},
      *         {"name"="state", "dataType"="integer", "required"=false, "description"="企业状态"},
-     *         {"name"="in_black_list", "dataType"="boolean", "required"=false, "description"="是否在黑名单"},
+     *         {"name"="in_black_list", "dataType"="integer", "required"=false, "description"="是否在黑名单，0否，1是"},
      *     },
      *     headers={
      *         {

@@ -18,8 +18,8 @@ class EnterpriseRepository extends \Doctrine\ORM\EntityRepository
             ->select('a')
             ->from('AppBundle:Enterprise', 'a');
         if (!empty($condition['name'])) {
-            $queryBuilder->andWhere('a.name = :name');
-            $queryBuilder->setParameter('name', $condition['name']);
+            $queryBuilder->andWhere($queryBuilder->expr()->like('a.name', ':name'));
+            $queryBuilder->setParameter('name', '%' . $condition['name'] . '%');
         }
         if (!empty($condition['state'])) {
             $queryBuilder->andWhere('a.state = :state');
@@ -39,7 +39,7 @@ class EnterpriseRepository extends \Doctrine\ORM\EntityRepository
                 $queryBuilder->andWhere('r.state IN (0,2,3)');
             }
         }
-        $query = $queryBuilder->orderBy('a.id', 'ASC')->getQuery();
+        $query = $queryBuilder->orderBy('a.id', 'DESC')->getQuery();
         $query->setFirstResult(($page - 1) * $pageLimit)->setMaxResults($pageLimit);
         $paginator = new Paginator($query, $fetchJoinCollection = true);
 
