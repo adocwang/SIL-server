@@ -223,7 +223,7 @@ class EnterpriseController extends Controller
         }
 
         /**
-         * @var User $roleA,$roleB
+         * @var User $roleA ,$roleB
          */
 
         if (!empty($data['role_a_id'])) {
@@ -322,5 +322,48 @@ class EnterpriseController extends Controller
         $em->persist($finding);
         $em->flush();
         return new ApiJsonResponse(0, 'set success', $finding);
+    }
+
+    /**
+     * 获得企业调查结果
+     * @ApiDoc(
+     *     section="企业",
+     *     description="获得企业调查结果",
+     *     parameters={
+     *     },
+     *     headers={
+     *         {
+     *             "name"="extra",
+     *             "default"="{""token"":""iamsuperman:15828516285""}"
+     *         }
+     *     },
+     *     statusCodes={
+     *         1003="缺少参数",
+     *         2007="用户不存在"
+     *     }
+     * )
+     *
+     * @Route("/enterprise/get_finding/{enterprise_id}")
+     * @Method("GET")
+     * @param integer $enterprise_id
+     * @return ApiJsonResponse
+     */
+    public function getEnterpriseFindingAction($enterprise_id)
+    {
+        if (empty($enterprise_id)) {
+            return new ApiJsonResponse(1003, 'need enterprise_id');
+        }
+        /**
+         * @var \AppBundle\Repository\EnterpriseRepository $enterpriseRepository
+         * @var \AppBundle\Entity\Enterprise $enterprise
+         * @var Loan $loan
+         */
+        $enterpriseRepository = $this->getDoctrine()->getRepository('AppBundle:Enterprise');
+        $enterprise = $enterpriseRepository->find($enterprise_id);
+        if (empty($enterprise)) {
+            return new ApiJsonResponse(2007, 'enterprise not exists');
+        }
+
+        return new ApiJsonResponse(0, 'ok', $enterprise->getFinding()->toArray());
     }
 }

@@ -65,7 +65,7 @@ class Finding
     {
         return [
             'id' => $this->getId(),
-            'data' => json_decode($this->getData(), true),
+            'data' => $this->getData(),
             'state' => $this->getState(),
             'created' => new DateTime($this->getCreated()),
             'modified' => new DateTime($this->getModified())
