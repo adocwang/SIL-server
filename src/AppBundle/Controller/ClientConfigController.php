@@ -102,7 +102,7 @@ class ClientConfigController extends Controller
         if (empty($config)) {
             return new ApiJsonResponse(2007, 'key not exist');
         }
-        return new ApiJsonResponse(0, 'ok', $config);
+        return new ApiJsonResponse(0, 'ok', $config->getConfigValue());
     }
 
     /**
