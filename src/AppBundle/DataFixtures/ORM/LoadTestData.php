@@ -59,18 +59,28 @@ class LoadTestData extends AbstractFixture implements OrderedFixtureInterface, C
         if (!empty($user)) {
             $manager->remove($user);
         }
+        $userB = $manager->getRepository('AppBundle:User')->findOneByPhone('13878787879');
+        if (!empty($userB)) {
+            $manager->remove($userB);
+        }
         $manager->flush();
     }
 
     private function setLoanTest(ObjectManager $manager)
     {
         //添加贷款测试数据
+        $cmRole = $manager->getRepository('AppBundle:Role')->findOneByRole('ROLE_CUSTOMER_MANAGER');
         $user = new User();
         $user->setTrueName('贷款测试经理');
         $user->setPhone('13878787878');
-        $cmRole = $manager->getRepository('AppBundle:Role')->findOneByRole('ROLE_CUSTOMER_MANAGER');
         $user->setRole($cmRole);
         $manager->persist($user);
+
+        $userB = new User();
+        $userB->setTrueName('贷款测试经理B');
+        $userB->setPhone('13878787879');
+        $userB->setRole($cmRole);
+        $manager->persist($userB);
 
         $bank = new Bank();
         $bank->setName('测试支行');
@@ -81,6 +91,7 @@ class LoadTestData extends AbstractFixture implements OrderedFixtureInterface, C
             $enterprise = new Enterprise();
             $enterprise->setBank($bank);
             $enterprise->setRoleA($user);
+            $enterprise->setRoleB($userB);
             $enterprise->setName('贷款测试企业' . $i);
             $enterprise->setObjId('asd' . $i);
             $manager->persist($enterprise);
