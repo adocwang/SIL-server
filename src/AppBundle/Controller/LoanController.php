@@ -17,11 +17,13 @@ class LoanController extends Controller
 
     /**
      * progress 0:已受理，1：协理已通过，2：支行已通过，3：分行已通过，4：审批通过，5：签约，6：放款
-     * state 1:正常,3:已删除
      * @ApiDoc(
      *     section="贷款",
      *     description="获取当前用户所能看到的贷款申请列表",
      *     parameters={
+     *         {"name"="page", "dataType"="string", "required"=false, "description"="页码"},
+     *         {"name"="page_limit", "dataType"="integer", "required"=false, "description"="每页size"},
+     *         {"name"="progress", "dataType"="integer", "required"=false, "description"="贷款状态"},
      *     },
      *     headers={
      *         {
@@ -34,43 +36,41 @@ class LoanController extends Controller
      *     }
      * )
      *
-     * @Route("/loan/list")
-     * @Method("GET")
+     * @Route("/loan/list/")
+     * @Method("POST")
+     * @param JsonRequest $request
      * @return ApiJsonResponse
      */
-    public function list()
+    public function list(JsonRequest $request)
     {
+
+        $data = $request->getData();
+        if (empty($data['page']) || $data['page'] < 1) {
+            $data['page'] = 1;
+        }
+
+        $pageLimit = $this->getParameter('page_limit');
+        if (!empty($data['page_limit']) && $data['page_limit'] > 0) {
+            $pageLimit = $data['page_limit'];
+        }
+        $data['now_user'] = $this->getUser();
         /**
-         * @var User $nowUser
-         * @var Loan $loan
+         * @var \Doctrine\ORM\Tools\Pagination\Paginator $paginator
+         * @var \AppBundle\Entity\Loan $loan
          */
-        $nowUser = $this->getUser();
-        $loanRepository = $this->getDoctrine()->getRepository('AppBundle:Loan');
-//        $em = $this->getDoctrine()->getManager();
+        $pageData = $this->getDoctrine()->getRepository('AppBundle:Loan')->listPage($data['page'], $pageLimit, $data);
         $loans = [];
-        $results = [];
-        if ($nowUser->getRole()->getRole() == 'ROLE_CUSTOMER_MANAGER') {
-            $queryBuilder = $loanRepository->createQueryBuilder('l');
-            $queryBuilder->where('l.bank = :bank');
-            $queryBuilder->leftJoin('l.enterprise', 'e', 'WITH');
-            $queryBuilder->andWhere('e.roleA = :user OR e.roleB = :user');
-            $queryBuilder->setParameter('user', $nowUser);
-            $queryBuilder->setParameter('bank', $nowUser->getBank());
-            $loans = $queryBuilder->getQuery()->getResult();
-        } elseif (in_array($nowUser->getRole()->getRole(), ['ROLE_BRANCH_MANAGER', 'ROLE_TAG_MANAGER'])) {
-            $queryBuilder = $loanRepository->createQueryBuilder('l');
-            $queryBuilder->where('l.bank = :bank');
-            $queryBuilder->setParameter('bank', $nowUser->getBank());
-            $loans = $queryBuilder->getQuery()->getResult();
+        foreach ($pageData['data'] as $loan) {
+            $arr = $loan->toArray();
+            $arr['enterprise'] = $loan->getEnterprise()->toArray();
+            $loans[] = $arr;
         }
-        if (!empty($loans)) {
-            foreach ($loans as $loan) {
-                $arr = $loan->toArray();
-                $arr['enterprise'] = $loan->getEnterprise()->toArray();
-                $results[] = $arr;
-            }
-        }
-        return new ApiJsonResponse(0, 'ok', $results);
+        return new ApiJsonResponse(0, 'ok', [
+            'count' => $pageData['count'],
+            'page_limit' => $pageLimit,
+            'page_count' => $pageData['pageCount'],
+            'loans' => $loans
+        ]);
     }
 
     /**

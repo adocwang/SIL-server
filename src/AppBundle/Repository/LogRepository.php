@@ -2,6 +2,8 @@
 
 namespace AppBundle\Repository;
 
+use Doctrine\ORM\Tools\Pagination\Paginator;
+
 /**
  * LogRepository
  *
@@ -10,4 +12,49 @@ namespace AppBundle\Repository;
  */
 class LogRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function listPage($page, $pageLimit = 20, $condition)
+    {
+        $queryBuilder = $this->_em->createQueryBuilder()
+            ->select('c')
+            ->from('AppBundle:Log', 'c');
+        if (!empty($condition['module'])) {
+            $queryBuilder->andWhere('c.module = :module');
+            $queryBuilder->setParameter('module', $condition['module']);
+        }
+        if (!empty($condition['action'])) {
+            $queryBuilder->andWhere('c.action = :action');
+            $queryBuilder->setParameter('action', $condition['action']);
+        }
+        if (!empty($condition['operator_id'])) {
+            $user = $this->_em->getRepository('AppBundle:User')->find($condition['operator_id']);
+            if (!empty($user)) {
+                $queryBuilder->andWhere('c.createdBy = :operator');
+                $queryBuilder->setParameter('operator', $user);
+            }
+        }
+        if (!empty($condition['time_from']) || !empty($condition['time_to'])) {
+            if (empty($condition['time_from'])) {
+                $condition['time_from'] = $condition['time_to'] - 3600 * 24 * 7;
+            }
+            if (empty($condition['time_to'])) {
+                $condition['time_to'] = $condition['time_from'] + 3600 * 24 * 7;
+            }
+            $queryBuilder->andWhere('c.created > :time_from');
+            $queryBuilder->setParameter('time_from', new \DateTime($condition['time_from']));
+            $queryBuilder->andWhere('c.created < :time_to');
+            $queryBuilder->setParameter('time_to', new \DateTime($condition['time_to']));
+        }
+        $query = $queryBuilder->orderBy('c.id', 'DESC')
+            ->getQuery();
+        $query->setFirstResult(($page - 1) * $pageLimit)
+            ->setMaxResults($pageLimit);
+        $paginator = new Paginator($query, $fetchJoinCollection = true);
+
+        $result = [
+            'count' => $paginator->count(),
+            'pageCount' => ceil($paginator->count() / $pageLimit),
+            'data' => $paginator->getIterator()
+        ];
+        return $result;
+    }
 }

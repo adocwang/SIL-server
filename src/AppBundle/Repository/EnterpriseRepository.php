@@ -2,6 +2,7 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\User;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
@@ -32,6 +33,10 @@ class EnterpriseRepository extends \Doctrine\ORM\EntityRepository
         if (!empty($condition['bank'])) {
             $queryBuilder->andWhere('a.bank = :bank');
             $queryBuilder->setParameter('bank', $condition['bank']);
+        }
+        if (!empty($condition['only_user']) && $condition['only_user'] instanceof User) {
+            $queryBuilder->andWhere('a.roleA = :only_user or a.roleB = :only_user');
+            $queryBuilder->setParameter('only_user', $condition['only_user']);
         }
         if (!empty($condition['role_a_disable'])) {
             if ($condition['role_a_disable'] == 1) {

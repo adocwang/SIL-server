@@ -113,6 +113,7 @@ class Enterprise
      */
     private $roleB;
 
+
     /**
      * One Customer has One Cart.
      * @ORM\OneToOne(targetEntity="Finding", mappedBy="enterprise")

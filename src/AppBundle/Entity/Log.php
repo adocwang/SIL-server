@@ -27,7 +27,7 @@ class Log
      *
      * @ORM\Column(type="string", length=63)
      */
-    private $object;
+    private $module;
 
     /**
      * @var string
@@ -35,6 +35,13 @@ class Log
      * @ORM\Column(type="string", length=63)
      */
     private $action;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="text")
+     */
+    private $data;
 
     /**
      * @var User $createdBy
@@ -53,6 +60,18 @@ class Log
      */
     private $created;
 
+    public function toArray()
+    {
+        return [
+            'id' => $this->getId(),
+            'module' => $this->getModule(),
+            'action' => $this->getAction(),
+            'data' => $this->getData(),
+            'operator' => $this->getCreatedBy()->getTrueName(),
+            'created' => $this->getCreated()
+        ];
+    }
+
 
     /**
      * Get id
@@ -62,30 +81,6 @@ class Log
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set object
-     *
-     * @param string $object
-     *
-     * @return Log
-     */
-    public function setObject($object)
-    {
-        $this->object = $object;
-
-        return $this;
-    }
-
-    /**
-     * Get object
-     *
-     * @return string
-     */
-    public function getObject()
-    {
-        return $this->object;
     }
 
     /**
@@ -158,5 +153,53 @@ class Log
     public function getCreatedBy()
     {
         return $this->createdBy;
+    }
+
+    /**
+     * Set module
+     *
+     * @param string $module
+     *
+     * @return Log
+     */
+    public function setModule($module)
+    {
+        $this->module = $module;
+
+        return $this;
+    }
+
+    /**
+     * Get module
+     *
+     * @return string
+     */
+    public function getModule()
+    {
+        return $this->module;
+    }
+
+    /**
+     * Set data
+     *
+     * @param string $data
+     *
+     * @return Log
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
+    /**
+     * Get data
+     *
+     * @return string
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 }

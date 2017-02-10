@@ -39,6 +39,5 @@ class CMTipRepository extends \Doctrine\ORM\EntityRepository
             'data' => $paginator->getIterator()
         ];
         return $result;
-
     }
 }

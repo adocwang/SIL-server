@@ -2,6 +2,9 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\User;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+
 /**
  * LoanRepository
  *
@@ -10,4 +13,41 @@ namespace AppBundle\Repository;
  */
 class LoanRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function listPage($page, $pageLimit = 20, $condition)
+    {
+        if (!$condition['now_user'] instanceof User) {
+            return [
+                'count' => 0,
+                'pageCount' => 0,
+                'data' => []
+            ];
+        }
+
+        $queryBuilder = $this->_em->createQueryBuilder()
+            ->select('l')
+            ->from('AppBundle:Loan', 'l')
+            ->leftJoin('l.enterprise', 'e', 'WITH');
+        if (!empty($condition['progresses'])) {
+            $queryBuilder->andWhere('l.progress IN :progresses');
+            $queryBuilder->setParameter('progresses', $condition['progresses']);
+        }
+        if ($condition['now_user']->getRole()->getRole() == 'ROLE_CUSTOMER_MANAGER') {
+            $queryBuilder->andWhere('e.roleA = :user OR e.roleB = :user');
+            $queryBuilder->setParameter('user', $condition['now_user']);
+        } elseif (in_array($condition['now_user']->getRole()->getRole(), ['ROLE_BRANCH_MANAGER', 'ROLE_TAG_MANAGER'])) {
+            $queryBuilder->andWhere('l.bank = :bank OR e.bank = :bank');
+            $queryBuilder->setParameter('bank', $condition['now_user']->getBank());
+        }
+        $query = $queryBuilder->orderBy('l.id', 'DESC')->getQuery();
+        $query->setFirstResult(($page - 1) * $pageLimit)->setMaxResults($pageLimit);
+        $paginator = new Paginator($query, $fetchJoinCollection = true);
+
+        $result = [
+            'count' => $paginator->count(),
+            'pageCount' => ceil($paginator->count() / $pageLimit),
+            'data' => $paginator->getIterator()
+        ];
+        return $result;
+
+    }
 }
