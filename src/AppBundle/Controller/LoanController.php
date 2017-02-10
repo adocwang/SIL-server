@@ -23,7 +23,7 @@ class LoanController extends Controller
      *     parameters={
      *         {"name"="page", "dataType"="string", "required"=false, "description"="页码"},
      *         {"name"="page_limit", "dataType"="integer", "required"=false, "description"="每页size"},
-     *         {"name"="progress", "dataType"="integer", "required"=false, "description"="贷款状态"},
+     *         {"name"="progress", "dataType"="integer", "required"=false, "description"="贷款状态，多种状态用逗号,隔开"},
      *     },
      *     headers={
      *         {
@@ -52,6 +52,13 @@ class LoanController extends Controller
         $pageLimit = $this->getParameter('page_limit');
         if (!empty($data['page_limit']) && $data['page_limit'] > 0) {
             $pageLimit = $data['page_limit'];
+        }
+        if (!empty($data['progress'])) {
+            if (strpos($data['progress'], ',') === false) {
+                $data['progress'] = [($data['progress'])];
+            } else {
+                $data['progress'] = explode(',', $data['progress']);
+            }
         }
         $data['now_user'] = $this->getUser();
         /**
