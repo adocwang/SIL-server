@@ -28,8 +28,8 @@ class LoanRepository extends \Doctrine\ORM\EntityRepository
             ->from('AppBundle:Loan', 'l')
             ->leftJoin('l.enterprise', 'e', 'WITH');
         if (!empty($condition['progresses'])) {
-            $queryBuilder->andWhere('l.progress IN :progresses');
-            $queryBuilder->setParameter('progresses', $condition['progresses']);
+            $queryBuilder->andWhere($queryBuilder->expr()->in('l.progress', $condition['progresses']));
+//            $queryBuilder->setParameter('progresses', $condition['progresses']);
         }
         if ($condition['now_user']->getRole()->getRole() == 'ROLE_CUSTOMER_MANAGER') {
             $queryBuilder->andWhere('e.roleA = :user OR e.roleB = :user');

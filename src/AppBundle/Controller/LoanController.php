@@ -55,9 +55,9 @@ class LoanController extends Controller
         }
         if (!empty($data['progress'])) {
             if (strpos($data['progress'], ',') === false) {
-                $data['progress'] = [($data['progress'])];
+                $data['progresses'] = [($data['progress'])];
             } else {
-                $data['progress'] = explode(',', $data['progress']);
+                $data['progresses'] = explode(',', $data['progress']);
             }
         }
         $data['now_user'] = $this->getUser();
