@@ -44,13 +44,21 @@ class LoadTestData extends AbstractFixture implements OrderedFixtureInterface, C
         for ($i = 0; $i < 10; $i++) {
             $enterprise = $manager->getRepository('AppBundle:Enterprise')->findOneByName('贷款测试企业' . $i);
             $loan = $manager->getRepository('AppBundle:Loan')->findOneByEnterprise($enterprise);
-            $manager->remove($loan);
-            $manager->remove($enterprise);
+            if (!empty($loan)) {
+                $manager->remove($loan);
+            }
+            if (!empty($enterprise)) {
+                $manager->remove($enterprise);
+            }
         }
         $bank = $manager->getRepository('AppBundle:Bank')->findOneByName('测试支行');
-        $manager->remove($bank);
+        if (!empty($bank)) {
+            $manager->remove($bank);
+        }
         $user = $manager->getRepository('AppBundle:User')->findOneByPhone('13878787878');
-        $manager->remove($user);
+        if (!empty($user)) {
+            $manager->remove($user);
+        }
         $manager->flush();
     }
 
