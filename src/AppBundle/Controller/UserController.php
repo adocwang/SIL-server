@@ -223,6 +223,7 @@ class UserController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($targetUser);
         $em->flush();
+        $this->get('app.op_logger')->logCreatAction('user', $targetUser->getId());
         return new ApiJsonResponse(0, 'update success', $targetUser->getSelfArr());
     }
 

@@ -9,37 +9,63 @@
 namespace AppBundle\Service;
 
 
-use AppBundle\Entity\User;
+use AppBundle\Entity\Log;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 class OperationLogger
 {
-    private $user;
+    private $tokenStorage;
     private $em;
 
-    public function __construct(User $user, EntityManager $em)
+    public function __construct(TokenStorage $tokenStorage, EntityManager $em)
     {
-        $this->user = $user;
+        $this->tokenStorage = $tokenStorage;
         $this->em = $em;
     }
 
-    public function logAction($module, $action, $data)
+    /**
+     * @param $module string
+     * @param $action string
+     * @param $data string
+     */
+    public function writeLog($module, $action, $data)
     {
-
+        $user = $this->tokenStorage->getToken()->getUser();
+        $log = new Log();
+        $log->setModule($module);
+        $log->setAction($action);
+        $log->setData($data);
+        $log->setCreatedBy($user);
+        $this->em->persist($log);
+        $this->em->flush();
     }
 
-    public function logDelAction($module, $action, $data)
+    /**
+     * @param $module string
+     * @param $id integer
+     */
+    public function logDeleteAction($module, $id)
     {
-
+        $data = ['id' => $id];
+        $this->writeLog($module, 'delete', $data);
     }
 
-    public function logSetAction($module, $action, $data)
+    /**
+     * @param $module string
+     * @param $data array
+     */
+    public function logUpdateAction($module, $data)
     {
-
+        $this->writeLog($module, 'update', serialize($data));
     }
 
-    public function logAddAction($module, $action, $data)
+    /**
+     * @param $module string
+     * @param $data array
+     */
+    public function logCreateAction($module, $data)
     {
-
+        $this->writeLog($module, 'update', serialize($data));
     }
 }

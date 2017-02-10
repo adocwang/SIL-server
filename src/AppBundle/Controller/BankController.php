@@ -98,6 +98,8 @@ class BankController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($bank);
         $em->flush();
+
+        $this->get('app.op_logger')->logCreatAction('bank', $bank->getId());
         return new ApiJsonResponse(0, 'add success', $bank->toArray());
     }
 

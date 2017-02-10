@@ -26,6 +26,9 @@ services:
     app.qixin_api:
         class: AppBundle\Service\QiXinApi
         arguments: ["@guzzle.client.api_qixin007",'%qixin_appkey%']
+    app.op_logger:
+        class: AppBundle\Service\OperationLogger
+        arguments: ["@security.token_storage",'@doctrine.orm.entity_manager']
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]

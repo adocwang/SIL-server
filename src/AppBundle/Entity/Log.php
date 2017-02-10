@@ -68,7 +68,7 @@ class Log
             'action' => $this->getAction(),
             'data' => $this->getData(),
             'operator' => $this->getCreatedBy()->getTrueName(),
-            'created' => $this->getCreated()
+            'created' => $this->getCreated()->format('Y-m-d H:i:s')
         ];
     }
 
