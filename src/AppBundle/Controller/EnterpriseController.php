@@ -68,8 +68,10 @@ class EnterpriseController extends Controller
          */
         $nowUser = $this->getUser();
         if ($nowUser->getRole()->getRole() != 'ROLE_ADMIN') {
+            //单用户不是管理员的时候
 //            $data['bank'] = $nowUser->getBank();
-            $data['state'] = 1;
+            $data['state'] = 1;//只拉得到正常状态的企业
+            $data['in_black_list'] = 0;//只拉得到不在黑名单的企业
         }
         $pageLimit = $this->getParameter('page_limit');
         if (!empty($data['page_limit']) && $data['page_limit'] > 0) {
