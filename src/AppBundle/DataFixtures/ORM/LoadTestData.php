@@ -34,7 +34,24 @@ class LoadTestData extends AbstractFixture implements OrderedFixtureInterface, C
      */
     public function load(ObjectManager $manager)
     {
+        $this->clearLoanTest($manager);
         $this->setLoanTest($manager);
+    }
+
+    private function clearLoanTest(ObjectManager $manager)
+    {
+
+        for ($i = 0; $i < 10; $i++) {
+            $enterprise = $manager->getRepository('AppBundle:Enterprise')->findOneByName('贷款测试企业' . $i);
+            $loan = $manager->getRepository('AppBundle:Loan')->findOneByEnterprise($enterprise);
+            $manager->remove($loan);
+            $manager->remove($enterprise);
+        }
+        $bank = $manager->getRepository('AppBundle:Bank')->findOneByName('测试支行');
+        $manager->remove($bank);
+        $user = $manager->getRepository('AppBundle:User')->findOneByPhone('13878787878');
+        $manager->remove($user);
+        $manager->flush();
     }
 
     private function setLoanTest(ObjectManager $manager)
