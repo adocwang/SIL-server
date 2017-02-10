@@ -74,7 +74,6 @@ class CMTipController extends Controller
      *     section="话术",
      *     description="获得话术详情",
      *     parameters={
-     *         {"name"="id", "dataType"="string", "required"=false, "description"="话术id"},
      *     },
      *     headers={
      *         {
@@ -88,15 +87,14 @@ class CMTipController extends Controller
      *     }
      * )
      *
-     * @Route("/cm_tip/get")
-     * @Method("POST")
-     * @param JsonRequest $request
+     * @Route("/cm_tip/get/{id}")
+     * @Method("GET")
+     * @param integer $id
      * @return ApiJsonResponse
      */
-    public function getCMTipAction(JsonRequest $request)
+    public function getCMTipAction($id)
     {
-        $data = $request->getData();
-        if (empty($data['id'])) {
+        if (empty($id)) {
             return new ApiJsonResponse(1003, 'need id or phone');
         }
         /**
@@ -104,9 +102,7 @@ class CMTipController extends Controller
          * @var \AppBundle\Entity\CMTip $cmTip
          */
         $cmTipRepository = $this->getDoctrine()->getRepository('AppBundle:CMTip');
-        if (!empty($data['id'])) {
-            $cmTip = $cmTipRepository->find($data['id']);
-        }
+        $cmTip = $cmTipRepository->find($id);
         if (empty($cmTip)) {
             return new ApiJsonResponse(2007, 'cm_tip not exists');
         }
@@ -114,6 +110,7 @@ class CMTipController extends Controller
             'id' => $cmTip->getId(),
             'title' => $cmTip->getTitle(),
             'content' => $cmTip->getContent(),
+            'state' => $cmTip->getState()
         ]);
     }
 
