@@ -389,6 +389,6 @@ class EnterpriseController extends Controller
             return new ApiJsonResponse(2007, 'enterprise not exists');
         }
 
-        return new ApiJsonResponse(0, 'ok', $enterprise->getFinding()->toArray());
+        return new ApiJsonResponse(0, 'ok', $enterprise->getFinding() ? $enterprise->getFinding()->toArray() : new \stdClass());
     }
 }
