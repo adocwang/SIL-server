@@ -147,7 +147,7 @@ class LoanController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($loan);
         $em->flush();
-        $this->get('app.op_logger')->logCreatAction('loan', $loan->getId());
+        $this->get('app.op_logger')->logCreateAction('loan', $loan->getId());
         return new ApiJsonResponse(0, 'add success', $loan->toArray());
     }
 

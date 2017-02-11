@@ -99,7 +99,7 @@ class BankController extends Controller
         $em->persist($bank);
         $em->flush();
 
-        $this->get('app.op_logger')->logCreatAction('bank', $bank->getId());
+        $this->get('app.op_logger')->logCreateAction('bank', $bank->getId());
         return new ApiJsonResponse(0, 'add success', $bank->toArray());
     }
 

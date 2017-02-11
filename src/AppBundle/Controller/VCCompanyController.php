@@ -108,7 +108,7 @@ class VCCompanyController extends Controller
         $em->persist($vcCompany);
         $em->flush();
 
-        $this->get('app.op_logger')->logCreatAction('vc_company', $vcCompany->getId());
+        $this->get('app.op_logger')->logCreateAction('vc_company', $vcCompany->getId());
         return new ApiJsonResponse(0, 'add success', $vcCompany->toArray());
     }
 
