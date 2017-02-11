@@ -67,8 +67,8 @@ class Finding
             'id' => $this->getId(),
             'data' => $this->getData(),
             'state' => $this->getState(),
-            'created' => new DateTime($this->getCreated()),
-            'modified' => new DateTime($this->getModified())
+            'created' => $this->getCreated()->format('Y-m-d H:i:s'),
+            'modified' => $this->getModified()->format('Y-m-d H:i:s'),
         ];
     }
 

@@ -3,7 +3,6 @@
 namespace AppBundle\Controller;
 
 use AppBundle\ApiJsonResponse;
-use AppBundle\Entity\CMTip;
 use AppBundle\JsonRequest;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -67,7 +66,7 @@ class LogController extends Controller
             'count' => $pageData['count'],
             'page_limit' => $pageLimit,
             'page_count' => $pageData['pageCount'],
-            'cm_tips' => $logs
+            'logs' => $logs
         ]);
     }
 
