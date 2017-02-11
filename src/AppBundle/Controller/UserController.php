@@ -148,8 +148,8 @@ class UserController extends Controller
      *
      * 角色：
      *   管理员：ROLE_ADMIN
-     *   分行行长：ROLE_BRANCH_ADMIN
-     *   支行行长：ROLE_END_ADMIN
+     *   分行行长：ROLE_BRANCH_PRESIDENT
+     *   支行行长：ROLE_END_PRESIDENT
      *   客户经理：ROLE_CUSTOMER_MANAGER
      * @ApiDoc(
      *     section="用户",
