@@ -66,6 +66,6 @@ class OperationLogger
      */
     public function logCreateAction($module, $data)
     {
-        $this->writeLog($module, 'update', json_encode($data));
+        $this->writeLog($module, 'create', json_encode($data));
     }
 }
