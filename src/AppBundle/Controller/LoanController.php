@@ -139,9 +139,9 @@ class LoanController extends Controller
         ], true));
         $loan->setBank($this->getUser()->getBank());
         if (empty($enterprise->getRoleB())) {
-            $loan->setProgress(2);
-        } else {
             $loan->setProgress(1);
+        } else {
+            $loan->setProgress(0);
         }
 
         $em = $this->getDoctrine()->getManager();
