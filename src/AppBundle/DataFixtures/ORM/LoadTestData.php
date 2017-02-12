@@ -34,8 +34,8 @@ class LoadTestData extends AbstractFixture implements OrderedFixtureInterface, C
      */
     public function load(ObjectManager $manager)
     {
-        $this->clearLoanTest($manager);
-        $this->setLoanTest($manager);
+//        $this->clearLoanTest($manager);
+//        $this->setLoanTest($manager);
     }
 
     private function clearLoanTest(ObjectManager $manager)

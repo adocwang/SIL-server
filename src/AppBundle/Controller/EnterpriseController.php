@@ -239,6 +239,17 @@ class EnterpriseController extends Controller
                 return new ApiJsonResponse(407, 'no permission to set bank');
             }
             $enterprise->setBank($bank);
+            $presidentRoles = [];
+            $presidentRoles[] = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByRole('ROLE_BRANCH_PRESIDENT');
+            $presidentRoles[] = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByRole('ROLE_END_PRESIDENT');
+            $managers = $this->getDoctrine()->getRepository('AppBundle:User')->findBy(['bank' => $bank, 'role' => $presidentRoles]);
+            foreach ($managers as $manager) {
+                $this->get('app.message_sender')->sendSysMessage(
+                    $manager,
+                    '有一个企业已被分配到您的银行',
+                    $enterprise->getName() . '已被分配到您的银行！请处理！'
+                );
+            }
         }
 
         /**
@@ -257,6 +268,11 @@ class EnterpriseController extends Controller
                 return new ApiJsonResponse(2009, 'role a not customer manager');
             }
             $enterprise->setRoleA($roleA);
+            $this->get('app.message_sender')->sendSysMessage(
+                $roleA,
+                '您被分配了一个新的企业',
+                '您已被分配为 ' . $enterprise->getName() . '的主理！请悉知！'
+            );
         }
 
         if (!empty($data['role_b_id'])) {
@@ -271,6 +287,11 @@ class EnterpriseController extends Controller
                 return new ApiJsonResponse(2009, 'role b not customer manager');
             }
             $enterprise->setRoleB($roleB);
+            $this->get('app.message_sender')->sendSysMessage(
+                $roleB,
+                '您被分配了一个新的企业',
+                '您已被分配为 ' . $enterprise->getName() . '的协理！请悉知！'
+            );
         }
 
         if (!empty($data['state'])) {

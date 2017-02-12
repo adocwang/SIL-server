@@ -240,7 +240,7 @@ class UserController extends Controller
 
     /**
      *
-     * 角色名称：管理员，行长，客户经理
+     * 角色名称：管理员，支行行长，分行行长，客户经理
      * 用户state 0:未激活,1:正常,2:已冻结,3:已删除
      * @ApiDoc(
      *     section="用户",
@@ -251,6 +251,7 @@ class UserController extends Controller
      *         {"name"="true_name", "dataType"="string", "required"=false, "description"="真实姓名"},
      *         {"name"="phone", "dataType"="string", "required"=false, "description"="手机号码"},
      *         {"name"="role_name", "dataType"="string", "required"=false, "description"="角色名称"},
+     *         {"name"="bank_id", "dataType"="string", "required"=false, "description"="所属银行id"},
      *         {"name"="state", "dataType"="string", "required"=false, "description"="状态"}
      *     },
      *     headers={
@@ -304,7 +305,16 @@ class UserController extends Controller
 
         if (!empty($data['role_name'])) {
             $role = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByName($data['role_name']);
-            $targetUser->setRole($role);
+            if (!empty($role)) {
+                $targetUser->setRole($role);
+            }
+        }
+
+        if (!empty($data['bank_id'])) {
+            $bank = $this->getDoctrine()->getRepository('AppBundle:Bank')->find($data['bank_id']);
+            if (!empty($bank)) {
+                $targetUser->setBank($bank);
+            }
         }
 
         if (!empty($data['phone'])) {

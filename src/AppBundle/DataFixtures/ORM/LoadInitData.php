@@ -10,6 +10,7 @@ namespace AppBundle\DataFixtures\ORM;
 
 
 use AppBundle\Entity\Bank;
+use AppBundle\Entity\ClientConfig;
 use AppBundle\Entity\Role;
 use AppBundle\Entity\User;
 use Doctrine\Common\DataFixtures\AbstractFixture;
@@ -31,6 +32,7 @@ class LoadInitData extends AbstractFixture implements OrderedFixtureInterface, C
      */
     public function load(ObjectManager $manager)
     {
+        //角色
         $adminRole = new Role();
         $adminRole->setName('管理员');
         $adminRole->setRole('ROLE_ADMIN');
@@ -55,6 +57,8 @@ class LoadInitData extends AbstractFixture implements OrderedFixtureInterface, C
         $bank->setName('总行');
         $manager->persist($bank);
 
+
+        //用户
         $userAdmin = new User();
         $userAdmin->setTrueName('超级管理员');
         $encoder = $this->container->get('security.password_encoder');
@@ -102,6 +106,12 @@ class LoadInitData extends AbstractFixture implements OrderedFixtureInterface, C
         $userAdmin->setBank($bank);
         $userAdmin->setState(0);
         $manager->persist($userAdmin);
+
+        $config = new ClientConfig();
+        $config->setConfigKey('message.request_interval');
+        $config->setConfigValue(60);
+        $config->setType(0);
+        $manager->persist($config);
 
 
         $manager->flush();

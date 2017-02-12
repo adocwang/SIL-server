@@ -216,8 +216,20 @@ class LoanController extends Controller
                 }
                 if (empty($enterprise->getRoleB())) {
                     $loan->setProgress(2);
+                    $presidentRole = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByRole('ROLE_END_PRESIDENT');
+                    $manager = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(['bank' => $loan->getBank(), 'role' => $presidentRole]);
+                    $this->get('app.message_sender')->sendSysMessage(
+                        $manager,
+                        '有一个贷款申请需要您审批',
+                        $enterprise->getName() . '已经提出贷款申请，请审批！'
+                    );
                 } else {
                     $loan->setProgress(1);
+                    $this->get('app.message_sender')->sendSysMessage(
+                        $enterprise->getRoleB(),
+                        '有一个贷款申请需要您复合',
+                        $enterprise->getName() . '的主理！已经提出贷款申请，请审批！'
+                    );
                 }
                 break;
             case 1:
@@ -227,6 +239,13 @@ class LoanController extends Controller
                 }
                 if ($data['pass'] == 1) {
                     $loan->setProgress(2);
+                    $presidentRole = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByRole('ROLE_END_PRESIDENT');
+                    $manager = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(['bank' => $loan->getBank(), 'role' => $presidentRole]);
+                    $this->get('app.message_sender')->sendSysMessage(
+                        $manager,
+                        '有一个贷款申请需要您审批',
+                        $enterprise->getName() . '已经提出贷款申请，请审批！'
+                    );
                 }
                 break;
             case 2:
@@ -240,6 +259,13 @@ class LoanController extends Controller
                     $superior = $nowUser->getBank()->getSuperior();
                     if (!empty($superior)) {
                         $loan->setBank($superior);
+                        $presidentRole = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByRole('ROLE_BRANCH_PRESIDENT');
+                        $manager = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(['bank' => $superior, 'role' => $presidentRole]);
+                        $this->get('app.message_sender')->sendSysMessage(
+                            $manager,
+                            '有一个贷款申请需要您审批',
+                            $enterprise->getName() . '已经提出贷款申请，请审批！'
+                        );
                     } else {
                         $loan->setProgress(3);
                     }

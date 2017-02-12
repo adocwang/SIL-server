@@ -54,7 +54,7 @@ class MessageSender
      * @param User $fromUser
      * @return bool
      */
-    private function writeMessage(User $toUser, $title, $content, User $fromUser)
+    private function writeMessage(User $toUser, $title, $content, User $fromUser = null)
     {
         if (empty($toUser) || !$toUser instanceof User) {
             return false;
