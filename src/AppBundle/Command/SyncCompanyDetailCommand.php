@@ -71,6 +71,7 @@ class SyncCompanyDetailCommand extends ContainerAwareCommand
                 $enterprise->setStart(new \DateTime($detail['start_date']));
                 $enterprise->setLegalMan($detail['oper_name']);
                 $enterprise->setAddress($detail['address']);
+                $enterprise->setRegistCapi($detail['regist_capi']);
             } else {
                 $enterprise->setDetail("");
             }

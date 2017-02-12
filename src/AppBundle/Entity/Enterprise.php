@@ -48,6 +48,11 @@ class Enterprise
     private $legalMan;
 
     /**
+     * @ORM\Column(type="string", length=63, nullable=true)
+     */
+    private $registCapi;
+
+    /**
      * @ORM\Column(type="string", length=127, unique=true, nullable=false)
      */
     private $objId;
@@ -126,6 +131,7 @@ class Enterprise
             'id' => $this->getId(),
             'name' => $this->getName(),
             'legal_man' => $this->getLegalMan(),
+            'regist_capi' => $this->getRegistCapi(),
             'obj_id' => $this->getObjId(),
             'start' => $this->getStart() ? $this->getStart()->format('Y-m-d') : "",
             'address' => $this->getAddress(),
@@ -519,5 +525,29 @@ class Enterprise
     public function getInBlackList()
     {
         return $this->inBlackList;
+    }
+
+    /**
+     * Set registCapi
+     *
+     * @param string $registCapi
+     *
+     * @return Enterprise
+     */
+    public function setRegistCapi($registCapi)
+    {
+        $this->registCapi = $registCapi;
+
+        return $this;
+    }
+
+    /**
+     * Get registCapi
+     *
+     * @return string
+     */
+    public function getRegistCapi()
+    {
+        return $this->registCapi;
     }
 }
