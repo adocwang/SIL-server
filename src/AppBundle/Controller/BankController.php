@@ -42,12 +42,12 @@ class BankController extends Controller
          * @var User $nowUser
          */
         $nowUser = $this->getUser();
-
-        if ($nowUser->getRole()->getRole() == 'ROLE_ADMIN') {
+        if ($nowUser->getRole()->getRole() == 'ROLE_ADMIN' || 1) {//todo --调试把这里加了||1
             $banks = $this->getDoctrine()->getRepository('AppBundle:Bank')->findAll();
         } else {
             $banks = $this->getDoctrine()->getRepository('AppBundle:Bank')->findBy(['superior' => $nowUser->getBank()]);
         }
+        $bankList = [];
         foreach ($banks as $bank) {
             $bankList[] = $bank->toArrayNoSubordinate();
         }
