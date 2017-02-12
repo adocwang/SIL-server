@@ -29,6 +29,9 @@ services:
     app.op_logger:
         class: AppBundle\Service\OperationLogger
         arguments: ["@security.token_storage",'@doctrine.orm.entity_manager']
+    app.message_sender:
+        class: AppBundle\Service\MessageSender
+        arguments: ["@security.token_storage",'@doctrine.orm.entity_manager']
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]

@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\ApiJsonResponse;
 use AppBundle\Entity\User;
 use AppBundle\JsonRequest;
+use GuzzleHttp\Psr7\Response;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -23,6 +24,7 @@ class UserController extends Controller
      *         {"name"="phone", "dataType"="string", "required"=false, "description"="手机号码"},
      *         {"name"="true_name", "dataType"="string", "required"=false, "description"="真实姓名"},
      *         {"name"="bank_name", "dataType"="string", "required"=false, "description"="银行名称(非管理员用户会自动通过当前用户的银行覆盖这个字段)"},
+     *         {"name"="role_en_name", "dataType"="string", "required"=false, "description"="角色的英文名称"},
      *         {"name"="state", "dataType"="string", "required"=false, "description"="状态"},
      *     },
      *     headers={
@@ -33,6 +35,7 @@ class UserController extends Controller
      *     },
      *     statusCodes={
      *         407="无权限",
+     *         3001="角色不存在",
      *     }
      * )
      *
@@ -72,6 +75,14 @@ class UserController extends Controller
         $pageLimit = $this->getParameter('page_limit');
         if (!empty($data['page_limit']) && $data['page_limit'] > 0) {
             $pageLimit = $data['page_limit'];
+        }
+
+        if (!empty($data['role_en_name'])) {
+            $role = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByRole($data['role_en_name']);
+            if (empty($role)) {
+                return new ApiJsonResponse(3001, 'role not exists');
+            }
+            $data['role'] = $role;
         }
 
 
