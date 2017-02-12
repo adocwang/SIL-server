@@ -29,6 +29,7 @@ class EnterpriseController extends Controller
      *         {"name"="role_a_disable", "dataType"="boolean", "required"=false, "description"="roleA是否不可用：1，0"},
      *         {"name"="state", "dataType"="integer", "required"=false, "description"="状态"},
      *         {"name"="only_mine", "dataType"="integer", "required"=false, "description"="只列出我的企业,0,1"},
+     *         {"name"="only_role_a", "dataType"="integer", "required"=false, "description"="只列出我是role a的企业,0,1"},
      *         {"name"="in_black_list", "dataType"="boolean", "required"=false, "description"="是否在黑名单"},
      *     },
      *     headers={
@@ -74,10 +75,11 @@ class EnterpriseController extends Controller
             $data['state'] = 1;//只拉得到正常状态的企业
             $data['in_black_list'] = 0;//只拉得到不在黑名单的企业
         }
+        $data['now_user'] = $nowUser;
 
         if (!empty($data['only_mine']) && $data['only_mine'] == 1) {
             if ($nowUser->getRole()->getRole() == 'ROLE_CUSTOMER_MANAGER') {
-                $data['only_user'] = $nowUser;
+                $data['only_user'] = 1;
             } else {
                 $data['bank'] = $nowUser->getBank();
             }

@@ -34,9 +34,12 @@ class EnterpriseRepository extends \Doctrine\ORM\EntityRepository
             $queryBuilder->andWhere('a.bank = :bank');
             $queryBuilder->setParameter('bank', $condition['bank']);
         }
-        if (!empty($condition['only_user']) && $condition['only_user'] instanceof User) {
-            $queryBuilder->andWhere('a.roleA = :only_user or a.roleB = :only_user');
-            $queryBuilder->setParameter('only_user', $condition['only_user']);
+        if (!empty($condition['only_role_a']) && $condition['only_role_a'] == 1) {
+            $queryBuilder->andWhere('a.roleA = :now_user');
+            $queryBuilder->setParameter('now_user', $condition['now_user']);
+        } elseif (!empty($condition['only_user']) && $condition['only_user'] instanceof User) {
+            $queryBuilder->andWhere('a.roleA = :only_user or a.roleB = :now_user');
+            $queryBuilder->setParameter('now_user', $condition['now_user']);
         }
         if (!empty($condition['role_a_disable'])) {
             if ($condition['role_a_disable'] == 1) {
