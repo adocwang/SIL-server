@@ -261,7 +261,7 @@ class EnterpriseController extends Controller
             if (empty($roleA)) {
                 return new ApiJsonResponse(2008, 'role_a not exists');
             }
-            if ($roleA->getBank() != $nowUserBank) {
+            if ($roleA->getBank() != $nowUserBank && $this->getUser()->getRole()->getRole() != 'ROLE_ADMIN') {
                 return new ApiJsonResponse(407, 'no permission to set role_a');
             }
             if ($roleA->getRole()->getRole() != 'ROLE_CUSTOMER_MANAGER') {
@@ -280,7 +280,7 @@ class EnterpriseController extends Controller
             if (empty($roleB)) {
                 return new ApiJsonResponse(2008, 'role_b not exists');
             }
-            if ($roleB->getBank() != $nowUserBank) {
+            if ($roleB->getBank() != $nowUserBank && $this->getUser()->getRole()->getRole() != 'ROLE_ADMIN') {
                 return new ApiJsonResponse(407, 'no permission to set role_b');
             }
             if ($roleB->getRole()->getRole() != 'ROLE_CUSTOMER_MANAGER') {
