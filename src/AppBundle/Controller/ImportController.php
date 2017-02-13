@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\ApiJsonResponse;
+use AppBundle\Entity\Role;
 use AppBundle\Entity\Bank;
 use AppBundle\Entity\User;
 use AppBundle\Entity\VCCompany;
@@ -52,13 +53,12 @@ class ImportController extends Controller
         $excelIO = $this->get('app.excel_io');
         $lines = $excelIO->getExcelData($this->getParameter('uploaded_directory') . '/' . $file->getPath());
 //        print_r($lines);exit;
-        if ($this->getUser()->getRole()->getRole() != 'ROLE_ADMIN') {
+        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN)) {
             return new ApiJsonResponse(407, 'no permission');
         }
         $em = $this->getDoctrine()->getManager();
         $userRepository = $this->getDoctrine()->getRepository('AppBundle:User');
         $bankRepository = $this->getDoctrine()->getRepository('AppBundle:Bank');
-        $roleRepository = $this->getDoctrine()->getRepository('AppBundle:Role');
         $errorLines = [];
         foreach ($lines as $line) {
             $user = new User();
@@ -81,7 +81,7 @@ class ImportController extends Controller
                 $user->setBank($bank);
             }
             if (!empty($line[3])) {
-                $role = $roleRepository->findOneByName($line[3]);
+                $role = Role::createRoleByName($line[3]);
                 if (empty($role)) {
                     $errorLines[] = ['data' => $line, 'reason' => '所填角色不存在'];
                     continue;
@@ -135,7 +135,7 @@ class ImportController extends Controller
         $excelIO = $this->get('app.excel_io');
         $lines = $excelIO->getExcelData($this->getParameter('uploaded_directory') . '/' . $file->getPath());
 //        print_r($lines);exit;
-        if ($this->getUser()->getRole()->getRole() != 'ROLE_ADMIN') {
+        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN)) {
             return new ApiJsonResponse(407, 'no permission');
         }
         $em = $this->getDoctrine()->getManager();
@@ -210,7 +210,7 @@ class ImportController extends Controller
         $excelIO = $this->get('app.excel_io');
         $lines = $excelIO->getExcelData($this->getParameter('uploaded_directory') . '/' . $file->getPath());
 //        print_r($lines);exit;
-        if ($this->getUser()->getRole()->getRole() != 'ROLE_ADMIN') {
+        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN)) {
             return new ApiJsonResponse(407, 'no permission');
         }
         $em = $this->getDoctrine()->getManager();

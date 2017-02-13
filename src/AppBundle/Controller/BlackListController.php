@@ -3,7 +3,6 @@
 namespace AppBundle\Controller;
 
 use AppBundle\ApiJsonResponse;
-use AppBundle\Entity\Role;
 use AppBundle\Entity\Bank;
 use AppBundle\Entity\User;
 use AppBundle\JsonRequest;
@@ -43,7 +42,7 @@ class BankController extends Controller
          * @var User $nowUser
          */
         $nowUser = $this->getUser();
-        if ($this->getUser()->getRole()->isRole(Role::ROLE_ADMIN) || 1) {//todo --调试把这里加了||1
+        if ($nowUser->getRole()->isRole('ROLE_ADMIN')) {//todo --调试把这里加了||1
             $banks = $this->getDoctrine()->getRepository('AppBundle:Bank')->findAll();
         } else {
             $banks = $this->getDoctrine()->getRepository('AppBundle:Bank')->findBy(['superior' => $nowUser->getBank()]);
@@ -88,7 +87,7 @@ class BankController extends Controller
         if (empty($data['name'])) {
             return new ApiJsonResponse(1003, 'need name');
         }
-        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN) && !$this->getUser()->getRole()->isRole(Role::ROLE_BRANCH_PRESIDENT)) {
+        if (!in_array($this->getUser()->getRole()->getRole(), ['ROLE_ADMIN', 'ROLE_BRANCH_PRESIDENT'])) {
             return new ApiJsonResponse(407, 'no permission');
         }
 
@@ -148,7 +147,7 @@ class BankController extends Controller
         if (empty($bankRepository->find($data['id']))) {
             return new ApiJsonResponse(2007, 'bank not exist');
         }
-        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN) && $this->getUser()->getRole()->isRole(Role::ROLE_BRANCH_PRESIDENT)) {
+        if (!in_array($this->getUser()->getRole()->getRole(), ['ROLE_ADMIN', 'ROLE_BRANCH_PRESIDENT'])) {
             return new ApiJsonResponse(407, 'no permission');
         }
         /**

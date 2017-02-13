@@ -3,8 +3,8 @@
 namespace AppBundle\Controller;
 
 use AppBundle\ApiJsonResponse;
-use AppBundle\Entity\Bank;
 use AppBundle\Entity\Loan;
+use AppBundle\Entity\Role;
 use AppBundle\Entity\User;
 use AppBundle\JsonRequest;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -216,7 +216,7 @@ class LoanController extends Controller
                 }
                 if (empty($enterprise->getRoleB())) {
                     $loan->setProgress(2);
-                    $presidentRole = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByRole('ROLE_END_PRESIDENT');
+                    $presidentRole = Role::createRole(Role::ROLE_END_PRESIDENT);
                     $manager = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(['bank' => $loan->getBank(), 'role' => $presidentRole]);
                     $this->get('app.message_sender')->sendSysMessage(
                         $manager,
@@ -239,7 +239,7 @@ class LoanController extends Controller
                 }
                 if ($data['pass'] == 1) {
                     $loan->setProgress(2);
-                    $presidentRole = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByRole('ROLE_END_PRESIDENT');
+                    $presidentRole = Role::createRole(Role::ROLE_END_PRESIDENT);
                     $manager = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(['bank' => $loan->getBank(), 'role' => $presidentRole]);
                     $this->get('app.message_sender')->sendSysMessage(
                         $manager,
@@ -259,7 +259,7 @@ class LoanController extends Controller
                     $superior = $nowUser->getBank()->getSuperior();
                     if (!empty($superior)) {
                         $loan->setBank($superior);
-                        $presidentRole = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByRole('ROLE_BRANCH_PRESIDENT');
+                        $presidentRole = Role::createRole(Role::ROLE_BRANCH_PRESIDENT);
                         $manager = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(['bank' => $superior, 'role' => $presidentRole]);
                         $this->get('app.message_sender')->sendSysMessage(
                             $manager,

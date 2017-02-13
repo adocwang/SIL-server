@@ -3,9 +3,9 @@
 namespace AppBundle\Controller;
 
 use AppBundle\ApiJsonResponse;
+use AppBundle\Entity\Role;
 use AppBundle\Entity\User;
 use AppBundle\JsonRequest;
-use GuzzleHttp\Psr7\Response;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -65,11 +65,11 @@ class UserController extends Controller
          * @var User $nowUser
          */
         $nowUser = $this->getUser();
-        if (!in_array($nowUser->getRole()->getRole(), ['ROLE_ADMIN', 'ROLE_END_PRESIDENT'])) {
+        if (!$nowUser->getRole()->isRole(Role::ROLE_ADMIN) && !$nowUser->getRole()->isRole(Role::ROLE_PRESIDENT)) {
             return new ApiJsonResponse(407, 'no permission');
         }
 
-        if ($nowUser->getRole()->getRole() != 'ROLE_ADMIN') {
+        if (!$nowUser->getRole()->isRole(Role::ROLE_ADMIN)) {
             $data['bank'] = $nowUser->getBank();
         }
         $pageLimit = $this->getParameter('page_limit');
@@ -78,7 +78,7 @@ class UserController extends Controller
         }
 
         if (!empty($data['role_en_name'])) {
-            $role = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByRole($data['role_en_name']);
+            $role = Role::createRole($data['role_en_name']);
             if (empty($role)) {
                 return new ApiJsonResponse(3001, 'role not exists');
             }
@@ -206,7 +206,7 @@ class UserController extends Controller
 
         $targetUser->setPhone($data['phone']);
         $targetUser->setTrueName($data['true_name']);
-        $role = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByRole($data['role']);
+        $role = Role::createRoleByName($data['role']);
 
 
         if (empty($role)) {
@@ -304,7 +304,7 @@ class UserController extends Controller
         }
 
         if (!empty($data['role_name'])) {
-            $role = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByName($data['role_name']);
+            $role = Role::createRole($data['role_name']);
             if (!empty($role)) {
                 $targetUser->setRole($role);
             }

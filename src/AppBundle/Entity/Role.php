@@ -1,70 +1,52 @@
 <?php
-
 namespace AppBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use ReflectionClass;
 use Symfony\Component\Security\Core\Role\RoleInterface;
 
 /**
- * Role
- *
- * @ORM\Table(name="role")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\RoleRepository")
+ * Created by PhpStorm.
+ * User: wangyibo
+ * Date: 2/13/17
+ * Time: 14:37
  */
 class Role implements RoleInterface
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     * @ORM\Id
-     */
-    private $id;
+    const ROLE_ADMIN = 'ROLE_ADMIN';
+    const ROLE_BRANCH_PRESIDENT = 'ROLE_BRANCH_PRESIDENT';
+    const ROLE_END_PRESIDENT = 'ROLE_END_PRESIDENT';
+    const ROLE_CUSTOMER_MANAGER = 'ROLE_CUSTOMER_MANAGER';
+    const ROLE_PRESIDENT = 'ROLE_PRESIDENT';
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=63, unique=true)
-     */
-    private $name;
+    public static $roleName = [
+        'ROLE_ADMIN' => '管理员',
+        'ROLE_BRANCH_PRESIDENT' => '分行行长',
+        'ROLE_END_PRESIDENT' => '支行行长',
+        'ROLE_CUSTOMER_MANAGER' => '客户经理'
+    ];
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=63, unique=true)
-     */
-    private $role;
+    private static $roleHierarchy = [
+        'ROLE_PRESIDENT' => ['ROLE_BRANCH_PRESIDENT', 'ROLE_END_PRESIDENT'],
+    ];
 
-    public function __construct($role = '')
+    private $roleValue = 'ROLE_CUSTOMER_MANAGER';
+
+    public static function createRole($roleEnName)
     {
-        if (!empty($role)) {
-            $this->setRole($role);
+        $role = new self();
+        if (!$role->setRole($roleEnName)) {
+            return null;
         }
+        return $role;
     }
 
-    /**
-     * Get id
-     *
-     * @return int
-     */
-    public function getId()
+    public static function createRoleByName($roleName)
     {
-        return $this->id;
-    }
-
-    /**
-     * Set id
-     *
-     * @param integer $id
-     *
-     * @return Role
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
+        $role = new self();
+        if (!$role->setRoleByName($roleName)) {
+            return null;
+        }
+        return $role;
     }
 
     /**
@@ -79,44 +61,74 @@ class Role implements RoleInterface
      */
     public function getRole()
     {
-        return $this->role;
+        $reflect = new ReflectionClass($this);
+        $constants = $reflect->getConstants();
+        return array_search($this->roleValue, $constants);
     }
 
     /**
-     * Set role
-     *
-     * @param string $role
-     *
-     * @return Role
+     * @return int
      */
-    public function setRole($role)
+    public function getRoleValue()
     {
-        $this->role = $role;
-
-        return $this;
+        return $this->roleValue;
     }
 
     /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return Role
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
      * @return string
      */
     public function getName()
     {
-        return $this->name;
+        return self::$roleName[$this->roleValue];
+    }
+
+    /**
+     * @param $initial_value string
+     * @return bool
+     */
+    public function setRoleByName($initial_value)
+    {
+        if (in_array($initial_value, self::$roleName)) {
+            $this->roleValue = array_search($initial_value, self::$roleName);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param $initial_value integer
+     * @return bool
+     */
+    public function setRole($initial_value)
+    {
+        $reflect = new ReflectionClass($this);
+        $constants = $reflect->getConstants();
+        if (in_array($initial_value, $constants)) {
+            $this->roleValue = $initial_value;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param $testRole integer
+     * @return bool
+     */
+    public function isRole($testRole)
+    {
+        if (!empty(self::$roleHierarchy[$testRole])) {
+            return in_array($this->roleValue, self::$roleHierarchy[$testRole]);
+        } else {
+            return ($this->roleValue == $testRole);
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getRole();
     }
 }

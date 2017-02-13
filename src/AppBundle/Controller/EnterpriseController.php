@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\ApiJsonResponse;
+use AppBundle\Entity\Role;
 use AppBundle\Entity\Bank;
 use AppBundle\Entity\Enterprise;
 use AppBundle\Entity\Finding;
@@ -69,7 +70,7 @@ class EnterpriseController extends Controller
          * @var User $nowUser
          */
         $nowUser = $this->getUser();
-        if ($nowUser->getRole()->getRole() != 'ROLE_ADMIN') {
+        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN)) {
             //单用户不是管理员的时候
 //            $data['bank'] = $nowUser->getBank();
             $data['state'] = 1;//只拉得到正常状态的企业
@@ -78,7 +79,7 @@ class EnterpriseController extends Controller
         $data['now_user'] = $nowUser;
 
         if (!empty($data['only_mine']) && $data['only_mine'] == 1) {
-            if ($nowUser->getRole()->getRole() == 'ROLE_CUSTOMER_MANAGER') {
+            if ($this->getUser()->getRole()->isRole(Role::ROLE_CUSTOMER_MANAGER)) {
                 $data['only_user'] = 1;
             } else {
                 $data['bank'] = $nowUser->getBank();
@@ -209,7 +210,7 @@ class EnterpriseController extends Controller
             return new ApiJsonResponse(2007, 'enterprise not exist');
         }
 
-        if (!in_array($this->getUser()->getRole()->getRole(), ['ROLE_ADMIN', 'ROLE_END_PRESIDENT'])) {
+        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN) && !$this->getUser()->getRole()->isRole(Role::ROLE_END_PRESIDENT)) {
             return new ApiJsonResponse(407, 'no permission');
         }
 
@@ -240,8 +241,8 @@ class EnterpriseController extends Controller
             }
             $enterprise->setBank($bank);
             $presidentRoles = [];
-            $presidentRoles[] = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByRole('ROLE_BRANCH_PRESIDENT');
-            $presidentRoles[] = $this->getDoctrine()->getRepository('AppBundle:Role')->findOneByRole('ROLE_END_PRESIDENT');
+            $presidentRoles[] = Role::createRole(Role::ROLE_BRANCH_PRESIDENT);
+            $presidentRoles[] = Role::createRole(Role::ROLE_END_PRESIDENT);
             $managers = $this->getDoctrine()->getRepository('AppBundle:User')->findBy(['bank' => $bank, 'role' => $presidentRoles]);
             foreach ($managers as $manager) {
                 $this->get('app.message_sender')->sendSysMessage(
@@ -264,7 +265,7 @@ class EnterpriseController extends Controller
             if ($roleA->getBank() != $nowUserBank && $this->getUser()->getRole()->getRole() != 'ROLE_ADMIN') {
                 return new ApiJsonResponse(407, 'no permission to set role_a');
             }
-            if ($roleA->getRole()->getRole() != 'ROLE_CUSTOMER_MANAGER') {
+            if (!$roleA->getRole()->isRole(Role::ROLE_CUSTOMER_MANAGER)) {
                 return new ApiJsonResponse(2009, 'role a not customer manager');
             }
             $enterprise->setRoleA($roleA);
@@ -283,7 +284,7 @@ class EnterpriseController extends Controller
             if ($roleB->getBank() != $nowUserBank && $this->getUser()->getRole()->getRole() != 'ROLE_ADMIN') {
                 return new ApiJsonResponse(407, 'no permission to set role_b');
             }
-            if ($roleB->getRole()->getRole() != 'ROLE_CUSTOMER_MANAGER') {
+            if (!$roleB->getRole()->isRole(Role::ROLE_CUSTOMER_MANAGER)) {
                 return new ApiJsonResponse(2009, 'role b not customer manager');
             }
             $enterprise->setRoleB($roleB);

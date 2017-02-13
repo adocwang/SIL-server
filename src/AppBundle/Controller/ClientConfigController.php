@@ -3,9 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\ApiJsonResponse;
-use AppBundle\Entity\Bank;
 use AppBundle\Entity\ClientConfig;
-use AppBundle\Entity\User;
 use AppBundle\JsonRequest;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;

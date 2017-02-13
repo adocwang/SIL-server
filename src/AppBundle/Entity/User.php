@@ -8,6 +8,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Entity\Role;
 use AppBundle\Validator\Constraints as MyAssert;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -72,9 +73,7 @@ class User implements AdvancedUserInterface
     protected $state = 0;
 
     /**
-     * Many Users have one Role.
-     * @ORM\ManyToOne(targetEntity="Role")
-     * @ORM\JoinColumn(name="role_id", referencedColumnName="id")
+     * @ORM\Column(type="string", length=31, nullable=false)
      */
     private $role;
 
@@ -202,7 +201,7 @@ class User implements AdvancedUserInterface
      */
     public function getRoles()
     {
-        return [$this->role];
+        return [$this->getRole()];
     }
 
     /**
@@ -426,9 +425,9 @@ class User implements AdvancedUserInterface
      *
      * @return User
      */
-    public function setRole(\AppBundle\Entity\Role $role = null)
+    public function setRole(Role $role = null)
     {
-        $this->role = $role;
+        $this->role = $role->getRoleValue();
 
         return $this;
     }
@@ -440,7 +439,7 @@ class User implements AdvancedUserInterface
      */
     public function getRole()
     {
-        return $this->role;
+        return Role::createRole($this->role);
     }
 
     /**

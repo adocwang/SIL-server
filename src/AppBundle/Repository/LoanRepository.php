@@ -2,6 +2,7 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\Role;
 use AppBundle\Entity\User;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
@@ -31,10 +32,10 @@ class LoanRepository extends \Doctrine\ORM\EntityRepository
             $queryBuilder->andWhere($queryBuilder->expr()->in('l.progress', $condition['progresses']));
 //            $queryBuilder->setParameter('progresses', $condition['progresses']);
         }
-        if ($condition['now_user']->getRole()->getRole() == 'ROLE_CUSTOMER_MANAGER') {
+        if ($condition['now_user']->getRole()->isRole(Role::ROLE_CUSTOMER_MANAGER)) {
             $queryBuilder->andWhere('e.roleA = :user OR e.roleB = :user');
             $queryBuilder->setParameter('user', $condition['now_user']);
-        } elseif (in_array($condition['now_user']->getRole()->getRole(), ['ROLE_BRANCH_MANAGER', 'ROLE_TAG_MANAGER'])) {
+        } elseif ($condition['now_user']->getRole()->isRole(Role::ROLE_PRESIDENT)) {
             $queryBuilder->andWhere('l.bank = :bank OR e.bank = :bank');
             $queryBuilder->setParameter('bank', $condition['now_user']->getBank());
         }

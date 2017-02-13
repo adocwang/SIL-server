@@ -155,7 +155,7 @@ class CMTipController extends Controller
         $cmTip->setTitle($data['title']);
         $cmTip->setContent($data['content']);
 
-        if ($this->getUser()->getRole()->getRole() != "ROLE_ADMIN") {
+        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN)) {
             return new ApiJsonResponse(407, 'no permission');
         }
 
@@ -215,7 +215,7 @@ class CMTipController extends Controller
         if (empty($cmTip)) {
             return new ApiJsonResponse(2007, 'cm_tip not exists');
         }
-        if ($this->getUser()->getRole()->getRole() != "ROLE_ADMIN") {
+        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN)) {
             return new ApiJsonResponse(407, 'no permission');
         }
         if (!empty($data['title'])) {

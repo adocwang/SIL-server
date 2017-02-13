@@ -9,11 +9,10 @@
 namespace AppBundle\DataFixtures\ORM;
 
 
+use AppBundle\Entity\Role;
 use AppBundle\Entity\Bank;
 use AppBundle\Entity\Enterprise;
 use AppBundle\Entity\Loan;
-use AppBundle\Entity\Log;
-use AppBundle\Entity\Role;
 use AppBundle\Entity\User;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\FixtureInterface;
@@ -69,7 +68,7 @@ class LoadTestData extends AbstractFixture implements OrderedFixtureInterface, C
     private function setLoanTest(ObjectManager $manager)
     {
         //添加贷款测试数据
-        $cmRole = $manager->getRepository('AppBundle:Role')->findOneByRole('ROLE_CUSTOMER_MANAGER');
+        $cmRole = Role::createRole(Role::ROLE_CUSTOMER_MANAGER);
         $user = new User();
         $user->setTrueName('贷款测试经理');
         $user->setPhone('13878787878');
