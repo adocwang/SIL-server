@@ -206,7 +206,7 @@ class UserController extends Controller
 
         $targetUser->setPhone($data['phone']);
         $targetUser->setTrueName($data['true_name']);
-        $role = Role::createRoleByName($data['role']);
+        $role = Role::createRole($data['role']);
 
 
         if (empty($role)) {
