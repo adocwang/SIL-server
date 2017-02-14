@@ -20,7 +20,7 @@ class BlackListController extends Controller
 {
     /**
      * @ApiDoc(
-     *     section="黑名单",
+     *     section="企业黑名单",
      *     description="获得黑名单列表",
      *     parameters={
      *         {"name"="page", "dataType"="string", "required"=false, "description"="页码"},
@@ -83,7 +83,7 @@ class BlackListController extends Controller
     /**
      *
      * @ApiDoc(
-     *     section="黑名单",
+     *     section="企业黑名单",
      *     description="添加黑名单",
      *     parameters={
      *         {"name"="name", "dataType"="integer", "required"=false, "description"="黑名单项目"},
@@ -130,7 +130,7 @@ class BlackListController extends Controller
     /**
      *
      * @ApiDoc(
-     *     section="黑名单",
+     *     section="企业黑名单",
      *     description="删除黑名单",
      *     parameters={
      *         {"name"="id", "dataType"="integer", "required"=true, "description"="黑名单id"},
@@ -173,7 +173,7 @@ class BlackListController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->remove($blacklist);
         $em->flush();
-        return new ApiJsonResponse(0, 'set success', $finding);
+        return new ApiJsonResponse(0, 'delete success');
     }
 
 }
