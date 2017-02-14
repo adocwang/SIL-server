@@ -3,7 +3,12 @@
 namespace AppBundle\Controller;
 
 use AppBundle\ApiJsonResponse;
+use AppBundle\Entity\Blacklist;
+use AppBundle\Entity\Role;
 use AppBundle\Entity\Bank;
+use AppBundle\Entity\Enterprise;
+use AppBundle\Entity\Finding;
+use AppBundle\Entity\Loan;
 use AppBundle\Entity\User;
 use AppBundle\JsonRequest;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -11,15 +16,16 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class BankController extends Controller
+class BlackListController extends Controller
 {
-
     /**
-     * state 1:正常,3:已删除
      * @ApiDoc(
-     *     section="银行",
-     *     description="获取银行列表",
+     *     section="黑名单",
+     *     description="获得黑名单列表",
      *     parameters={
+     *         {"name"="page", "dataType"="string", "required"=false, "description"="页码"},
+     *         {"name"="page_limit", "dataType"="integer", "required"=false, "description"="每页size"},
+     *         {"name"="name", "dataType"="string", "required"=false, "description"="根据名称搜索"},
      *     },
      *     headers={
      *         {
@@ -32,35 +38,55 @@ class BankController extends Controller
      *     }
      * )
      *
-     * @Route("/bank/list")
-     * @Method("GET")
+     * @Route("/blacklist/list")
+     * @Method("POST")
+     * @param JsonRequest $request
      * @return ApiJsonResponse
      */
-    public function list()
+    public function listAction(JsonRequest $request)
     {
+        $data = $request->getData();
+        if (empty($data['page']) || $data['page'] < 1) {
+            $data['page'] = 1;
+        }
+
         /**
          * @var User $nowUser
          */
-        $nowUser = $this->getUser();
-        if ($nowUser->getRole()->isRole('ROLE_ADMIN')) {//todo --调试把这里加了||1
-            $banks = $this->getDoctrine()->getRepository('AppBundle:Bank')->findAll();
-        } else {
-            $banks = $this->getDoctrine()->getRepository('AppBundle:Bank')->findBy(['superior' => $nowUser->getBank()]);
+        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN)) {
+            //单用户不是管理员的时候
+            return new ApiJsonResponse(407, 'no permission');
         }
-        $bankList = [];
-        foreach ($banks as $bank) {
-            $bankList[] = $bank->toArrayNoSubordinate();
+
+        $pageLimit = $this->getParameter('page_limit');
+        if (!empty($data['page_limit']) && $data['page_limit'] > 0) {
+            $pageLimit = $data['page_limit'];
         }
-        return new ApiJsonResponse(0, 'ok', $bankList);
+
+        /**
+         * @var \Doctrine\ORM\Tools\Pagination\Paginator $paginator
+         * @var \AppBundle\Entity\Blacklist $item
+         */
+        $pageData = $this->getDoctrine()->getRepository('AppBundle:Blacklist')->listPage($data['page'], $pageLimit, $data);
+        $items = [];
+        foreach ($pageData['data'] as $item) {
+            $items[] = $item->toArray();
+        }
+        return new ApiJsonResponse(0, 'ok', [
+            'count' => $pageData['count'],
+            'page_limit' => $pageLimit,
+            'page_count' => $pageData['pageCount'],
+            'blacklist' => $items
+        ]);
     }
 
     /**
-     * 添加银行
+     *
      * @ApiDoc(
-     *     section="银行",
-     *     description="添加银行",
+     *     section="黑名单",
+     *     description="添加黑名单",
      *     parameters={
-     *         {"name"="name", "dataType"="string", "required"=true, "description"="银行"}
+     *         {"name"="name", "dataType"="integer", "required"=false, "description"="黑名单项目"},
      *     },
      *     headers={
      *         {
@@ -74,12 +100,12 @@ class BankController extends Controller
      *     }
      * )
      *
-     * @Route("/bank/add")
+     * @Route("/blacklist/add")
      * @Method("POST")
      * @param JsonRequest $request
      * @return ApiJsonResponse
      */
-    public function addBankAction(JsonRequest $request)
+    public function setBlacklistAction(JsonRequest $request)
     {
         $data = $request->getData();
         //check notnull data fields
@@ -87,35 +113,27 @@ class BankController extends Controller
         if (empty($data['name'])) {
             return new ApiJsonResponse(1003, 'need name');
         }
-        if (!in_array($this->getUser()->getRole()->getRole(), ['ROLE_ADMIN', 'ROLE_BRANCH_PRESIDENT'])) {
+
+        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN)) {
             return new ApiJsonResponse(407, 'no permission');
         }
 
-        $bank = new Bank();
-        $bank->setName($data['name']);
-        $bank->setSuperior($this->getUser()->getBank());
+        $blackItem = new Blacklist();
+        $blackItem->setName($data['name']);
 
         $em = $this->getDoctrine()->getManager();
-        $em->persist($bank);
+        $em->persist($blackItem);
         $em->flush();
-
-        $this->get('app.op_logger')->logCreateAction('bank', $bank->getId());
-        return new ApiJsonResponse(0, 'add success', $bank->toArray());
+        return new ApiJsonResponse(0, 'update success', $blackItem->toArray());
     }
 
     /**
-     * 修改银行
-     * state:1正常, 3已删除
+     *
      * @ApiDoc(
-     *     section="银行",
-     *     description="修改银行",
+     *     section="黑名单",
+     *     description="删除黑名单",
      *     parameters={
-     *         {"name"="id", "dataType"="integer", "required"=true, "description"="银行"},
-     *         {"name"="name", "dataType"="string", "required"=false, "description"="银行"},
-     *         {"name"="address", "dataType"="string", "required"=false, "description"="地址"},
-     *         {"name"="coordinates", "dataType"="string", "required"=false, "description"="坐标"},
-     *         {"name"="state", "dataType"="string", "required"=false, "description"="状态"},
-     *         {"name"="superior_id", "dataType"="integer", "required"=false, "description"="上级id"}
+     *         {"name"="id", "dataType"="integer", "required"=true, "description"="黑名单id"},
      *     },
      *     headers={
      *         {
@@ -125,17 +143,17 @@ class BankController extends Controller
      *     },
      *     statusCodes={
      *         1003="缺少参数",
-     *         2007="银行不存在",
+     *         2007="企业不存在",
      *         407="无权限",
      *     }
      * )
      *
-     * @Route("/bank/set")
+     * @Route("/blacklist/del")
      * @Method("POST")
      * @param JsonRequest $request
      * @return ApiJsonResponse
      */
-    public function setBankAction(JsonRequest $request)
+    public function delBlacklistAction(JsonRequest $request)
     {
         $data = $request->getData();
         //check notnull data fields
@@ -143,61 +161,19 @@ class BankController extends Controller
         if (empty($data['id'])) {
             return new ApiJsonResponse(1003, 'need id');
         }
-        $bankRepository = $this->getDoctrine()->getRepository('AppBundle:Bank');
-        if (empty($bankRepository->find($data['id']))) {
-            return new ApiJsonResponse(2007, 'bank not exist');
-        }
-        if (!in_array($this->getUser()->getRole()->getRole(), ['ROLE_ADMIN', 'ROLE_BRANCH_PRESIDENT'])) {
-            return new ApiJsonResponse(407, 'no permission');
-        }
+
         /**
-         * @var Bank $bank
+         * @var Enterprise $enterprise
          */
-        $bank = $bankRepository->find($data['id']);
-        if (!empty($data['name'])) {
-            $bank->setName($data['name']);
-        }
-        if (!empty($data['address'])) {
-            $bank->setAddress($data['address']);
-        }
-        if (!empty($data['coordinates'])) {
-            $bank->setCoordinates($data['coordinates']);
-        }
-
-        if (!empty($data['state'])) {
-            $bank->setState($data['state']);
-        }
-
-        if (!empty($data['superior_id'])) {
-            /**
-             * @var Bank $superior
-             */
-            $superior = $bankRepository->find($data['superior_id']);
-            if (empty($superior)) {
-                return new ApiJsonResponse(2007, 'superior bank not exist');
-            }
-            $bank->setSuperior($superior);
-            $right = false;
-            $nowUserBank = $this->getUser()->getBank();
-            $nowSuperior = $superior->getSuperior();
-            do {
-                if (!empty($nowSuperior)) {
-                    if ($nowSuperior == $nowUserBank) {
-                        $right = true;
-                        break;
-                    }
-                } else {
-                    break;
-                }
-            } while ($nowSuperior = $nowSuperior->getSuperior());
-            if (!$right) {
-                return new ApiJsonResponse(407, 'no permission');
-            }
+        $blacklist = $this->getDoctrine()->getRepository('AppBundle:Blacklist')->find($data['id']);
+        if (empty($blacklist) || !$blacklist instanceof Blacklist) {
+            return new ApiJsonResponse(2007, 'blacklist not exist');
         }
 
         $em = $this->getDoctrine()->getManager();
-        $em->persist($bank);
+        $em->remove($blacklist);
         $em->flush();
-        return new ApiJsonResponse(0, 'add success', $bank->toArray());
+        return new ApiJsonResponse(0, 'set success', $finding);
     }
+
 }

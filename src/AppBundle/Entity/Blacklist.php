@@ -3,7 +3,6 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\Role\RoleInterface;
 
 /**
  * Role
@@ -34,7 +33,15 @@ class Blacklist
      * @ORM\Column(type="integer")
      */
     private $matchCount = 0;
-    
+
+    public function toArray()
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'match_count' => $this->getMatchCount(),
+        ];
+    }
 
     /**
      * Get id

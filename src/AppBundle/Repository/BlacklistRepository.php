@@ -1,6 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
  * BlacklistRepository
@@ -10,4 +11,25 @@ namespace AppBundle\Repository;
  */
 class BlacklistRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function listPage($page, $pageLimit = 20, $condition)
+    {
+        $queryBuilder = $this->_em->createQueryBuilder()
+            ->select('a')
+            ->from('AppBundle:Blacklist', 'a');
+        if (!empty($condition['name'])) {
+            $queryBuilder->andWhere($queryBuilder->expr()->like('a.name', ':name'));
+            $queryBuilder->setParameter('name', '%' . $condition['name'] . '%');
+        }
+        $query = $queryBuilder->orderBy('a.id', 'DESC')->getQuery();
+        $query->setFirstResult(($page - 1) * $pageLimit)->setMaxResults($pageLimit);
+        $paginator = new Paginator($query, $fetchJoinCollection = true);
+
+        $result = [
+            'count' => $paginator->count(),
+            'pageCount' => ceil($paginator->count() / $pageLimit),
+            'data' => $paginator->getIterator()
+        ];
+        return $result;
+
+    }
 }
