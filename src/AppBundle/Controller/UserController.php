@@ -240,7 +240,7 @@ class UserController extends Controller
 
     /**
      *
-     * 角色名称：管理员，支行行长，分行行长，客户经理
+     * 角色名称：ROLE_ADMIN,ROLE_BRANCH_PRESIDENT,ROLE_END_PRESIDENT,ROLE_CUSTOMER_MANAGER
      * 用户state 0:未激活,1:正常,2:已冻结,3:已删除
      * @ApiDoc(
      *     section="用户",
@@ -250,7 +250,7 @@ class UserController extends Controller
      *         {"name"="new_password", "dataType"="string", "required"=false, "description"="新密码"},
      *         {"name"="true_name", "dataType"="string", "required"=false, "description"="真实姓名"},
      *         {"name"="phone", "dataType"="string", "required"=false, "description"="手机号码"},
-     *         {"name"="role_name", "dataType"="string", "required"=false, "description"="角色名称"},
+     *         {"name"="role", "dataType"="string", "required"=false, "description"="角色英文名称"},
      *         {"name"="bank_id", "dataType"="string", "required"=false, "description"="所属银行id"},
      *         {"name"="state", "dataType"="string", "required"=false, "description"="状态"}
      *     },
@@ -304,7 +304,14 @@ class UserController extends Controller
         }
 
         if (!empty($data['role_name'])) {
-            $role = Role::createRole($data['role_name']);
+            $role = Role::createRoleByName($data['role_name']);
+            if (!empty($role)) {
+                $targetUser->setRole($role);
+            }
+        }
+
+        if (!empty($data['role'])) {
+            $role = Role::createRole($data['role']);
             if (!empty($role)) {
                 $targetUser->setRole($role);
             }
