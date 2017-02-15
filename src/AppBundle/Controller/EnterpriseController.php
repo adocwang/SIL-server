@@ -149,7 +149,14 @@ class EnterpriseController extends Controller
             return new ApiJsonResponse(2007, 'enterprise not exists');
         }
         $enterpriseResult = $enterprise->toArray();
-        $enterpriseResult['detail'] = json_decode($enterprise->getDetail(), true);
+        if (!empty($enterprise->getDetailObjId())) {
+            $enterpriseMongoRepository = $this->get('doctrine_mongodb')->getManager()->getRepository('AppBundle:EnterpriseDetail');
+            $enterpriseDetail = $enterpriseMongoRepository->find($enterprise->getDetailObjId());
+            $enterpriseResult['detail'] = $enterpriseDetail->getDetail();
+        } else {
+            $enterpriseResult['detail'] = new \stdClass();
+        }
+
         $enterpriseResult['loan'] = new \stdClass();
         $loanRepository = $this->getDoctrine()->getRepository('AppBundle:Loan');
         $loans = $loanRepository->findBy(['enterprise' => $enterprise], ['id' => 'DESC'], 1);

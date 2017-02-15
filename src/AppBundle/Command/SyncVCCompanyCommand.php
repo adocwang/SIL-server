@@ -70,6 +70,7 @@ class SyncVCCompanyCommand extends ContainerAwareCommand
             do {
                 try {
                     $enterprisesArr = $qixinApi->getChildCompany($vcCompany->getName());
+                    break;
                 } catch (ConnectException $e) {
                     continue;
                 }
@@ -84,12 +85,11 @@ class SyncVCCompanyCommand extends ContainerAwareCommand
                     $enterprise->setName($enterpriseArr['name']);
                     $enterprise->setStart(new \DateTime($enterpriseArr['start_date']));
                     $enterprise->setLegalMan($enterpriseArr['oper_name']);
-                    $enterprise->setObjId($enterpriseArr['id']);
                     $em->persist($enterprise);
                     $em->flush();
                 }
-            }else{
-                $output->writeln($vcCompany->getName().'is empty');
+            } else {
+                $output->writeln($vcCompany->getName() . 'is empty');
             }
             $vcCompany->setChildrenSynced(new \DateTime());
             $em->persist($vcCompany);

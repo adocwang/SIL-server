@@ -31,11 +31,6 @@ class Enterprise
     private $name;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $detail;
-
-    /**
      * @var \DateTime $detailSynced
      *
      * @ORM\Column(type="datetime", nullable=true)
@@ -53,9 +48,9 @@ class Enterprise
     private $registCapi;
 
     /**
-     * @ORM\Column(type="string", length=127, unique=true, nullable=false)
+     * @ORM\Column(type="string", length=63, nullable=false)
      */
-    private $objId;
+    private $detailObjId;
 
     /**
      * @ORM\Column(type="date", nullable=true)
@@ -132,7 +127,6 @@ class Enterprise
             'name' => $this->getName(),
             'legal_man' => $this->getLegalMan(),
             'regist_capi' => $this->getRegistCapi(),
-            'obj_id' => $this->getObjId(),
             'start' => $this->getStart() ? $this->getStart()->format('Y-m-d') : "",
             'address' => $this->getAddress(),
             'bank' => $this->getBank() ? $this->getBank()->toArrayNoSubordinate() : null,
@@ -199,30 +193,6 @@ class Enterprise
     public function getLegalMan()
     {
         return $this->legalMan;
-    }
-
-    /**
-     * Set objId
-     *
-     * @param string $objId
-     *
-     * @return Enterprise
-     */
-    public function setObjId($objId)
-    {
-        $this->objId = $objId;
-
-        return $this;
-    }
-
-    /**
-     * Get objId
-     *
-     * @return string
-     */
-    public function getObjId()
-    {
-        return $this->objId;
     }
 
     /**
@@ -432,30 +402,6 @@ class Enterprise
     }
 
     /**
-     * Set detail
-     *
-     * @param string $detail
-     *
-     * @return Enterprise
-     */
-    public function setDetail($detail)
-    {
-        $this->detail = $detail;
-
-        return $this;
-    }
-
-    /**
-     * Get detail
-     *
-     * @return string
-     */
-    public function getDetail()
-    {
-        return $this->detail;
-    }
-
-    /**
      * Set detailSynced
      *
      * @param \DateTime $detailSynced
@@ -549,5 +495,29 @@ class Enterprise
     public function getRegistCapi()
     {
         return $this->registCapi;
+    }
+
+    /**
+     * Set detailObjId
+     *
+     * @param string $detailObjId
+     *
+     * @return Enterprise
+     */
+    public function setDetailObjId($detailObjId)
+    {
+        $this->detailObjId = $detailObjId;
+
+        return $this;
+    }
+
+    /**
+     * Get detailObjId
+     *
+     * @return string
+     */
+    public function getDetailObjId()
+    {
+        return $this->detailObjId;
     }
 }

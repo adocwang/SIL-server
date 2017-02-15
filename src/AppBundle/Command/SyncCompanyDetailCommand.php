@@ -9,10 +9,13 @@
 namespace AppBundle\Command;
 
 
+use AppBundle\Document\Company;
+use AppBundle\Document\EnterpriseDetail;
 use AppBundle\Entity\Enterprise;
 use AppBundle\Repository\EnterpriseRepository;
 use AppBundle\Service\QiXinApi;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\Common\Util\Debug;
 use GuzzleHttp\Exception\ConnectException;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -48,6 +51,9 @@ class SyncCompanyDetailCommand extends ContainerAwareCommand
         $em = $doctrine->getManager();
         $enterprises = $enterpriseRepository->findAll();
 
+        $mm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+        $enterpriseMongoRepository = $mm->getRepository('AppBundle:EnterpriseDetail');
+
         // outputs multiple lines to the console (adding "\n" at the end of each line)
         // 输出多行到控制台（在每一行的末尾添加 "\n"）
         $output->writeln([
@@ -57,28 +63,44 @@ class SyncCompanyDetailCommand extends ContainerAwareCommand
         ]);
         $qixinApi = $this->getContainer()->get('app.qixin_api');
         foreach ($enterprises as $enterprise) {
+            /**
+             * @var EnterpriseDetail $oldDetail
+             */
+            $enterpriseDetail = $enterpriseMongoRepository->find($enterprise->getDetailObjId());
             $i = 0;
             do {
                 try {
                     $detail = $qixinApi->getGongShangInfo($enterprise->getName());
+                    break;
                 } catch (ConnectException $e) {
+                    echo $e->getMessage();
                     continue;
                 }
-            } while (++$i < 5);
+            } while (++$i < 4);//最多重试3次
 
             if (!empty($detail)) {
-                $enterprise->setDetail(json_encode($detail));
+                if (!empty($enterpriseDetail)) {
+                    $enterpriseDetail->setDetail($detail);
+                    $mm->persist($enterpriseDetail);
+                    $mm->flush();
+                } else {
+                    $enterpriseDetail = new EnterpriseDetail();
+                    $enterpriseDetail->setDetail($detail);
+                    $mm->persist($enterpriseDetail);
+                    $mm->flush();
+                }
+                $enterprise->setDetailObjId($enterpriseDetail->getId());
                 $enterprise->setStart(new \DateTime($detail['start_date']));
                 $enterprise->setLegalMan($detail['oper_name']);
                 $enterprise->setAddress($detail['address']);
                 $enterprise->setRegistCapi($detail['regist_capi']);
             } else {
-                $enterprise->setDetail("");
+                $enterprise->setDetailObjId("");
             }
             $enterprise->setDetailSynced(new \DateTime());
             $em->persist($enterprise);
             $em->flush();
-            $output->writeln($enterprise->getName() . ":" . $enterprise->getObjId());
+            $output->writeln($enterprise->getName() . ":" . $enterprise->getDetailObjId());
         }
     }
 }

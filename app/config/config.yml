@@ -90,4 +90,14 @@ guzzle:
             headers:
                 Accept: "application/json"
 
+doctrine_mongodb:
+    connections:
+        default:
+            server: "%mongodb_server%"
+            options: {}
+    default_database: sil
+    document_managers:
+        default:
+            auto_mapping: true
+
 
