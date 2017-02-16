@@ -32,6 +32,10 @@ services:
     app.message_sender:
         class: AppBundle\Service\MessageSender
         arguments: ["@security.token_storage",'@doctrine.orm.entity_manager']
+    app.loan_decision_helper:
+        class: AppBundle\Service\LoanDecisionHelper
+        arguments: ['@doctrine.orm.entity_manager',"@doctrine_mongodb"]
+
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]

@@ -44,6 +44,7 @@ class LoanDecisionController extends Controller
         if (empty($data['id'])) {
             return new ApiJsonResponse(1003, 'need id');
         }
-        return new ApiJsonResponse(0);
+        $result = $this->get('app.loan_decision_helper')->getDataForm($data['id'], $data);
+        return new ApiJsonResponse(0, 'ok', $result);
     }
 }
