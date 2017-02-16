@@ -10,6 +10,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 class CMTipController extends Controller
 {
@@ -17,12 +18,11 @@ class CMTipController extends Controller
      *
      * @ApiDoc(
      *     section="话术",
-     *     description="话术列表，搜索话术",
+     *     description="话术列表",
      *     parameters={
      *         {"name"="page", "dataType"="string", "required"=false, "description"="页码"},
      *         {"name"="page_limit", "dataType"="integer", "required"=false, "description"="每页size"},
-     *         {"name"="state", "dataType"="integer", "required"=false, "description"="1正常，3删除，默认1"},
-     *         {"name"="keyword", "dataType"="string", "required"=false, "description"="搜索关键词"}
+     *         {"name"="state", "dataType"="integer", "required"=false, "description"="1正常，3删除，默认1"}
      *     },
      *     headers={
      *         {
@@ -59,15 +59,6 @@ class CMTipController extends Controller
         $pageData = $this->getDoctrine()->getRepository('AppBundle:CMTip')->listPage($data['page'], $pageLimit, $data);
         $cmTips = [];
         foreach ($pageData['data'] as $cmTip) {
-            if (!empty($data['keyword'])) {
-                $content = preg_replace('/[\\\\\`\*\_\[\]\#\+\-\!\>]/i', '', $cmTip->getContent());
-                $start = mb_stripos($data['keyword'], $content);
-                $start = ($start > 25) ? ($start - 25) : $start;
-                $end = ($start > (mb_strlen($content) - 100)) ? mb_strlen($content) : $start + 100;
-                $content = mb_substr($content, $start, $end - $start);
-                $content = str_replace($data['keyword'], '<em>' . $data['keyword'] . '</em>', $content);
-                $cmTip->setContent($content);
-            }
             $cmTips[] = $cmTip->toArray();
         }
         return new ApiJsonResponse(0, 'ok', [
@@ -76,6 +67,53 @@ class CMTipController extends Controller
             'page_count' => $pageData['pageCount'],
             'cm_tips' => $cmTips
         ]);
+    }
+
+    /**
+     *
+     * @ApiDoc(
+     *     section="话术",
+     *     description="搜索话术",
+     *     parameters={
+     *     },
+     *     headers={
+     *         {
+     *             "name"="extra",
+     *             "default"="{""token"":""iamsuperman:15828516285""}"
+     *         }
+     *     },
+     *     statusCodes={
+     *         407="无权限",
+     *     }
+     * )
+     *
+     * @Route("/cm_tip/search/{keyword}")
+     * @Method("GET")
+     * @return Response
+     */
+    public function searchAction($keyword)
+    {
+        if (empty($keyword)) {
+            return new ApiJsonResponse(1003, 'need keyword');
+        }
+        $data = ['keyword' => $keyword];
+        /**
+         * @var \Doctrine\ORM\Tools\Pagination\Paginator $paginator
+         * @var \AppBundle\Entity\CMTip $cmTip
+         */
+        $pageData = $this->getDoctrine()->getRepository('AppBundle:CMTip')->listPage(1, 1000, $data);
+        $html = "<ol>";
+        foreach ($pageData['data'] as $cmTip) {
+            $content = preg_replace('/[\\\\\`\*\_\[\]\#\+\-\!\>]/i', '', $cmTip->getContent());
+            $start = mb_stripos($data['keyword'], $content);
+            $start = ($start > 25) ? ($start - 25) : $start;
+            $end = ($start > (mb_strlen($content) - 100)) ? mb_strlen($content) : $start + 100;
+            $content = mb_substr($content, $start, $end - $start);
+            $content = str_replace($data['keyword'], '<em>' . $data['keyword'] . '</em>', $content);
+            $html .= "<li><h4>" . $cmTip->getTitle() . "</h4>" . '<div id="content">' . $content . '</div></li>';
+        }
+        $html .= "</ol>";
+        return new Response($html);
     }
 
     /**
