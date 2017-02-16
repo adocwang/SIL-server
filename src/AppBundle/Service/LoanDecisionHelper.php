@@ -81,13 +81,12 @@ class LoanDecisionHelper
         $detail = $enterpriseDetail->getDetail();
         $values = [];
         foreach ($configTemplate as $field) {
-            $this->findDetailValue($field['title'], $detail);
+            $values[($field['title'])] = $this->findDetailValue($field['title'], $detail);
         }
         return $values;
     }
 
-    private
-    function buildEmptyDataForm()
+    private function buildEmptyDataForm()
     {
         $configTemplate = $this->getConfigTemplate();
         $formLines = [];
@@ -102,8 +101,7 @@ class LoanDecisionHelper
         return $formLines;
     }
 
-    private
-    function getConfigTemplate()
+    private function getConfigTemplate()
     {
         /**
          * @var $configure ClientConfig
@@ -115,8 +113,7 @@ class LoanDecisionHelper
         return json_decode($configure->getConfigValue(), true);
     }
 
-    private
-    function findDetailValue($fieldName, $detail)
+    private function findDetailValue($fieldName, $detail)
     {
         $keyEncoded = EnterpriseChineseKey::getKeyFromChinese($fieldName);
         $keys = explode(',', $keyEncoded);
@@ -137,8 +134,7 @@ class LoanDecisionHelper
      * @param $value
      * @return integer
      */
-    private
-    function calculatePoints($templateField, $value)
+    private function calculatePoints($templateField, $value)
     {
         $value = trim($value);
         $points = (int)$templateField['default_point'];
@@ -160,24 +156,29 @@ class LoanDecisionHelper
             foreach ($templateField['options'] as $option) {
                 $option['value'] = (int)trim($option['value']);
                 if ($option['condition'] == '>') {
-                    if ($option['value'] > $value) {
+                    if ($value > $option['value']) {
                         $points = $option['point'];
+                        break;
                     }
                 } elseif ($option['condition'] == '<') {
-                    if ($option['value'] < $value) {
+                    if ($value < $option['value']) {
                         $points = $option['point'];
+                        break;
                     }
                 } elseif ($option['condition'] == '>=') {
-                    if ($option['value'] >= $value) {
+                    if ($value >= $option['value']) {
                         $points = $option['point'];
+                        break;
                     }
                 } elseif ($option['condition'] == '<=') {
-                    if ($option['value'] <= $value) {
+                    if ($value <= $option['value']) {
                         $points = $option['point'];
+                        break;
                     }
                 } elseif ($option['condition'] == '=') {
-                    if ($option['value'] = $value) {
+                    if ($value = $option['value']) {
                         $points = $option['point'];
+                        break;
                     }
                 }
             }

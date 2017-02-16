@@ -54,7 +54,7 @@ class LoanDecisionController extends Controller
                 $historyData = [];
             }
         } else {
-            $historyData = $data;
+            $historyData = json_decode($data['data'], 1);
         }
         $result = $this->get('app.loan_decision_helper')->getDataForm($data['id'], $historyData);
         return new ApiJsonResponse(0, 'ok', $result);
