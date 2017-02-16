@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\ApiJsonResponse;
 use AppBundle\Entity\CMTip;
+use AppBundle\Entity\Role;
 use AppBundle\JsonRequest;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
