@@ -27,7 +27,7 @@ class LoanDecisionHelper
         $this->mm = $mm;
     }
 
-    public function getDataForm($enterpriseId)
+    public function getDataForm($enterpriseId, $data = [])
     {
         /**
          * @var Enterprise $enterprise
@@ -37,15 +37,22 @@ class LoanDecisionHelper
         if (empty($enterprise) || empty($enterprise->getDetailObjId())) {
             return $this->buildEmptyDataForm();
         }
-        $enterpriseDetail = $this->mm->getRepository('AppBundle:EnterpriseDetail')->find($enterprise->getDetailObjId());
-        if (empty($enterpriseDetail) || empty($enterpriseDetail->getDetail())) {
+        $configTemplate = $this->getConfigTemplate();
+        $values = $this->findValues($configTemplate, $enterprise->getDetailObjId());
+
+        if (!empty($data)) {
+            foreach ($configTemplate as $field) {
+                if (empty($values[($field['title'])])) {
+                    $values[($field['title'])] = $this->findValueInData($field['title'], $data);
+                }
+            }
+        }
+        if (empty($values)) {
             return $this->buildEmptyDataForm();
         }
-        $detail = $enterpriseDetail->getDetail();
-        $configTemplate = $this->getConfigTemplate();
         $formLines = [];
         foreach ($configTemplate as $field) {
-            $value = $this->findValue($field['title'], $detail);
+            $value = $values[($field['title'])];
             $formLines[] = [
                 'title' => $field['title'],
                 'type' => $field['option_type'],
@@ -55,12 +62,32 @@ class LoanDecisionHelper
         return $formLines;
     }
 
-    private function findValue($fieldName, $detail)
+    private function findValueInData($title, $data)
     {
-        return $this->findDetailValue($fieldName, $detail);
+        foreach ($data as $field) {
+            if ($field['title'] == $title) {
+                return $field['value'];
+            }
+        }
+        return '';
     }
 
-    private function buildEmptyDataForm()
+    private function findValues($configTemplate, $detailId)
+    {
+        $enterpriseDetail = $this->mm->getRepository('AppBundle:EnterpriseDetail')->find($detailId);
+        if (empty($enterpriseDetail) || empty($enterpriseDetail->getDetail())) {
+            return [];
+        }
+        $detail = $enterpriseDetail->getDetail();
+        $values = [];
+        foreach ($configTemplate as $field) {
+            $this->findDetailValue($field['title'], $detail);
+        }
+        return $values;
+    }
+
+    private
+    function buildEmptyDataForm()
     {
         $configTemplate = $this->getConfigTemplate();
         $formLines = [];
@@ -75,7 +102,8 @@ class LoanDecisionHelper
         return $formLines;
     }
 
-    private function getConfigTemplate()
+    private
+    function getConfigTemplate()
     {
         /**
          * @var $configure ClientConfig
@@ -87,7 +115,8 @@ class LoanDecisionHelper
         return json_decode($configure->getConfigValue(), true);
     }
 
-    private function findDetailValue($fieldName, $detail)
+    private
+    function findDetailValue($fieldName, $detail)
     {
         $keyEncoded = EnterpriseChineseKey::getKeyFromChinese($fieldName);
         $keys = explode(',', $keyEncoded);
@@ -108,7 +137,8 @@ class LoanDecisionHelper
      * @param $value
      * @return integer
      */
-    private function calculatePoints($templateField, $value)
+    private
+    function calculatePoints($templateField, $value)
     {
         $value = trim($value);
         $points = (int)$templateField['default_point'];

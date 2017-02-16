@@ -89,6 +89,7 @@ class CMTipController extends Controller
      *
      * @Route("/cm_tip/search/{keyword}")
      * @Method("GET")
+     * @param $keyword string
      * @return Response
      */
     public function searchAction($keyword)
