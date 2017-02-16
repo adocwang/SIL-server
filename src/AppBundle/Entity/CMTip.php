@@ -49,7 +49,8 @@ class CMTip
         return [
             'id' => $this->getId(),
             'title' => $this->getTitle(),
-            'content' => mb_strlen($this->getContent()) > 15 ? mb_substr($this->getContent(), 0, 15) . "..." : $this->getContent(),
+            'content' => mb_strlen($this->getContent()) > 200 ? mb_substr($this->getContent(), 0, 200) . "..." : $this->getContent(),
+//            'content' => $this->getContent(),
             'state' => $this->getState()
         ];
     }

@@ -18,7 +18,8 @@ class CMTipRepository extends \Doctrine\ORM\EntityRepository
             ->select('c')
             ->from('AppBundle:CMTip', 'c');
         if (!empty($condition['keyword'])) {
-            $queryBuilder->andWhere($queryBuilder->expr()->like('c.title', ':keyword'));
+            $queryBuilder->orWhere($queryBuilder->expr()->like('c.title', ':keyword'));
+            $queryBuilder->orWhere($queryBuilder->expr()->like('c.content', ':keyword'));
             $queryBuilder->setParameter('keyword', '%' . $condition['keyword'] . '%');
         }
         if (!empty($condition['state'])) {
@@ -27,8 +28,7 @@ class CMTipRepository extends \Doctrine\ORM\EntityRepository
         } else {
             $queryBuilder->andWhere('c.state = 1');
         }
-        $query = $queryBuilder->orderBy('c.id', 'DESC')
-            ->getQuery();
+        $query = $queryBuilder->getQuery();
         $query->setFirstResult(($page - 1) * $pageLimit)
             ->setMaxResults($pageLimit);
         $paginator = new Paginator($query, $fetchJoinCollection = true);

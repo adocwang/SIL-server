@@ -59,6 +59,15 @@ class CMTipController extends Controller
         $pageData = $this->getDoctrine()->getRepository('AppBundle:CMTip')->listPage($data['page'], $pageLimit, $data);
         $cmTips = [];
         foreach ($pageData['data'] as $cmTip) {
+            if (!empty($data['keyword'])) {
+                $content = preg_replace('/[\\\\\`\*\_\[\]\#\+\-\!\>]/i', '', $cmTip->getContent());
+                $start = mb_stripos($data['keyword'], $content);
+                $start = ($start > 25) ? ($start - 25) : $start;
+                $end = ($start > (mb_strlen($content) - 100)) ? mb_strlen($content) : $start + 100;
+                $content = mb_substr($content, $start, $end - $start);
+                $content = str_replace($data['keyword'], '<em>' . $data['keyword'] . '</em>', $content);
+                $cmTip->setContent($content);
+            }
             $cmTips[] = $cmTip->toArray();
         }
         return new ApiJsonResponse(0, 'ok', [
