@@ -33,7 +33,7 @@ class LoanDecisionController extends Controller
      *     }
      * )
      *
-     * @Route("/loan_decision/get_result/")
+     * @Route("/loan_decision/get_result")
      * @Method("POST")
      * @param JsonRequest $request
      * @return ApiJsonResponse
