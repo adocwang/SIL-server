@@ -42,8 +42,9 @@ class LoanDecisionHelper
 
         if (!empty($data)) {
             foreach ($configTemplate as $field) {
-                if (empty($values[($field['title'])])) {
-                    $values[($field['title'])] = $this->findValueInData($field['title'], $data);
+                $fieldTitle = $field['title'];
+                if (!empty($this->findValueInData($fieldTitle, $data))) {
+                    $values[$fieldTitle] = $this->findValueInData($fieldTitle, $data);
                 }
             }
         }
@@ -52,14 +53,30 @@ class LoanDecisionHelper
         }
         $formLines = [];
         foreach ($configTemplate as $field) {
-            $value = $values[($field['title'])];
+            $fieldTitle = $field['title'];
+            $value = $this->formatValue($field['option_type'], $values[$fieldTitle]);
             $formLines[] = [
-                'title' => $field['title'],
+                'title' => $fieldTitle,
                 'type' => $field['option_type'],
                 'value' => $value,
                 'point' => $this->calculatePoints($field, $value)];
         }
         return $formLines;
+    }
+
+    private function formatValue($type, $value)
+    {
+        if ($type == 'integer') {
+            $matched = preg_match('/(\d|\.)+/', $value, $match);
+            if ($matched) {
+                $value = (float)$match[0];
+            } else {
+                $value = 0;
+            }
+        } elseif ($type == 'string') {
+            $value = trim($value);
+        }
+        return $value;
     }
 
     private function findValueInData($title, $data)
@@ -136,7 +153,6 @@ class LoanDecisionHelper
      */
     private function calculatePoints($templateField, $value)
     {
-        $value = trim($value);
         $points = (int)$templateField['default_point'];
         if ($templateField['option_type'] == "string") {
             foreach ($templateField['options'] as $option) {
@@ -152,7 +168,6 @@ class LoanDecisionHelper
                 }
             }
         } elseif ($templateField['option_type'] == "integer") {
-            $value = (int)$value;
             foreach ($templateField['options'] as $option) {
                 $option['value'] = (int)trim($option['value']);
                 if ($option['condition'] == '>') {
