@@ -10,7 +10,6 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Response;
 
 class CMTipController extends Controller
 {
@@ -90,7 +89,7 @@ class CMTipController extends Controller
      * @Route("/cm_tip/search/{keyword}")
      * @Method("GET")
      * @param $keyword string
-     * @return Response
+     * @return ApiJsonResponse
      */
     public function searchAction($keyword)
     {
@@ -114,7 +113,7 @@ class CMTipController extends Controller
             $html .= "<li><h4>" . $cmTip->getTitle() . "</h4>" . '<div id="content">' . $content . '</div></li>';
         }
         $html .= "</ol>";
-        return new Response($html);
+        return new ApiJsonResponse(0, 'ok', $html);
     }
 
     /**
