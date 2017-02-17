@@ -37,6 +37,13 @@ class Message
     private $content;
 
     /**
+     * 跳转的信息
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $type;
+
+    /**
      * @var User $toUser
      *
      * @Gedmo\Blameable(on="create")
@@ -230,9 +237,34 @@ class Message
             'id' => $this->getId(),
             'title' => $this->getTitle(),
             'content' => $this->getContent(),
-            'fromUser' => !empty($this->getFromUser()) ? $this->getFromUser()->getOtherArr() : new \stdClass(),
+            'type' => $this->getType(),
+            'from_user' => !empty($this->getFromUser()) ? $this->getFromUser()->getOtherArr() : new \stdClass(),
             'created' => $this->getCreated()->getTimestamp(),
             'state' => $this->getState()
         ];
+    }
+
+    /**
+     * Set type
+     *
+     * @param array $type
+     *
+     * @return Message
+     */
+    public function setType($type)
+    {
+        $this->type = json_encode($type);
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return array
+     */
+    public function getType()
+    {
+        return json_decode($this->type, true);
     }
 }

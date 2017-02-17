@@ -255,7 +255,8 @@ class EnterpriseController extends Controller
                 $this->get('app.message_sender')->sendSysMessage(
                     $manager,
                     '有一个企业已被分配到您的银行',
-                    $enterprise->getName() . '已被分配到您的银行！请处理！'
+                    $enterprise->getName() . '已被分配到您的银行！请处理！',
+                    ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
                 );
             }
         }
@@ -279,7 +280,8 @@ class EnterpriseController extends Controller
             $this->get('app.message_sender')->sendSysMessage(
                 $roleA,
                 '您被分配了一个新的企业',
-                '您已被分配为 ' . $enterprise->getName() . '的主理！请悉知！'
+                '您已被分配为 ' . $enterprise->getName() . '的主理！请悉知！',
+                ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
             );
         }
 
@@ -298,7 +300,8 @@ class EnterpriseController extends Controller
             $this->get('app.message_sender')->sendSysMessage(
                 $roleB,
                 '您被分配了一个新的企业',
-                '您已被分配为 ' . $enterprise->getName() . '的协理！请悉知！'
+                '您已被分配为 ' . $enterprise->getName() . '的协理！请悉知！',
+                ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
             );
         }
 

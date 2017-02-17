@@ -29,11 +29,12 @@ class MessageSender
      * @param $toUser User
      * @param $title string
      * @param $content string
+     * @param array $type
      * @return bool
      */
-    public function sendSysMessage(User $toUser, $title, $content)
+    public function sendSysMessage(User $toUser, $title, $content, $type = [])
     {
-        return $this->writeMessage($toUser, $title, $content, null);
+        return $this->writeMessage($toUser, $title, $content, $type, null);
     }
 
     /**
@@ -51,14 +52,16 @@ class MessageSender
      * @param User $toUser
      * @param $title
      * @param $content
+     * @param $type array
      * @param User $fromUser
      * @return bool
      */
-    private function writeMessage(User $toUser, $title, $content, User $fromUser = null)
+    private function writeMessage(User $toUser, $title, $content, $type, User $fromUser = null)
     {
         if (empty($toUser) || !$toUser instanceof User) {
             return false;
         }
+
         $message = new Message();
         $message->setTitle($title);
         $message->setToUser($toUser);
@@ -66,6 +69,7 @@ class MessageSender
         if (!empty($fromUser)) {
             $message->setFromUser($fromUser);
         }
+        $message->setType($type);
         $this->em->persist($message);
         $this->em->flush();
         return true;

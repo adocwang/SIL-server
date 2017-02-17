@@ -221,14 +221,16 @@ class LoanController extends Controller
                     $this->get('app.message_sender')->sendSysMessage(
                         $manager,
                         '有一个贷款申请需要您审批',
-                        $enterprise->getName() . '已经提出贷款申请，请审批！'
+                        $enterprise->getName() . '已经提出贷款申请，请审批！',
+                        ['page' => 'enterprise_detail', 'param' => ['id' => $enterprise->getId()]]
                     );
                 } else {
                     $loan->setProgress(1);
                     $this->get('app.message_sender')->sendSysMessage(
                         $enterprise->getRoleB(),
                         '有一个贷款申请需要您复合',
-                        $enterprise->getName() . '的主理！已经提出贷款申请，请审批！'
+                        $enterprise->getName() . '的主理！已经提出贷款申请，请审批！',
+                        ['page' => 'enterprise_detail', 'param' => ['id' => $enterprise->getId()]]
                     );
                 }
                 break;
@@ -244,7 +246,8 @@ class LoanController extends Controller
                     $this->get('app.message_sender')->sendSysMessage(
                         $manager,
                         '有一个贷款申请需要您审批',
-                        $enterprise->getName() . '已经提出贷款申请，请审批！'
+                        $enterprise->getName() . '已经提出贷款申请，请审批！',
+                        ['page' => 'enterprise_detail', 'param' => ['id' => $enterprise->getId()]]
                     );
                 }
                 break;
@@ -264,7 +267,8 @@ class LoanController extends Controller
                         $this->get('app.message_sender')->sendSysMessage(
                             $manager,
                             '有一个贷款申请需要您审批',
-                            $enterprise->getName() . '已经提出贷款申请，请审批！'
+                            $enterprise->getName() . '已经提出贷款申请，请审批！',
+                            ['page' => 'enterprise_detail', 'param' => ['id' => $enterprise->getId()]]
                         );
                     } else {
                         $loan->setProgress(3);
