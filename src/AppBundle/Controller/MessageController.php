@@ -55,12 +55,13 @@ class MessageController extends Controller
     }
 
     /**
-     * 用户state 0:未激活,1:正常,2:已冻结,3:已删除
+     * state:0,未读，1已读
      * @ApiDoc(
      *     section="消息",
      *     description="获取消息列表",
      *     parameters={
-     *         {"name"="page", "dataType"="string", "required"=false, "description"="页码"}
+     *         {"name"="page", "dataType"="string", "required"=false, "description"="页码"},
+     *         {"name"="page_limit", "dataType"="integer", "required"=false, "description"="每页size"}
      *     },
      *     headers={
      *         {
@@ -82,19 +83,23 @@ class MessageController extends Controller
             $data['page'] = 1;
         }
         $data['to_user'] = $this->getUser();
+
+        $pageLimit = $this->getParameter('page_limit');
+        if (!empty($data['page_limit']) && $data['page_limit'] > 0) {
+            $pageLimit = $data['page_limit'];
+        }
         /**
          * @var \Doctrine\ORM\Tools\Pagination\Paginator $paginator
          * @var \AppBundle\Entity\Message $message
          */
-        $pageData = $this->getDoctrine()->getRepository('AppBundle:Message')->listPage($data['page'],
-            $this->getParameter('page_limit'), $data);
+        $pageData = $this->getDoctrine()->getRepository('AppBundle:Message')->listPage($data['page'], $pageLimit, $data);
         $messages = [];
         foreach ($pageData['data'] as $message) {
             $messages[] = $message->getArr();
         }
         return new ApiJsonResponse(0, 'ok', [
             'count' => $pageData['count'],
-            'page_limit' => $this->getParameter('page_limit'),
+            'page_limit' => $pageLimit,
             'page_count' => $pageData['pageCount'],
             'messages' => $messages
         ]);
@@ -102,7 +107,7 @@ class MessageController extends Controller
 
     /**
      * 可用于设置已读，删除消息
-     * state:0,未读，1已读，2已删除
+     * state:0,未读，1已读，3已删除
      * @ApiDoc(
      *     section="消息",
      *     description="设置消息状态",
