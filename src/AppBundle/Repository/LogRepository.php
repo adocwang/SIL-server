@@ -40,9 +40,9 @@ class LogRepository extends \Doctrine\ORM\EntityRepository
                 $condition['time_to'] = $condition['time_from'] + 3600 * 24 * 7;
             }
             $queryBuilder->andWhere('c.created > :time_from');
-            $queryBuilder->setParameter('time_from', new \DateTime($condition['time_from']));
+            $queryBuilder->setParameter('time_from', (new \DateTime())->setTimestamp($condition['time_from']));
             $queryBuilder->andWhere('c.created < :time_to');
-            $queryBuilder->setParameter('time_to', new \DateTime($condition['time_to']));
+            $queryBuilder->setParameter('time_to', (new \DateTime())->setTimestamp($condition['time_to']));
         }
         $query = $queryBuilder->orderBy('c.id', 'DESC')
             ->getQuery();

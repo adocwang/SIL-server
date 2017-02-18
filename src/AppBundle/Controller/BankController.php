@@ -148,7 +148,7 @@ class BankController extends Controller
         if (empty($bankRepository->find($data['id']))) {
             return new ApiJsonResponse(2007, 'bank not exist');
         }
-        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN) && $this->getUser()->getRole()->isRole(Role::ROLE_BRANCH_PRESIDENT)) {
+        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN) && !$this->getUser()->getRole()->isRole(Role::ROLE_BRANCH_PRESIDENT)) {
             return new ApiJsonResponse(407, 'no permission');
         }
         /**
