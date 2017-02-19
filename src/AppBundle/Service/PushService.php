@@ -19,13 +19,14 @@ class PushService
     public static function pushMessage($title, $content, $data, $aliasList = 'all')
     {
         self::pushAndroid($title, $content, $data, $aliasList);
+        self::pushIos($title, $data, $aliasList);
     }
 
-    public static function pushIos($title, $desc, $payload, $aliasList)
+    public static function pushIos($title, $payload, $aliasList)
     {
         $app_key = "dd19b8ba0c66d03e1ccc23cb";
         $master_secret = "2f7554707b2c3efa4ff097e9";
-        $client = new JPushClient($app_key, $master_secret);
+        $client = new JPushClient($app_key, $master_secret, null);
         $push = $client->push();
         $push->setPlatform('ios');
         if ($aliasList == 'all') {
@@ -34,9 +35,15 @@ class PushService
             $push->addAlias($aliasList);
         }
         $push->iosNotification($title, [
-            'extras' => $payload
+            'extras' => ['type' => $payload]
         ]);
-        $push->send();
+        $res = $push->send();
+        if ($res['body']['msg_id']) {
+            return true;
+        }
+        return false;
+//        print_r($push->send());
+//        exit;
     }
 
     public static function pushAndroid($title, $desc, $payload, $aliasList)

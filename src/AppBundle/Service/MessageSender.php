@@ -72,7 +72,11 @@ class MessageSender
         $message->setType($type);
         $this->em->persist($message);
         $this->em->flush();
-        PushService::pushMessage($title, $content, $type, 'all');
+        if ($toUser->getPlatform() == 'ios') {
+            PushService::pushIos($title, $type, $toUser->getPhone());
+        } else {
+            PushService::pushMessage($title, $content, $type, $toUser->getPhone());
+        }
         return true;
     }
 }
