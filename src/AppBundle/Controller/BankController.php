@@ -43,7 +43,7 @@ class BankController extends Controller
          * @var User $nowUser
          */
         $nowUser = $this->getUser();
-        if ($this->getUser()->getRole()->isRole(Role::ROLE_ADMIN) || 1) {//todo --调试把这里加了||1
+        if ($this->getUser()->getRole()->isRole(Role::ROLE_ADMIN)) {//todo --调试把这里加了||1
             $banks = $this->getDoctrine()->getRepository('AppBundle:Bank')->findAll();
         } else {
             $banks = $this->getDoctrine()->getRepository('AppBundle:Bank')->findBy(['superior' => $nowUser->getBank()]);
