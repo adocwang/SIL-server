@@ -15,7 +15,6 @@ use AppBundle\Entity\Enterprise;
 use AppBundle\Repository\EnterpriseRepository;
 use AppBundle\Service\QiXinApi;
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\Common\Util\Debug;
 use GuzzleHttp\Exception\ConnectException;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;

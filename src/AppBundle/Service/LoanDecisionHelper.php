@@ -64,7 +64,7 @@ class LoanDecisionHelper
         return $formLines;
     }
 
-    private function formatValue($type, $value)
+    public function formatValue($type, $value)
     {
         if ($type == 'integer') {
             $matched = preg_match('/(\d|\.)+/', $value, $match);
@@ -89,7 +89,7 @@ class LoanDecisionHelper
         return '';
     }
 
-    public function findValuesInDetail($configTemplate, $detailId)
+    protected function findValuesInDetail($configTemplate, $detailId)
     {
         $enterpriseDetail = $this->mm->getRepository('AppBundle:EnterpriseDetail')->find($detailId);
         if (empty($enterpriseDetail) || empty($enterpriseDetail->getDetail())) {
@@ -130,7 +130,7 @@ class LoanDecisionHelper
         return json_decode($configure->getConfigValue(), true);
     }
 
-    private function findDetailValue($fieldName, $detail)
+    public function findDetailValue($fieldName, $detail)
     {
         $keyEncoded = EnterpriseChineseKey::getKeyFromChinese($fieldName);
         $keys = explode(',', $keyEncoded);

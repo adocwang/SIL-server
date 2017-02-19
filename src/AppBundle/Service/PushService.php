@@ -60,7 +60,7 @@ class PushService
         $message1->title($title);  // 通知栏的title
         $message1->description($desc); // 通知栏的descption
         $message1->passThrough(0);  // 这是一条通知栏消息，如果需要透传，把这个参数设置成1,同时去掉title和descption两个参数
-        $message1->payload($payload); // 携带的数据，点击后将会通过客户端的receiver中的onReceiveMessage方法传入。
+        $message1->payload(json_encode(['type'=>$payload])); // 携带的数据，点击后将会通过客户端的receiver中的onReceiveMessage方法传入。
         $message1->extra(MiPushBuilder::notifyForeground, 1); // 应用在前台是否展示通知，如果不希望应用在前台时候弹出通知，则设置这个参数为0
         $message1->notifyId(2); // 通知类型。最多支持0-4 5个取值范围，同样的类型的通知会互相覆盖，不同类型可以在通知栏并存
         $message1->notifyType(-1);
@@ -70,7 +70,7 @@ class PushService
 
         } else {
             @$res = $sender->sendToAliases($message1, $aliasList);
-//            print_r($res);exit;
+//            print_r($res->getRaw());exit;
         }
         if (!empty($res) && $res->getErrorCode() == 0) {
             return true;
