@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Constant\State;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints\DateTime;
@@ -43,7 +44,7 @@ class Finding
      *
      * @ORM\Column(type="integer")
      */
-    private $state = 1;
+    private $state = State::STATE_NORMAL;
 
     /**
      * @var \DateTime $created

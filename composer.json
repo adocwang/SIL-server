@@ -30,7 +30,9 @@
         "eightpoints/guzzle-bundle": "^4.5",
         "alcaeus/mongo-php-adapter": "^1.0",
         "doctrine/mongodb-odm": "^1.0",
-        "doctrine/mongodb-odm-bundle": "^3.1"
+        "doctrine/mongodb-odm-bundle": "^3.1",
+        "adocwang/mipush": "^2.2",
+        "jpush/jpush": "^3.5"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

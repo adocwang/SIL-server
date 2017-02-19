@@ -75,6 +75,11 @@ class User implements AdvancedUserInterface
     /**
      * @ORM\Column(type="string", length=31, nullable=false)
      */
+    private $platform;
+
+    /**
+     * @ORM\Column(type="string", length=31, nullable=false)
+     */
     private $role;
 
     /**
@@ -466,4 +471,28 @@ class User implements AdvancedUserInterface
         return $this->bank;
     }
 
+
+    /**
+     * Set platform
+     *
+     * @param string $platform
+     *
+     * @return User
+     */
+    public function setPlatform($platform)
+    {
+        $this->platform = $platform;
+
+        return $this;
+    }
+
+    /**
+     * Get platform
+     *
+     * @return string
+     */
+    public function getPlatform()
+    {
+        return $this->platform;
+    }
 }

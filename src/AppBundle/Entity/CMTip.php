@@ -8,6 +8,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Constant\State;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -42,7 +43,7 @@ class CMTip
      * @var integer
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $state = 1;
+    private $state = State::STATE_NORMAL;
 
     public function toArray()
     {

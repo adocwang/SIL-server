@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\ApiJsonResponse;
+use AppBundle\Constant\State;
 use AppBundle\Entity\Role;
 use AppBundle\Entity\Bank;
 use AppBundle\Entity\User;
@@ -88,7 +89,7 @@ class ImportController extends Controller
                 }
                 $user->setRole($role);
             }
-            $user->setState(0);
+            $user->setState(State::STATE_UN_ACTIVE);
             $em->persist($user);
             $em->flush();
         }
@@ -164,7 +165,7 @@ class ImportController extends Controller
             if (!empty($superior)) {
                 $bank->setSuperior($superior);
             }
-            $bank->setState(0);
+            $bank->setState(State::STATE_NORMAL);
             $em->persist($bank);
             $em->flush();
         }

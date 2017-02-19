@@ -72,6 +72,7 @@ class MessageSender
         $message->setType($type);
         $this->em->persist($message);
         $this->em->flush();
+        PushService::pushMessage($title, $content, $type, 'all');
         return true;
     }
 }

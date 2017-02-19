@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\ApiJsonResponse;
+use AppBundle\Constant\State;
 use AppBundle\Entity\Role;
 use AppBundle\Entity\Bank;
 use AppBundle\Entity\Enterprise;
@@ -73,7 +74,7 @@ class EnterpriseController extends Controller
         if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN)) {
             //单用户不是管理员的时候
 //            $data['bank'] = $nowUser->getBank();
-            $data['state'] = 1;//只拉得到正常状态的企业
+            $data['state'] = State::STATE_NORMAL;//只拉得到正常状态的企业
             $data['in_black_list'] = 0;//只拉得到不在黑名单的企业
         }
         $data['now_user'] = $nowUser;

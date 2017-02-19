@@ -2,6 +2,7 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Constant\State;
 use AppBundle\Entity\User;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
@@ -43,8 +44,8 @@ class EnterpriseRepository extends \Doctrine\ORM\EntityRepository
         }
         if (!empty($condition['role_a_disable'])) {
             if ($condition['role_a_disable'] == 1) {
-                $queryBuilder->leftJoin('a.roleA', 'r', 'WITH', 'r.state IN (0,2,3)');
-                $queryBuilder->andWhere('r.state IN (0,2,3)');
+                $queryBuilder->leftJoin('a.roleA', 'r', 'WITH', 'r.state IN ('. State::STATE_UN_ACTIVE .','.State::STATE_FREEZED.','.State::STATE_DELETED.')');
+                $queryBuilder->andWhere('r.state IN ('.State::STATE_UN_ACTIVE.','.State::STATE_FREEZED.','.State::STATE_DELETED.')');
             }
         }
         $query = $queryBuilder->orderBy('a.id', 'DESC')->getQuery();

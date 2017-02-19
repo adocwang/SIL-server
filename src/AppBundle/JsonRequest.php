@@ -32,4 +32,21 @@ class JsonRequest extends Request
         }
         return $this->data;
     }
+
+    public function getExtra($key = '')
+    {
+        $extra = $this->headers->get('extra');
+        if (!empty($extra)) {
+            $extra = json_decode($extra, true);
+            if (empty($key)) {
+                return $extra;
+            }
+            if (!empty($extra[$key])) {
+                return $extra[$key];
+            } else {
+                return '';
+            }
+        }
+        return [];
+    }
 }

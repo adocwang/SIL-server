@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\ApiJsonResponse;
+use AppBundle\Constant\State;
 use AppBundle\Entity\Message;
 use AppBundle\JsonRequest;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -149,8 +150,8 @@ class MessageController extends Controller
         if ($message->getToUser()->getId() != $this->getUser()->getId()) {
             return new ApiJsonResponse(407);
         }
-        if (!in_array($data['state'], [0, 1, 2])) {
-            $data['state'] = 1;
+        if (!in_array($data['state'], [State::STATE_UN_ACTIVE, State::STATE_NORMAL, State::STATE_DELETED,State::STATE_FREEZED])) {
+            $data['state'] = State::STATE_NORMAL;
         }
         $message->setState($data['state']);
         $em = $this->getDoctrine()->getManager();

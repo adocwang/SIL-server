@@ -9,6 +9,7 @@
 namespace AppBundle\DataFixtures\ORM;
 
 
+use AppBundle\Constant\State;
 use AppBundle\Entity\Role;
 use AppBundle\Entity\Bank;
 use AppBundle\Entity\ClientConfig;
@@ -62,7 +63,7 @@ class LoadInitData extends AbstractFixture implements OrderedFixtureInterface, C
         $userAdmin->setToken('test_token1');
         $userAdmin->setRole($adminRole);
         $userAdmin->setBank($bank);
-        $userAdmin->setState(0);
+        $userAdmin->setState(State::STATE_UN_ACTIVE);
         $manager->persist($userAdmin);
 
         $userAdmin = new User();
@@ -74,7 +75,7 @@ class LoadInitData extends AbstractFixture implements OrderedFixtureInterface, C
         $userAdmin->setToken('test_token2');
         $userAdmin->setRole($branchRole);
         $userAdmin->setBank($bank);
-        $userAdmin->setState(0);
+        $userAdmin->setState(State::STATE_UN_ACTIVE);
         $manager->persist($userAdmin);
 
         $userAdmin = new User();
@@ -86,7 +87,7 @@ class LoadInitData extends AbstractFixture implements OrderedFixtureInterface, C
         $userAdmin->setToken('test_token3');
         $userAdmin->setRole($endRole);
         $userAdmin->setBank($bank);
-        $userAdmin->setState(0);
+        $userAdmin->setState(State::STATE_UN_ACTIVE);
         $manager->persist($userAdmin);
 
         $userAdmin = new User();
@@ -98,7 +99,7 @@ class LoadInitData extends AbstractFixture implements OrderedFixtureInterface, C
         $userAdmin->setToken('test_token4');
         $userAdmin->setRole($cmRole);
         $userAdmin->setBank($bank);
-        $userAdmin->setState(0);
+        $userAdmin->setState(State::STATE_UN_ACTIVE);
         $manager->persist($userAdmin);
 
 

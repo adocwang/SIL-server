@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\ApiJsonResponse;
+use AppBundle\Constant\State;
 use AppBundle\Entity\Role;
 use AppBundle\Entity\User;
 use AppBundle\JsonRequest;
@@ -216,7 +217,7 @@ class UserController extends Controller
 
         $targetUser->setBank($this->getUser()->getBank());
         $targetUser->setToken(md5(uniqid()));
-        $targetUser->setState(0);
+        $targetUser->setState(State::STATE_UN_ACTIVE);
         /**
          * @var \Symfony\Component\Validator\Validator\ValidatorInterface $validator
          */
@@ -294,8 +295,8 @@ class UserController extends Controller
             $encoder = $this->get('security.password_encoder');
             $encoded = $encoder->encodePassword($targetUser, $data['new_password']);
             $targetUser->setPassword($encoded);
-            if ($targetUser->getState() == 0) {
-                $targetUser->setState(1);
+            if ($targetUser->getState() == State::STATE_UN_ACTIVE) {
+                $targetUser->setState(State::STATE_NORMAL);
             }
         }
 

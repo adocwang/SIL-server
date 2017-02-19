@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Constant\State;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
@@ -67,7 +68,7 @@ class Message
      *
      * @ORM\Column(type="integer", nullable=false)
      */
-    private $state = 0;
+    private $state = State::STATE_UN_ACTIVE;
 
     /**
      * @var \DateTime $created

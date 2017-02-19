@@ -29,6 +29,8 @@ services:
     app.op_logger:
         class: AppBundle\Service\OperationLogger
         arguments: ["@security.token_storage",'@doctrine.orm.entity_manager']
+#    app.push_service:
+#        class: AppBundle\Service\PushService
     app.message_sender:
         class: AppBundle\Service\MessageSender
         arguments: ["@security.token_storage",'@doctrine.orm.entity_manager']

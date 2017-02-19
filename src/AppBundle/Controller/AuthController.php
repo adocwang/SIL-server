@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\ApiJsonResponse;
+use AppBundle\Constant\State;
 use AppBundle\Entity\Sms;
 use AppBundle\Entity\User;
 use AppBundle\JsonRequest;
@@ -133,6 +134,7 @@ class AuthController extends Controller
         if (empty($user) || !($user instanceof User)) {
             return new ApiJsonResponse(2007, 'user not exist');
         }
+        $user->setPlatform($request->getExtra('platform'));
         $loginResult = $this->loginProcess($user);
         if (!$loginResult) {
             return new ApiJsonResponse(500, 'login process error');
@@ -185,11 +187,10 @@ class AuthController extends Controller
         if (empty($user) || !($user instanceof User)) {
             return new ApiJsonResponse(2007, 'user not exist');
         }
-
         if (!$user->checkPassword($data['password'])) {
             return new ApiJsonResponse(2003, 'password error');
         }
-
+        $user->setPlatform($request->getExtra('platform'));
         $loginResult = $this->loginProcess($user);
         if (!$loginResult) {
             return new ApiJsonResponse(500, 'login process error');
@@ -206,8 +207,8 @@ class AuthController extends Controller
     {
         $token = md5(uniqid());
         $user->setToken($token);
-        if ($user->getState() == 0) {
-            $user->setState(1);
+        if ($user->getState() == State::STATE_UN_ACTIVE) {
+            $user->setState(State::STATE_NORMAL);
         }
         $em = $this->getDoctrine()->getManager();
         $em->persist($user);
