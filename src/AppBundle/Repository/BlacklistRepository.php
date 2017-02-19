@@ -1,6 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
+
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
@@ -31,5 +32,15 @@ class BlacklistRepository extends \Doctrine\ORM\EntityRepository
         ];
         return $result;
 
+    }
+
+    public function getAllAsArr()
+    {
+        $items = $this->_em->getRepository('AppBundle:Blacklist')->findAll();
+        $names = [];
+        foreach ($items as $item) {
+            $names[] = $item->getName();
+        }
+        return $names;
     }
 }

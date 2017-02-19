@@ -79,11 +79,11 @@ class Enterprise
     private $modified;
 
     /**
-     * 是否在黑名单
+     * 被过滤的原因
      *
-     * @ORM\Column(type="integer", nullable=false)
+     * @ORM\Column(type="string", nullable=true)
      */
-    protected $inBlackList = 0;
+    protected $blockReason = '';
 
     /**
      * 1正常2冻结3删除
@@ -133,7 +133,7 @@ class Enterprise
             'role_a' => $this->getRoleA() ? $this->getRoleA()->getOtherArr() : null,
             'role_b' => $this->getRoleB() ? $this->getRoleB()->getOtherArr() : null,
             'state' => $this->getState(),
-            'in_black_list' => $this->getInBlackList(),
+            'block_reason' => $this->getBlockReason(),
         ];
     }
 
@@ -450,30 +450,6 @@ class Enterprise
     }
 
     /**
-     * Set inBlackList
-     *
-     * @param boolean $inBlackList
-     *
-     * @return Enterprise
-     */
-    public function setInBlackList($inBlackList)
-    {
-        $this->inBlackList = $inBlackList;
-
-        return $this;
-    }
-
-    /**
-     * Get inBlackList
-     *
-     * @return boolean
-     */
-    public function getInBlackList()
-    {
-        return $this->inBlackList;
-    }
-
-    /**
      * Set registCapi
      *
      * @param string $registCapi
@@ -519,5 +495,29 @@ class Enterprise
     public function getDetailObjId()
     {
         return $this->detailObjId;
+    }
+
+    /**
+     * Set blockReason
+     *
+     * @param string $blockReason
+     *
+     * @return Enterprise
+     */
+    public function setBlockReason($blockReason)
+    {
+        $this->blockReason = $blockReason;
+
+        return $this;
+    }
+
+    /**
+     * Get blockReason
+     *
+     * @return string
+     */
+    public function getBlockReason()
+    {
+        return $this->blockReason;
     }
 }

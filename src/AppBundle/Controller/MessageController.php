@@ -150,7 +150,7 @@ class MessageController extends Controller
         if ($message->getToUser()->getId() != $this->getUser()->getId()) {
             return new ApiJsonResponse(407);
         }
-        if (!in_array($data['state'], [State::STATE_UN_ACTIVE, State::STATE_NORMAL, State::STATE_DELETED,State::STATE_FREEZED])) {
+        if (!in_array($data['state'], [State::STATE_UN_ACTIVE, State::STATE_NORMAL, State::STATE_DELETED, State::STATE_FREEZED])) {
             $data['state'] = State::STATE_NORMAL;
         }
         $message->setState($data['state']);

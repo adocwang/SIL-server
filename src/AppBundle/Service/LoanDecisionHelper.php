@@ -38,7 +38,7 @@ class LoanDecisionHelper
             return $this->buildEmptyDataForm();
         }
         $configTemplate = $this->getConfigTemplate();
-        $values = $this->findValues($configTemplate, $enterprise->getDetailObjId());
+        $values = $this->findValuesInDetail($configTemplate, $enterprise->getDetailObjId());
 
         if (!empty($data)) {
             foreach ($configTemplate as $field) {
@@ -89,7 +89,7 @@ class LoanDecisionHelper
         return '';
     }
 
-    private function findValues($configTemplate, $detailId)
+    public function findValuesInDetail($configTemplate, $detailId)
     {
         $enterpriseDetail = $this->mm->getRepository('AppBundle:EnterpriseDetail')->find($detailId);
         if (empty($enterpriseDetail) || empty($enterpriseDetail->getDetail())) {
@@ -118,7 +118,7 @@ class LoanDecisionHelper
         return $formLines;
     }
 
-    private function getConfigTemplate()
+    public function getConfigTemplate()
     {
         /**
          * @var $configure ClientConfig

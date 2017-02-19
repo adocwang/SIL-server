@@ -73,7 +73,7 @@ class User implements AdvancedUserInterface
     protected $state = 0;
 
     /**
-     * @ORM\Column(type="string", length=31, nullable=false)
+     * @ORM\Column(type="string", length=31, nullable=true)
      */
     private $platform;
 
