@@ -75,7 +75,7 @@ class MessageSender
         if (strcmp($toUser->getPlatform(), 'ios') === 0) {
             PushService::pushIos($title, $type, $toUser->getPhone());
         } else {
-            PushService::pushAndroid($title, $content, $type, $toUser->getPhone());
+            PushService::pushAndroid($title, $content, $type, [$toUser->getPhone()]);
         }
         return true;
     }

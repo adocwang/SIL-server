@@ -66,12 +66,13 @@ class PushService
         $message1->notifyType(-1);
         $message1->build();
         if ($aliasList == 'all') {
-            @$res_code = $sender->broadcastAll($message1)->getErrorCode();
+            @$res = $sender->broadcastAll($message1);
 
         } else {
-            @$res_code = $sender->sendToAliases($message1, $aliasList)->getErrorCode();
+            @$res = $sender->sendToAliases($message1, $aliasList);
+//            print_r($res);exit;
         }
-        if ($res_code == 0) {
+        if (!empty($res) && $res->getErrorCode() == 0) {
             return true;
         }
         return false;
