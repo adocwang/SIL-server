@@ -47,6 +47,7 @@ class BankController extends Controller
             $banks = $this->getDoctrine()->getRepository('AppBundle:Bank')->findAll();
         } else {
             $banks = $this->getDoctrine()->getRepository('AppBundle:Bank')->findBy(['superior' => $nowUser->getBank()]);
+            $banks[] = $nowUser->getBank();
         }
         $bankList = [];
         foreach ($banks as $bank) {
