@@ -43,7 +43,7 @@ class Finding
      *
      * @ORM\Column(type="text")
      */
-    private $unPassReason='';
+    private $unPassReason = '';
 
 
     /**
@@ -85,6 +85,7 @@ class Finding
             'id' => $this->getId(),
             'data' => $this->getData(),
             'state' => $this->getState(),
+            'progress' => $this->getProgress(),
             'created' => $this->getCreated()->format('Y-m-d H:i:s'),
             'modified' => $this->getModified()->format('Y-m-d H:i:s'),
         ];

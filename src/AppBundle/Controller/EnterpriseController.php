@@ -11,10 +11,12 @@ use AppBundle\Entity\Finding;
 use AppBundle\Entity\Loan;
 use AppBundle\Entity\User;
 use AppBundle\JsonRequest;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Date;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class EnterpriseController extends Controller
 {
@@ -346,10 +348,10 @@ class EnterpriseController extends Controller
      * 修改企业调查结果
      * @ApiDoc(
      *     section="企业",
-     *     description="修改企业调查结果",
+     *     description="设置企业采集结果",
      *     parameters={
      *         {"name"="id", "dataType"="integer", "required"=true, "description"="企业id"},
-     *         {"name"="data", "dataType"="string", "required"=false, "description"="调查结果数据"},
+     *         {"name"="data", "dataType"="string", "required"=false, "description"="调查结果数据"}
      *     },
      *     headers={
      *         {
@@ -409,7 +411,7 @@ class EnterpriseController extends Controller
      * 获得企业调查结果
      * @ApiDoc(
      *     section="企业",
-     *     description="获得企业调查结果",
+     *     description="获得企业采集结果",
      *     parameters={
      *     },
      *     headers={
@@ -444,7 +446,152 @@ class EnterpriseController extends Controller
         if (empty($enterprise)) {
             return new ApiJsonResponse(2007, 'enterprise not exists');
         }
+        $finding = $enterprise->getFinding();
+        $findingArr = new \stdClass();
+        if (!empty($finding)) {
+            $findingArr = $finding->toArray();
+            $findingArr['un_pass_reason'] = $finding->getUnPassReason();
+            /**
+             * @var $nowUser User
+             */
+            $nowUser = $this->getUser();
+            $findingArr['operation_enable'] = 'none';
+            if ($finding->getProgress() == 0 && $enterprise->getRoleB() == $nowUser) {
+                $findingArr['operation_enable'] = 'check';
+            }
+            if ($finding->getProgress() == 1 && $enterprise->getBank() == $nowUser->getBank()
+                && $nowUser->getRole()->isRole(Role::ROLE_PRESIDENT)
+            ) {
+                $findingArr['operation_enable'] = 'check';
+            }
+            if ($finding->getProgress() == 3 && $enterprise->getRoleA() == $nowUser) {
+                $findingArr['operation_enable'] = 'refinding';
+            }
+        }
+        return new ApiJsonResponse(0, 'ok', $findingArr);
+    }
 
-        return new ApiJsonResponse(0, 'ok', $enterprise->getFinding() ? $enterprise->getFinding()->toArray() : new \stdClass());
+    /**
+     *
+     * 设置调查结果是否可以通过
+     * @ApiDoc(
+     *     section="企业",
+     *     description="设置采集结果是否可以通过",
+     *     parameters={
+     *         {"name"="id", "dataType"="integer", "required"=true, "description"="企业id"},
+     *         {"name"="pass", "dataType"="string", "required"=true, "description"="-1不通过，1已通过"},
+     *         {"name"="un_pass_reason", "dataType"="string", "required"=false, "description"="不通过原因"}
+     *     },
+     *     headers={
+     *         {
+     *             "name"="extra",
+     *             "default"="{""token"":""iamsuperman:15828516285""}"
+     *         }
+     *     },
+     *     statusCodes={
+     *         1003="缺少参数",
+     *         2007="企业不存在",
+     *         2008="没有finding",
+     *         407="无权限",
+     *     }
+     * )
+     *
+     * @Route("/enterprise/set_finding_pass")
+     * @Method("POST")
+     * @param JsonRequest $request
+     * @return ApiJsonResponse
+     */
+    public function setEnterpriseFindingPassAction(JsonRequest $request)
+    {
+        $data = $request->getData();
+        //check notnull data fields
+//        print_r($data);exit;
+        if (empty($data['id']) || empty($data['pass'])) {
+            return new ApiJsonResponse(1003, 'need id and pass');
+        }
+
+        /**
+         * @var Enterprise $enterprise
+         */
+        $enterprise = $this->getDoctrine()->getRepository('AppBundle:Enterprise')->find($data['id']);
+        if (empty($enterprise) || !$enterprise instanceof Enterprise) {
+            return new ApiJsonResponse(2007, 'enterprise not exist');
+        }
+
+        $finding = $enterprise->getFinding();
+        if (empty($finding)) {
+            return new ApiJsonResponse(2007, 'finding not exist');
+        }
+        if ($data['pass'] == '-1') {
+            $finding->setProgress($finding->getProgress() - 1);
+            if (empty($data['un_pass_reason'])) {
+                return new ApiJsonResponse(1003, 'need unpass reason');
+            }
+            $finding->setProgress($this->getUser()->getTrueName() . ' : ' . $data['un_pass_reason'] . " " . (new DateTime())->format('Y-m-d H:i:s') . "\n");
+
+        } elseif ($data['pass'] == '1') {
+            $finding->setProgress($finding->getProgress() + 1);
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($finding);
+        $em->flush();
+        return new ApiJsonResponse(0, 'set pass success', $finding->toArray());
+    }
+
+    /**
+     *
+     * 设置调查结果是否可以通过
+     * @ApiDoc(
+     *     section="企业",
+     *     description="删除采集结果",
+     *     parameters={
+     *         {"name"="id", "dataType"="integer", "required"=true, "description"="企业id"}
+     *     },
+     *     headers={
+     *         {
+     *             "name"="extra",
+     *             "default"="{""token"":""iamsuperman:15828516285""}"
+     *         }
+     *     },
+     *     statusCodes={
+     *         1003="缺少参数",
+     *         2007="企业不存在",
+     *         2008="没有finding",
+     *         407="无权限",
+     *     }
+     * )
+     *
+     * @Route("/enterprise/del_finding")
+     * @Method("POST")
+     * @param JsonRequest $request
+     * @return ApiJsonResponse
+     */
+    public function delEnterpriseFindingAction(JsonRequest $request)
+    {
+        $data = $request->getData();
+        //check notnull data fields
+//        print_r($data);exit;
+        if (empty($data['id'])) {
+            return new ApiJsonResponse(1003, 'need id');
+        }
+
+        /**
+         * @var Enterprise $enterprise
+         * @var Finding $finding
+         */
+        $enterprise = $this->getDoctrine()->getRepository('AppBundle:Enterprise')->find($data['id']);
+        if (empty($enterprise) || !$enterprise instanceof Enterprise) {
+            return new ApiJsonResponse(2007, 'enterprise not exist');
+        }
+
+        $finding = $this->getDoctrine()->getRepository('AppBundle:Finding')->findOneByEnterprise($enterprise);
+        if (empty($finding)) {
+            return new ApiJsonResponse(2007, 'finding not exist');
+        }
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($finding);
+        $em->flush();
+        return new ApiJsonResponse(0, 'del success');
     }
 }
