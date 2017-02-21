@@ -34,6 +34,7 @@ class EnterpriseController extends Controller
      *         {"name"="state", "dataType"="integer", "required"=false, "description"="状态"},
      *         {"name"="only_mine", "dataType"="integer", "required"=false, "description"="只列出我的企业,0,1"},
      *         {"name"="only_my_finding", "dataType"="integer", "required"=false, "description"="列出与我的采集相关的企业"},
+     *         {"name"="only_loan_ready", "dataType"="integer", "required"=false, "description"="只列出可以计算贷款辅助信息的企业"},
      *         {"name"="in_black_list", "dataType"="boolean", "required"=false, "description"="是否在黑名单"},
      *     },
      *     headers={
