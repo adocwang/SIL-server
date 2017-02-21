@@ -35,17 +35,21 @@ class EnterpriseRepository extends \Doctrine\ORM\EntityRepository
             $queryBuilder->andWhere('a.bank = :bank');
             $queryBuilder->setParameter('bank', $condition['bank']);
         }
-        if (!empty($condition['only_role_a']) && $condition['only_role_a'] == 1) {
-            $queryBuilder->andWhere('a.roleA = :now_user');
+        if (!empty($condition['my_finding']) && $condition['my_finding'] == 1) {
+            $queryBuilder->leftJoin('a.finding', 'f', 'WITH');
+            $queryBuilder->andWhere('a.roleA = :now_user OR (a.roleB = :now_user AND f.progress = 0)');
             $queryBuilder->setParameter('now_user', $condition['now_user']);
+        } elseif (!empty($condition['my_bank_finding']) && $condition['my_bank_finding'] == 1) {
+            $queryBuilder->leftJoin('a.finding', 'f', 'WITH');
+            $queryBuilder->andWhere('f.progress = 1');
         } elseif (!empty($condition['only_user']) && $condition['only_user'] instanceof User) {
             $queryBuilder->andWhere('a.roleA = :only_user or a.roleB = :now_user');
             $queryBuilder->setParameter('now_user', $condition['now_user']);
         }
         if (!empty($condition['role_a_disable'])) {
             if ($condition['role_a_disable'] == 1) {
-                $queryBuilder->leftJoin('a.roleA', 'r', 'WITH', 'r.state IN ('. State::STATE_UN_ACTIVE .','.State::STATE_FREEZED.','.State::STATE_DELETED.')');
-                $queryBuilder->andWhere('r.state IN ('.State::STATE_UN_ACTIVE.','.State::STATE_FREEZED.','.State::STATE_DELETED.')');
+                $queryBuilder->leftJoin('a.roleA', 'r', 'WITH', 'r.state IN (' . State::STATE_UN_ACTIVE . ',' . State::STATE_FREEZED . ',' . State::STATE_DELETED . ')');
+                $queryBuilder->andWhere('r.state IN (' . State::STATE_UN_ACTIVE . ',' . State::STATE_FREEZED . ',' . State::STATE_DELETED . ')');
             }
         }
         $query = $queryBuilder->orderBy('a.id', 'DESC')->getQuery();

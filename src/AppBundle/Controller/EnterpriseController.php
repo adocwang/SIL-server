@@ -31,7 +31,7 @@ class EnterpriseController extends Controller
      *         {"name"="role_a_disable", "dataType"="boolean", "required"=false, "description"="roleA是否不可用：1，0"},
      *         {"name"="state", "dataType"="integer", "required"=false, "description"="状态"},
      *         {"name"="only_mine", "dataType"="integer", "required"=false, "description"="只列出我的企业,0,1"},
-     *         {"name"="only_role_a", "dataType"="integer", "required"=false, "description"="只列出我是role a的企业,0,1"},
+     *         {"name"="only_my_finding", "dataType"="integer", "required"=false, "description"="列出与我的采集相关的企业"},
      *         {"name"="in_black_list", "dataType"="boolean", "required"=false, "description"="是否在黑名单"},
      *     },
      *     headers={
@@ -79,6 +79,15 @@ class EnterpriseController extends Controller
         }
         $data['now_user'] = $nowUser;
 
+        if (!empty($data['only_my_finding']) && $data['only_my_finding'] == 1) {
+            if ($this->getUser()->getRole()->isRole(Role::ROLE_PRESIDENT)) {
+                $data['my_bank_finding'] = 1;
+                $data['bank'] = $nowUser->getBank();
+            } else {
+                $data['my_finding'] = 1;
+            }
+        }
+
         if (!empty($data['only_mine']) && $data['only_mine'] == 1) {
             if ($this->getUser()->getRole()->isRole(Role::ROLE_CUSTOMER_MANAGER)) {
                 $data['only_user'] = 1;
@@ -99,7 +108,18 @@ class EnterpriseController extends Controller
         $pageData = $this->getDoctrine()->getRepository('AppBundle:Enterprise')->listPage($data['page'], $pageLimit, $data);
         $enterprises = [];
         foreach ($pageData['data'] as $enterprise) {
-            $enterprises[] = $enterprise->toArray();
+            $enterpriseArr = $enterprise->toArray();
+            $finding = $enterprise->getFinding();
+            $enterpriseArr['finding'] = [];
+            if (!empty($finding)) {
+                $enterpriseArr['finding'] = [
+                    'id' => $finding->getId(),
+                    'state' => $finding->getState(),
+                    'created' => $finding->getCreated()->format('Y-m-d H:i:s'),
+                    'modified' => $finding->getModified()->format('Y-m-d H:i:s')
+                ];
+            }
+            $enterprises[] = $enterpriseArr;
         }
         return new ApiJsonResponse(0, 'ok', [
             'count' => $pageData['count'],
@@ -150,8 +170,8 @@ class EnterpriseController extends Controller
             return new ApiJsonResponse(2007, 'enterprise not exists');
         }
         $enterpriseResult = $enterprise->toArray();
-        $enterpriseResult['link_map']='http://apph5.qixin.com/new-network/'.$enterprise->getQixinId().'.html?eid='.$enterprise->getQixinId().'&serviceType=c&version=3.6.1&client_type=ios&from=app';
-        $enterpriseResult['relation_map']='http://apph5.qixin.com/new-relation/'.$enterprise->getQixinId().'.html?eid='.$enterprise->getQixinId().'&serviceType=c&version=3.6.1&client_type=ios&from=app';
+        $enterpriseResult['link_map'] = 'http://apph5.qixin.com/new-network/' . $enterprise->getQixinId() . '.html?eid=' . $enterprise->getQixinId() . '&serviceType=c&version=3.6.1&client_type=ios&from=app';
+        $enterpriseResult['relation_map'] = 'http://apph5.qixin.com/new-relation/' . $enterprise->getQixinId() . '.html?eid=' . $enterprise->getQixinId() . '&serviceType=c&version=3.6.1&client_type=ios&from=app';
         if (!empty($enterprise->getDetailObjId())) {
             $enterpriseMongoRepository = $this->get('doctrine_mongodb')->getManager()->getRepository('AppBundle:EnterpriseDetail');
             $enterpriseDetail = $enterpriseMongoRepository->find($enterprise->getDetailObjId());

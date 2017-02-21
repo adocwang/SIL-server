@@ -37,6 +37,14 @@ class Finding
      */
     private $data;
 
+    /**
+     * 未通过原因
+     * @var string
+     *
+     * @ORM\Column(type="text")
+     */
+    private $unPassReason='';
+
 
     /**
      * 1：正常，2：已冻结，3：已删除
@@ -53,6 +61,15 @@ class Finding
      * @ORM\Column(type="datetime")
      */
     private $created;
+
+
+    /**
+     * 0:已受理，1：协理已通过，2：行长已通过, 3:审核不通过
+     * @var integer
+     *
+     * @ORM\Column(type="integer")
+     */
+    private $progress = 0;
 
     /**
      * @var \DateTime $modified
@@ -201,5 +218,54 @@ class Finding
     public function getEnterprise()
     {
         return $this->enterprise;
+    }
+
+    /**
+     * Set progress
+     *
+     * @param integer $progress
+     *
+     * @return Finding
+     */
+    public function setProgress($progress)
+    {
+        $this->progress = $progress;
+
+        return $this;
+    }
+
+    /**
+     * Get progress
+     *
+     * @return integer
+     */
+    public function getProgress()
+    {
+        return $this->progress;
+    }
+
+
+    /**
+     * Set unPassReason
+     *
+     * @param string $unPassReason
+     *
+     * @return Finding
+     */
+    public function setUnPassReason($unPassReason)
+    {
+        $this->unPassReason = $unPassReason;
+
+        return $this;
+    }
+
+    /**
+     * Get unPassReason
+     *
+     * @return string
+     */
+    public function getUnPassReason()
+    {
+        return $this->unPassReason;
     }
 }
