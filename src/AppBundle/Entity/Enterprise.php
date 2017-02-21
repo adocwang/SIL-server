@@ -50,6 +50,11 @@ class Enterprise
     /**
      * @ORM\Column(type="string", length=63, nullable=false)
      */
+    private $qixinId;
+
+    /**
+     * @ORM\Column(type="string", length=63, nullable=false)
+     */
     private $detailObjId;
 
     /**
@@ -519,5 +524,29 @@ class Enterprise
     public function getBlockReason()
     {
         return $this->blockReason;
+    }
+
+    /**
+     * Set qixinId
+     *
+     * @param string $qixinId
+     *
+     * @return Enterprise
+     */
+    public function setQixinId($qixinId)
+    {
+        $this->qixinId = $qixinId;
+
+        return $this;
+    }
+
+    /**
+     * Get qixinId
+     *
+     * @return string
+     */
+    public function getQixinId()
+    {
+        return $this->qixinId;
     }
 }

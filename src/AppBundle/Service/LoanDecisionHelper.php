@@ -13,6 +13,7 @@ use AppBundle\Constant\EnterpriseChineseKey;
 use AppBundle\Document\EnterpriseDetail;
 use AppBundle\Entity\ClientConfig;
 use AppBundle\Entity\Enterprise;
+use AppBundle\Entity\Finding;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\ORM\EntityManager;
 
@@ -38,7 +39,9 @@ class LoanDecisionHelper
             return $this->buildEmptyDataForm();
         }
         $configTemplate = $this->getConfigTemplate();
-        $values = $this->findValuesInDetail($configTemplate, $enterprise->getDetailObjId());
+        $values1 = $this->findValuesInDetail($configTemplate, $enterprise->getDetailObjId());
+        $values2 = $this->findValuesInFinding($configTemplate, $enterprise);
+        $values = array_merge($values1, $values2);
 
         if (!empty($data)) {
             foreach ($configTemplate as $field) {
@@ -101,6 +104,41 @@ class LoanDecisionHelper
             $values[($field['title'])] = $this->findDetailValue($field['title'], $detail);
         }
         return $values;
+    }
+
+    protected function findValuesInFinding($configTemplate, $enterprise)
+    {
+        /**
+         * @var $enterpriseFinding Finding
+         */
+        $enterpriseFinding = $this->mm->getRepository('AppBundle:Finding')->findOneByEnterprise($enterprise);
+        if (empty($enterpriseFinding) || empty($enterpriseFinding->getData())) {
+            return [];
+        }
+        $findingData = json_decode($enterpriseFinding->getData(), true);
+
+        $values = [];
+        foreach ($configTemplate as $field) {
+            $value = $this->findDetailValue($field['title'], $findingData);
+            if (!empty($value))
+                $values[($field['title'])] = $value;
+        }
+        return $values;
+    }
+
+    public function findInFindingValue($fieldName, $findingData)
+    {
+        foreach ($findingData['submitData'] as $project) {
+            foreach ($project['content'] as $content) {
+                if (trim($content['title']) == trim($fieldName)) {
+                    if (is_array($content['value'])) {
+                        $content['value'] = join(' ', $content['value']);
+                    }
+                    return $content['value'];
+                }
+            }
+        }
+        return null;
     }
 
     private function buildEmptyDataForm()

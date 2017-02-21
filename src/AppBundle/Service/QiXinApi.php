@@ -32,7 +32,7 @@ class QiXinApi
         /**
          * @var \GuzzleHttp\Client $qixinApi
          */
-        $url = 'enterprise/getDetailAndContactByName?appkey=' . $this->appKey . '&keyword=' . urlencode($companyName);
+        $url = 'enterprise/getDetailAndContactById?appkey=ada44bd0070711e6b8a865678b483fde' . $this->appKey . '&keyword=' . urlencode($companyName);
         $options = ['connect_timeout' => 5, 'timeout' => 5];
         $response = $this->client->get($url, $options);
         $json = $response->getBody()->getContents();
@@ -43,7 +43,28 @@ class QiXinApi
         return [];
     }
 
-    public function getChildCompany($vcCompanyName){
+    /**
+     * @param $companyName string
+     * @return array|null
+     */
+    public function getGongShangInfoById($qixinId)
+    {
+        /**
+         * @var \GuzzleHttp\Client $qixinApi
+         */
+        $url = 'enterprise/getDetailAndContactById?appkey=ada44bd0070711e6b8a865678b483fde&id=' . $qixinId;
+        $options = ['connect_timeout' => 5, 'timeout' => 5];
+        $response = $this->client->get($url, $options);
+        $json = $response->getBody()->getContents();
+        $arr = json_decode($json, true);
+        if (!empty($arr)) {
+            return $arr['data'];
+        }
+        return [];
+    }
+
+    public function getChildCompany($vcCompanyName)
+    {
         /**
          * @var \GuzzleHttp\Client $qixinApi
          */

@@ -78,11 +78,12 @@ class SyncVCCompanyCommand extends ContainerAwareCommand
 //            print_r($enterprisesArr);exit;
             if (!empty($enterprisesArr)) {
                 foreach ($enterprisesArr as $enterpriseArr) {
-                    if ($enterpriseRepository->findOneByName($enterpriseArr['name'])) {
-                        continue;
+                    $enterprise = $enterpriseRepository->findOneByName($enterpriseArr['name']);
+                    if (empty($enterprise)) {
+                        $enterprise = new Enterprise();
                     }
-                    $enterprise = new Enterprise();
                     $enterprise->setName($enterpriseArr['name']);
+                    $enterprise->setQixinId($enterpriseArr['id']);
                     $enterprise->setStart(new \DateTime($enterpriseArr['start_date']));
                     $enterprise->setLegalMan($enterpriseArr['oper_name']);
                     $em->persist($enterprise);
