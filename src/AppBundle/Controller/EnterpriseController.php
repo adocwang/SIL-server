@@ -150,6 +150,8 @@ class EnterpriseController extends Controller
             return new ApiJsonResponse(2007, 'enterprise not exists');
         }
         $enterpriseResult = $enterprise->toArray();
+        $enterpriseResult['link_map']='http://apph5.qixin.com/new-network/'.$enterprise->getQixinId().'.html?eid='.$enterprise->getQixinId().'&serviceType=c&version=3.6.1&client_type=ios&from=app';
+        $enterpriseResult['relation_map']='http://apph5.qixin.com/new-relation/'.$enterprise->getQixinId().'.html?eid='.$enterprise->getQixinId().'&serviceType=c&version=3.6.1&client_type=ios&from=app';
         if (!empty($enterprise->getDetailObjId())) {
             $enterpriseMongoRepository = $this->get('doctrine_mongodb')->getManager()->getRepository('AppBundle:EnterpriseDetail');
             $enterpriseDetail = $enterpriseMongoRepository->find($enterprise->getDetailObjId());
@@ -157,7 +159,6 @@ class EnterpriseController extends Controller
         } else {
             $enterpriseResult['detail'] = new \stdClass();
         }
-
         $enterpriseResult['loan'] = new \stdClass();
         $loanRepository = $this->getDoctrine()->getRepository('AppBundle:Loan');
         $loans = $loanRepository->findBy(['enterprise' => $enterprise], ['id' => 'DESC'], 1);
