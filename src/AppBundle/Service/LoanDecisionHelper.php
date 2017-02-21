@@ -111,7 +111,7 @@ class LoanDecisionHelper
         /**
          * @var $enterpriseFinding Finding
          */
-        $enterpriseFinding = $this->mm->getRepository('AppBundle:Finding')->findOneByEnterprise($enterprise);
+        $enterpriseFinding = $this->em->getRepository('AppBundle:Finding')->findOneByEnterprise($enterprise);
         if (empty($enterpriseFinding) || empty($enterpriseFinding->getData())) {
             return [];
         }
@@ -119,7 +119,7 @@ class LoanDecisionHelper
 
         $values = [];
         foreach ($configTemplate as $field) {
-            $value = $this->findDetailValue($field['title'], $findingData);
+            $value = $this->findInFindingValue($field['title'], $findingData);
             if (!empty($value))
                 $values[($field['title'])] = $value;
         }
