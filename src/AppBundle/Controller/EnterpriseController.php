@@ -114,7 +114,7 @@ class EnterpriseController extends Controller
             if (!empty($finding)) {
                 $enterpriseArr['finding'] = [
                     'id' => $finding->getId(),
-                    'state' => $finding->getState(),
+                    'progress' => $finding->getProgress(),
                     'created' => $finding->getCreated()->format('Y-m-d H:i:s'),
                     'modified' => $finding->getModified()->format('Y-m-d H:i:s')
                 ];
