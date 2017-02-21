@@ -139,6 +139,7 @@ class Enterprise
             'role_b' => $this->getRoleB() ? $this->getRoleB()->getOtherArr() : null,
             'state' => $this->getState(),
             'block_reason' => $this->getBlockReason(),
+            'qixin_id' => $this->getQixinId()
         ];
     }
 
