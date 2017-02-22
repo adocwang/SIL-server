@@ -12,6 +12,7 @@ namespace AppBundle\Service;
 use AppBundle\Entity\Message;
 use AppBundle\Entity\User;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 class MessageSender
@@ -73,9 +74,17 @@ class MessageSender
         $this->em->persist($message);
         $this->em->flush();
         if (strcmp($toUser->getPlatform(), 'ios') === 0) {
-            PushService::pushIos($title, $type, $toUser->getPhone());
+            try {
+                PushService::pushIos($title, $type, $toUser->getPhone());
+            } catch (Exception $e) {
+                return false;
+            }
         } else {
-            PushService::pushAndroid($title, $content, $type, [$toUser->getPhone()]);
+            try {
+                PushService::pushAndroid($title, $content, $type, [$toUser->getPhone()]);
+            } catch (Exception $e) {
+                return false;
+            }
         }
         return true;
     }
