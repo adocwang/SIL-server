@@ -10,6 +10,7 @@ namespace AppBundle\Service;
 
 
 use JPush\Client as JPushClient;
+use JPush\Exceptions\APIRequestException;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use xmpush\Builder as MiPushBuilder;
 use xmpush\Constants as MiPushConstants;
@@ -40,7 +41,7 @@ class PushService
         ]);
         try {
             $res = $push->send();
-        }catch (Exception $e){
+        }catch (APIRequestException $e){
             return false;
         }
         if ($res['body']['msg_id']) {
