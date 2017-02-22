@@ -82,8 +82,8 @@ class ExportController extends Controller
          * @var ExcelIOService $excelIO
          */
         $excelIO = $this->get('app.excel_io');
-        $name = '银行导入模板';
-        $header = ['银行名称', '上级银行名称'];
+        $name = '机构导入模板';
+        $header = ['机构名称', '上级机构名称', '机构地址', '联系电话'];
         $excelWriter = $excelIO->exportExcel($name, [$header]);
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $name . '.xlsx"');

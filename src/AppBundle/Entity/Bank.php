@@ -40,6 +40,13 @@ class Bank
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
+    private $telephone;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
     private $coordinates;
 
     /**
@@ -134,6 +141,7 @@ class Bank
             'id' => $this->getId(),
             'name' => $this->getName(),
             'address' => $this->getAddress(),
+            'telephone' => $this->getTelephone(),
             'coordinates' => $this->getCoordinates(),
             'state' => $this->getState(),
             'subordinate' => $subordinate,
@@ -265,5 +273,29 @@ class Bank
     public function getCoordinates()
     {
         return $this->coordinates;
+    }
+
+    /**
+     * Set telephone
+     *
+     * @param string $telephone
+     *
+     * @return Bank
+     */
+    public function setTelephone($telephone)
+    {
+        $this->telephone = $telephone;
+
+        return $this;
+    }
+
+    /**
+     * Get telephone
+     *
+     * @return string
+     */
+    public function getTelephone()
+    {
+        return $this->telephone;
     }
 }
