@@ -7,6 +7,7 @@ use AppBundle\Entity\Role;
 use AppBundle\Entity\Bank;
 use AppBundle\Entity\User;
 use AppBundle\JsonRequest;
+use Doctrine\ORM\QueryBuilder;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -21,6 +22,8 @@ class BankController extends Controller
      *     section="银行",
      *     description="获取银行列表",
      *     parameters={
+     *         {"name"="name", "dataType"="string", "required"=true, "description"="名称"},
+     *         {"name"="state", "dataType"="string", "required"=true, "description"="状态"},
      *     },
      *     headers={
      *         {
@@ -34,21 +37,36 @@ class BankController extends Controller
      * )
      *
      * @Route("/bank/list")
-     * @Method("GET")
+     * @Method("POST")
+     * @param JsonRequest $request
      * @return ApiJsonResponse
      */
-    public function list()
+    public function list(JsonRequest $request)
     {
         /**
          * @var User $nowUser
          */
+        $data = $request->getData();
         $nowUser = $this->getUser();
-        if ($this->getUser()->getRole()->isRole(Role::ROLE_ADMIN)) {
-            $banks = $this->getDoctrine()->getRepository('AppBundle:Bank')->findAll();
-        } else {
-            $banks = $this->getDoctrine()->getRepository('AppBundle:Bank')->findBy(['superior' => $nowUser->getBank()]);
-            $banks[] = $nowUser->getBank();
+        /**
+         * @var QueryBuilder $queryBuilder
+         */
+        $queryBuilder = $this->getDoctrine()->getManager()->createQueryBuilder()
+            ->select('a')
+            ->from('AppBundle:Bank', 'a');
+        if (!empty($data['name'])) {
+            $queryBuilder->andWhere('a.name like :name');
+            $queryBuilder->setParameter('name', '%' . $data['name'] . '%');
         }
+        if (!empty($data['state'])) {
+            $queryBuilder->andWhere('a.state = :state');
+            $queryBuilder->setParameter('state', $data['state']);
+        }
+        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN)) {
+            $queryBuilder->andWhere('a.superior = :superior');
+            $queryBuilder->setParameter('superior', $nowUser->getBank());
+        }
+        $banks = $queryBuilder->getQuery()->getResult();
         $bankList = [];
         foreach ($banks as $bank) {
             $bankList[] = $bank->toArrayNoSubordinate();

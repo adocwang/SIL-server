@@ -4,6 +4,7 @@ namespace AppBundle\Repository;
 
 use AppBundle\Constant\State;
 use AppBundle\Entity\User;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**

@@ -45,7 +45,7 @@ class LoadInitData extends AbstractFixture implements OrderedFixtureInterface, C
 
         //银行
         $bank = new Bank();
-        $bank->setName('总行');
+        $bank->setName('科技金融中心');
         $manager->persist($bank);
 
 
