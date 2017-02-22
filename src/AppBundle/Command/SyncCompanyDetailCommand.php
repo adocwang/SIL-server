@@ -69,7 +69,7 @@ class SyncCompanyDetailCommand extends ContainerAwareCommand
             $i = 0;
             do {
                 try {
-                    $detail = $qixinApi->getGongShangInfoById($enterprise->getQixinId());
+                    $detail = $qixinApi->getGongShangInfo($enterprise->getName());
                     break;
                 } catch (ConnectException $e) {
                     echo $e->getMessage();

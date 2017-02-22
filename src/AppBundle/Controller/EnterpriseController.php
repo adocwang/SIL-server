@@ -524,14 +524,21 @@ class EnterpriseController extends Controller
             return new ApiJsonResponse(2007, 'finding not exist');
         }
         if ($data['pass'] == '-1') {
-            $finding->setProgress($finding->getProgress() - 1);
+            $newProgress = 3;
+            $finding->setProgress($newProgress);
             if (empty($data['un_pass_reason'])) {
                 return new ApiJsonResponse(1003, 'need unpass reason');
             }
-            $finding->setProgress($this->getUser()->getTrueName() . ' : ' . $data['un_pass_reason'] . " " . (new DateTime())->format('Y-m-d H:i:s') . "\n");
-
+            $finding->setUnPassReason($this->getUser()->getTrueName() . '设置为未通过，原因：' . $data['un_pass_reason'] .
+                '，时间：' . (new \DateTime())->format('Y-m-d H:i:s') . "\n" . $finding->getUnPassReason());
         } elseif ($data['pass'] == '1') {
-            $finding->setProgress($finding->getProgress() + 1);
+            $newProgress = $finding->getProgress() + 1;
+            if ($newProgress > 2) {
+                $newProgress = 2;
+            }
+            $finding->setProgress($newProgress);
+            $finding->setUnPassReason($this->getUser()->getTrueName() . '设置为通过，时间：' .
+                (new \DateTime())->format('Y-m-d H:i:s') . "\n" . $finding->getUnPassReason());
         }
 
         $em = $this->getDoctrine()->getManager();
