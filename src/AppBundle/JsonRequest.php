@@ -29,6 +29,9 @@ class JsonRequest extends Request
             if (!empty($content)) {
                 $this->data = json_decode($content, true);
             }
+            if (empty($this->data)) {
+                $this->data = $this->query->all();
+            }
         }
         return $this->data;
     }

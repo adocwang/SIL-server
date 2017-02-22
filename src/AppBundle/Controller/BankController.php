@@ -37,7 +37,7 @@ class BankController extends Controller
      * )
      *
      * @Route("/bank/list")
-     * @Method("POST")
+     * @Method("POST|GET")
      * @param JsonRequest $request
      * @return ApiJsonResponse
      */
