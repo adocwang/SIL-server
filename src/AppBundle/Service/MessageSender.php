@@ -79,12 +79,14 @@ class MessageSender
             } catch (Exception $e) {
                 return false;
             }
-        } else {
+        } elseif (strcmp($toUser->getPlatform(), 'android') === 0) {
             try {
                 PushService::pushAndroid($title, $content, $type, [$toUser->getPhone()]);
             } catch (Exception $e) {
                 return false;
             }
+        } else {
+            return false;
         }
         return true;
     }
