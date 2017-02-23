@@ -28,6 +28,20 @@ class Blacklist
     private $name;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $source;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="text", length=65535, nullable=true)
+     */
+    private $note;
+
+    /**
      * @var integer
      *
      * @ORM\Column(type="integer")
@@ -99,5 +113,53 @@ class Blacklist
     public function getMatchCount()
     {
         return $this->matchCount;
+    }
+
+    /**
+     * Set note
+     *
+     * @param string $note
+     *
+     * @return Blacklist
+     */
+    public function setNote($note)
+    {
+        $this->note = $note;
+
+        return $this;
+    }
+
+    /**
+     * Get note
+     *
+     * @return string
+     */
+    public function getNote()
+    {
+        return $this->note;
+    }
+
+    /**
+     * Set source
+     *
+     * @param string $source
+     *
+     * @return Blacklist
+     */
+    public function setSource($source)
+    {
+        $this->source = $source;
+
+        return $this;
+    }
+
+    /**
+     * Get source
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return $this->source;
     }
 }

@@ -31,6 +31,7 @@ class Role implements RoleInterface
 
     private static $roleHierarchy = [
         'ROLE_PRESIDENT' => ['ROLE_BRANCH_PRESIDENT', 'ROLE_END_PRESIDENT', 'ROLE_END_PRESIDENT_WITH_CM'],
+        'ROLE_END_PRESIDENT' => ['ROLE_END_PRESIDENT', 'ROLE_END_PRESIDENT_WITH_CM'],
         'ROLE_CUSTOMER_MANAGER' => ['ROLE_CUSTOMER_MANAGER', 'ROLE_END_PRESIDENT_WITH_CM'],
     ];
 

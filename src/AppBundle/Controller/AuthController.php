@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\ApiJsonResponse;
 use AppBundle\Constant\State;
+use AppBundle\Entity\Role;
 use AppBundle\Entity\Sms;
 use AppBundle\Entity\User;
 use AppBundle\JsonRequest;
@@ -16,6 +17,33 @@ use Symfony\Component\Config\Definition\Exception\Exception;
 
 class AuthController extends Controller
 {
+    /**
+     * @ApiDoc(
+     *     section="身份认证",
+     *     description="角色列表",
+     *     parameters={
+     *     },
+     *     headers={
+     *         {
+     *             "name"="extra",
+     *             "default"="{""token"":""iamsuperman""}"
+     *         }
+     *     },
+     *     statusCodes={
+     *     }
+     * )
+     *
+     * @Route("/auth/role_list")
+     * @Method("GET")
+     * @param JsonRequest $request
+     * @return ApiJsonResponse
+     */
+    public function getRoleListAction(JsonRequest $request)
+    {
+        $roleList = Role::getRoleList();
+        return new ApiJsonResponse(0, 'send success', $roleList);
+    }
+
     /**
      * @ApiDoc(
      *     section="身份认证",

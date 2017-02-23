@@ -86,6 +86,7 @@ class SyncVCCompanyCommand extends ContainerAwareCommand
                     $enterprise->setQixinId($enterpriseArr['id']);
                     $enterprise->setStart(new \DateTime($enterpriseArr['start_date']));
                     $enterprise->setLegalMan($enterpriseArr['oper_name']);
+                    $enterprise->setState(0);
                     $em->persist($enterprise);
                     $em->flush();
                 }

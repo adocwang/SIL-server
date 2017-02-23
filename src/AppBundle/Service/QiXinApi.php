@@ -32,7 +32,8 @@ class QiXinApi
         /**
          * @var \GuzzleHttp\Client $qixinApi
          */
-        $url = 'enterprise/getDetailAndContactById?appkey=ada44bd0070711e6b8a865678b483fde' . $this->appKey . '&keyword=' . urlencode($companyName);
+//        $url = 'enterprise/getDetailAndContactById?appkey=ada44bd0070711e6b8a865678b483fde' . $this->appKey . '&keyword=' . urlencode($companyName);
+        $url = 'enterprise/getDetailByName?appkey=ada44bd0070711e6b8a865678b483fde' . $this->appKey . '&keyword=' . urlencode($companyName);
         $options = ['connect_timeout' => 5, 'timeout' => 5];
         $response = $this->client->get($url, $options);
         $json = $response->getBody()->getContents();

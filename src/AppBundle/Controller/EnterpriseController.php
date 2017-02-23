@@ -35,7 +35,6 @@ class EnterpriseController extends Controller
      *         {"name"="only_mine", "dataType"="integer", "required"=false, "description"="只列出我的企业,0,1"},
      *         {"name"="only_my_finding", "dataType"="integer", "required"=false, "description"="列出与我的采集相关的企业"},
      *         {"name"="only_loan_ready", "dataType"="integer", "required"=false, "description"="只列出可以计算贷款辅助信息的企业"},
-     *         {"name"="in_black_list", "dataType"="boolean", "required"=false, "description"="是否在黑名单"},
      *     },
      *     headers={
      *         {
@@ -78,7 +77,6 @@ class EnterpriseController extends Controller
             //单用户不是管理员的时候
 //            $data['bank'] = $nowUser->getBank();
             $data['state'] = State::STATE_NORMAL;//只拉得到正常状态的企业
-            $data['in_black_list'] = 0;//只拉得到不在黑名单的企业
         }
         $data['now_user'] = $nowUser;
 
@@ -206,7 +204,6 @@ class EnterpriseController extends Controller
      *         {"name"="role_a_id", "dataType"="integer", "required"=false, "description"="A角user_id"},
      *         {"name"="role_b_id", "dataType"="integer", "required"=false, "description"="B角user_id"},
      *         {"name"="state", "dataType"="integer", "required"=false, "description"="企业状态"},
-     *         {"name"="in_black_list", "dataType"="integer", "required"=false, "description"="是否在黑名单，0否，1是"},
      *     },
      *     headers={
      *         {
@@ -335,14 +332,60 @@ class EnterpriseController extends Controller
             $enterprise->setState($data['state']);
         }
 
-        if (!empty($data['in_black_list'])) {
-            $enterprise->setInBlackList($data['in_black_list']);
-        }
-
         $em = $this->getDoctrine()->getManager();
         $em->persist($enterprise);
         $em->flush();
         return new ApiJsonResponse(0, 'update success', $enterprise->toArray());
+    }
+
+    /**
+     *
+     * @ApiDoc(
+     *     section="企业",
+     *     description="添加企业",
+     *     parameters={
+     *         {"name"="name", "dataType"="integer", "required"=true, "description"="名称"}
+     *     },
+     *     headers={
+     *         {
+     *             "name"="extra",
+     *             "default"="{""token"":""iamsuperman:15828516285""}"
+     *         }
+     *     },
+     *     statusCodes={
+     *         1003="缺少参数",
+     *         2007="银行不存在",
+     *         407="无权限",
+     *     }
+     * )
+     *
+     * @Route("/enterprise/add")
+     * @Method("POST")
+     * @param JsonRequest $request
+     * @return ApiJsonResponse
+     */
+    public function addEnterpriseAction(JsonRequest $request)
+    {
+        $data = $request->getData();
+        //check notnull data fields
+//        print_r($data);exit;
+        if (empty($data['name'])) {
+            return new ApiJsonResponse(1003, 'need name');
+        }
+
+        $enterprise = $this->getDoctrine()->getRepository('AppBundle:Enterprise')->findOneByName($data['name']);
+        if (!empty($enterprise)) {
+            return new ApiJsonResponse(2007, 'enterprise name exist');
+        }
+        $enterprise = new Enterprise();
+        $enterprise->setName($data['name']);
+        $enterprise->setBank($this->getUser()->getBank());
+        $enterprise->setState(0);
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($enterprise);
+        $em->flush();
+        return new ApiJsonResponse(0, 'add success', $enterprise->toArray());
     }
 
     /**
@@ -353,7 +396,7 @@ class EnterpriseController extends Controller
      *     description="接受与拒绝企业分配",
      *     parameters={
      *         {"name"="id", "dataType"="integer", "required"=true, "description"="企业id"},
-     *         {"name"="accept", "dataType"="integer", "required"=true, "description"="是否接受:-1不接受，1接受"},
+     *         {"name"="accept", "dataType"="integer", "required"=true, "description"="是否接受:-1不接受，1接受"}
      *     },
      *     headers={
      *         {

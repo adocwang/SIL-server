@@ -88,11 +88,13 @@ class SyncCompanyDetailCommand extends ContainerAwareCommand
                     $mm->persist($enterpriseDetail);
                     $mm->flush();
                 }
+                $enterprise->setQixinId($detail['id']);
                 $enterprise->setDetailObjId($enterpriseDetail->getId());
                 $enterprise->setStart(new \DateTime($detail['start_date']));
                 $enterprise->setLegalMan($detail['oper_name']);
                 $enterprise->setAddress($detail['address']);
                 $enterprise->setRegistCapi($detail['regist_capi']);
+                $enterprise->setState(1);
             } else {
                 $enterprise->setDetailObjId("");
             }

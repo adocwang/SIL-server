@@ -86,7 +86,9 @@ class BlackListController extends Controller
      *     section="企业黑名单",
      *     description="添加黑名单",
      *     parameters={
-     *         {"name"="name", "dataType"="integer", "required"=false, "description"="黑名单项目"},
+     *         {"name"="name", "dataType"="integer", "required"=true, "description"="黑名单项目"},
+     *         {"name"="source", "dataType"="integer", "required"=false, "description"="来源"},
+     *         {"name"="note", "dataType"="integer", "required"=false, "description"="备注"},
      *     },
      *     headers={
      *         {
@@ -120,6 +122,8 @@ class BlackListController extends Controller
 
         $blackItem = new Blacklist();
         $blackItem->setName($data['name']);
+        $blackItem->setSource($data['source']);
+        $blackItem->setNote($data['note']);
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($blackItem);

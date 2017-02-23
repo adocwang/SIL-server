@@ -169,7 +169,8 @@ class UserController extends Controller
      *     parameters={
      *         {"name"="true_name", "dataType"="string", "required"=true, "description"="真实姓名"},
      *         {"name"="phone", "dataType"="string", "required"=true, "description"="手机号码"},
-     *         {"name"="role", "dataType"="string", "required"=true, "description"="角色"}
+     *         {"name"="role", "dataType"="string", "required"=true, "description"="角色"},
+     *         {"name"="bank_id", "dataType"="string", "required"=false, "description"="银行id"}
      *     },
      *     headers={
      *         {
@@ -179,6 +180,7 @@ class UserController extends Controller
      *     },
      *     statusCodes={
      *         1003="缺少参数",
+     *         2006="bank不存在",
      *         2009="role不存在",
      *         2008="手机号码已存在",
      *         407="无权限",
@@ -200,7 +202,7 @@ class UserController extends Controller
         }
 
         if ($this->getDoctrine()->getRepository('AppBundle:User')->findOneByPhone($data['phone'])) {
-            return new ApiJsonResponse(2008, '手机号码已存在');
+            return new ApiJsonResponse(2008, 'phone already exists');
         }
 
         $targetUser = new User();
@@ -211,7 +213,14 @@ class UserController extends Controller
 
 
         if (empty($role)) {
-            return new ApiJsonResponse(2009, '角色不存在');
+            return new ApiJsonResponse(2009, 'role not exist');
+        }
+        if (!empty($data['bank_id'])) {
+            $bank = $this->getDoctrine()->getRepository('AppBundle:Bank')->find($data['bank_id']);
+            if (empty($bank)) {
+                return new ApiJsonResponse(1003, 'bank not exist');
+            }
+            $targetUser->setBank($bank);
         }
         $targetUser->setRole($role);
 

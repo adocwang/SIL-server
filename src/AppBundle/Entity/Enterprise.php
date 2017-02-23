@@ -48,12 +48,12 @@ class Enterprise
     private $registCapi;
 
     /**
-     * @ORM\Column(type="string", length=63, nullable=false)
+     * @ORM\Column(type="string", length=63, nullable=true)
      */
     private $qixinId;
 
     /**
-     * @ORM\Column(type="string", length=63, nullable=false)
+     * @ORM\Column(type="string", length=63, nullable=true)
      */
     private $detailObjId;
 
