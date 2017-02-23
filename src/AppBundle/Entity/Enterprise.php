@@ -98,6 +98,14 @@ class Enterprise
     protected $state = 1;
 
     /**
+     * 1：待分配，2：已分配（待认领），3：已认领
+     *
+     * @ORM\Column(type="integer", nullable=false,options={"default":1})
+     */
+    protected $distributeState = 1;
+
+
+    /**
      * Many Enterprises in one Bank.
      * @ORM\ManyToOne(targetEntity="Bank")
      * @ORM\JoinColumn(name="bank_id", referencedColumnName="id")
@@ -138,6 +146,7 @@ class Enterprise
             'role_a' => $this->getRoleA() ? $this->getRoleA()->getOtherArr() : null,
             'role_b' => $this->getRoleB() ? $this->getRoleB()->getOtherArr() : null,
             'state' => $this->getState(),
+            'distribute_state' => $this->getDistributeState(),
             'block_reason' => $this->getBlockReason(),
             'qixin_id' => $this->getQixinId()
         ];
@@ -549,5 +558,29 @@ class Enterprise
     public function getQixinId()
     {
         return $this->qixinId;
+    }
+
+    /**
+     * Set distributeState
+     *
+     * @param integer $distributeState
+     *
+     * @return Enterprise
+     */
+    public function setDistributeState($distributeState)
+    {
+        $this->distributeState = $distributeState;
+
+        return $this;
+    }
+
+    /**
+     * Get distributeState
+     *
+     * @return integer
+     */
+    public function getDistributeState()
+    {
+        return $this->distributeState;
     }
 }

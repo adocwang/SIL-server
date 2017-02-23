@@ -14,22 +14,36 @@ class Role implements RoleInterface
 {
     const ROLE_ADMIN = 'ROLE_ADMIN';
     const ROLE_BRANCH_PRESIDENT = 'ROLE_BRANCH_PRESIDENT';
+    const ROLE_CHANNEL_MANAGER = 'ROLE_CHANNEL_MANAGER';
     const ROLE_END_PRESIDENT = 'ROLE_END_PRESIDENT';
+    const ROLE_END_PRESIDENT_WITH_CM = 'ROLE_END_PRESIDENT_WITH_CM';
     const ROLE_CUSTOMER_MANAGER = 'ROLE_CUSTOMER_MANAGER';
     const ROLE_PRESIDENT = 'ROLE_PRESIDENT';
 
     public static $roleName = [
         'ROLE_ADMIN' => '管理员',
         'ROLE_BRANCH_PRESIDENT' => '分行行长',
+        'ROLE_CHANNEL_MANAGER' => '渠道管理员',
         'ROLE_END_PRESIDENT' => '支行行长',
+        'ROLE_END_PRESIDENT_WITH_CM' => '支行行长兼客户经理',
         'ROLE_CUSTOMER_MANAGER' => '客户经理'
     ];
 
     private static $roleHierarchy = [
-        'ROLE_PRESIDENT' => ['ROLE_BRANCH_PRESIDENT', 'ROLE_END_PRESIDENT'],
+        'ROLE_PRESIDENT' => ['ROLE_BRANCH_PRESIDENT', 'ROLE_END_PRESIDENT', 'ROLE_END_PRESIDENT_WITH_CM'],
+        'ROLE_CUSTOMER_MANAGER' => ['ROLE_CUSTOMER_MANAGER', 'ROLE_END_PRESIDENT_WITH_CM'],
     ];
 
     private $roleValue = 'ROLE_CUSTOMER_MANAGER';
+
+    public static function getRoleList()
+    {
+        $list = [];
+        foreach (self::$roleName as $value => $name) {
+            $list[] = ['value' => $value, 'name' => $name];
+        }
+        return $list;
+    }
 
     public static function createRole($roleEnName)
     {

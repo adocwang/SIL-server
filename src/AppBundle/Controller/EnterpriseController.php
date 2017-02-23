@@ -302,6 +302,7 @@ class EnterpriseController extends Controller
                 return new ApiJsonResponse(2009, 'role a not customer manager');
             }
             $enterprise->setRoleA($roleA);
+            $enterprise->setDistributeState(2);
             $this->get('app.message_sender')->sendSysMessage(
                 $roleA,
                 '您被分配了一个新的企业',
@@ -336,6 +337,82 @@ class EnterpriseController extends Controller
 
         if (!empty($data['in_black_list'])) {
             $enterprise->setInBlackList($data['in_black_list']);
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($enterprise);
+        $em->flush();
+        return new ApiJsonResponse(0, 'update success', $enterprise->toArray());
+    }
+
+    /**
+     *
+     * 企业分配是否接受
+     * @ApiDoc(
+     *     section="企业",
+     *     description="接受与拒绝企业分配",
+     *     parameters={
+     *         {"name"="id", "dataType"="integer", "required"=true, "description"="企业id"},
+     *         {"name"="accept", "dataType"="integer", "required"=true, "description"="是否接受:-1不接受，1接受"},
+     *     },
+     *     headers={
+     *         {
+     *             "name"="extra",
+     *             "default"="{""token"":""iamsuperman:15828516285""}"
+     *         }
+     *     },
+     *     statusCodes={
+     *         1003="缺少参数",
+     *         2007="银行不存在",
+     *         2008="角不存在",
+     *         2009="角不是客户经理",
+     *         407="无权限",
+     *     }
+     * )
+     *
+     * @Route("/enterprise/set_distribute")
+     * @Method("POST")
+     * @param JsonRequest $request
+     * @return ApiJsonResponse
+     */
+    public function setEnterpriseDistributeAction(JsonRequest $request)
+    {
+        $data = $request->getData();
+        //check notnull data fields
+//        print_r($data);exit;
+        if (empty($data['id']) || empty($data['accept'])) {
+            return new ApiJsonResponse(1003, 'need id and accept');
+        }
+
+        $enterprise = $this->getDoctrine()->getRepository('AppBundle:Enterprise')->findOneBy(['id' => $data['id']]);
+        if (empty($enterprise) || !$enterprise instanceof Enterprise) {
+            return new ApiJsonResponse(2007, 'enterprise not exist');
+        }
+
+        if ($enterprise->getRoleA() != $this->getUser()) {
+            return new ApiJsonResponse(407, 'no permission');
+        }
+        if ($data['accept'] == -1) {
+            $enterprise->setRoleA(null);
+            $enterprise->setRoleB(null);
+            $enterprise->setDistributeState(1);
+
+            $presidentRoles = [];
+            $presidentRoles[] = Role::createRole(Role::ROLE_END_PRESIDENT_WITH_CM);
+            $presidentRoles[] = Role::createRole(Role::ROLE_END_PRESIDENT);
+            $managers = $this->getDoctrine()->getRepository('AppBundle:User')->findBy(
+                ['bank' => $enterprise->getBank(), 'role' => $presidentRoles]
+            );
+            foreach ($managers as $manager) {
+                $this->get('app.message_sender')->sendSysMessage(
+                    $manager,
+                    '有一个您已分配的企业被拒绝认领',
+                    $enterprise->getName() . '已被拒绝认领！请处理！',
+                    ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
+                );
+            }
+        } else {
+            $enterprise->setDistributeState(3);
         }
 
         $em = $this->getDoctrine()->getManager();
