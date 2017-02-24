@@ -36,6 +36,11 @@ class JsonRequest extends Request
         return $this->data;
     }
 
+    public function setData($data)
+    {
+        $this->data = $data;
+    }
+
     public function getExtra($key = '')
     {
         $extra = $this->headers->get('extra');

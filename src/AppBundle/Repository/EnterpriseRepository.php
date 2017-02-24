@@ -46,6 +46,10 @@ class EnterpriseRepository extends \Doctrine\ORM\EntityRepository
             $queryBuilder->leftJoin('a.finding', 'f', 'WITH');
             $queryBuilder->andWhere('f.id IS NOT NULL');
         }
+        if (!empty($condition['distribute_state'])) {
+            $queryBuilder->andWhere('a.distributeState = :distribute_state');
+            $queryBuilder->setParameter('distribute_state', $condition['distribute_state']);
+        }
         if (!empty($condition['role_a_disable'])) {
             if ($condition['role_a_disable'] == 1) {
                 $queryBuilder->leftJoin('a.roleA', 'r', 'WITH', 'r.state IN (' . State::STATE_UN_ACTIVE . ',' . State::STATE_FREEZED . ',' . State::STATE_DELETED . ')');

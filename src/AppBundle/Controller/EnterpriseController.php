@@ -33,6 +33,7 @@ class EnterpriseController extends Controller
      *         {"name"="role_a_disable", "dataType"="boolean", "required"=false, "description"="roleA是否不可用：1，0"},
      *         {"name"="state", "dataType"="integer", "required"=false, "description"="状态"},
      *         {"name"="only_mine", "dataType"="integer", "required"=false, "description"="只列出我的企业,0,1"},
+     *         {"name"="only_mine_accepted", "dataType"="integer", "required"=false, "description"="只列出我已认领的企业"},
      *         {"name"="only_my_finding", "dataType"="integer", "required"=false, "description"="列出与我的采集相关的企业"},
      *         {"name"="only_loan_ready", "dataType"="integer", "required"=false, "description"="只列出可以计算贷款辅助信息的企业"},
      *     },
@@ -87,6 +88,10 @@ class EnterpriseController extends Controller
             } else {
                 $data['my_finding'] = 1;
             }
+        }
+        if (!empty($data['only_mine_accepted']) && $data['only_mine_accepted'] == 1) {
+            $data['only_mine'] = 1;
+            $data['distribute_state'] = 3;
         }
 
         if (!empty($data['only_mine']) && $data['only_mine'] == 1) {

@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\ApiJsonResponse;
+use AppBundle\Entity\Enterprise;
 use AppBundle\Entity\Loan;
 use AppBundle\Entity\Role;
 use AppBundle\Entity\User;
@@ -43,8 +44,9 @@ class LoanController extends Controller
      */
     public function list(JsonRequest $request)
     {
-
         $data = $request->getData();
+
+
         if (empty($data['page']) || $data['page'] < 1) {
             $data['page'] = 1;
         }
@@ -52,6 +54,43 @@ class LoanController extends Controller
         $pageLimit = $this->getParameter('page_limit');
         if (!empty($data['page_limit']) && $data['page_limit'] > 0) {
             $pageLimit = $data['page_limit'];
+        }
+        //TODO 整个progress==0都是为了给企业那边临时打补丁，以后要删掉
+        if ($data['progress'] == 0) {
+            $data['only_mine'] = 1;
+            $data['distribute_state'] = 3;
+            $data['now_user'] = $this->getUser();
+            if ($this->getUser()->getRole()->isRole(Role::ROLE_CUSTOMER_MANAGER)) {
+                $data['only_user'] = 1;
+            } else {
+                $data['bank'] = $this->getUser()->getBank();
+            }
+
+            /**
+             * @var \Doctrine\ORM\Tools\Pagination\Paginator $paginator
+             * @var \AppBundle\Entity\Enterprise $enterprise
+             */
+            $pageData = $this->getDoctrine()->getRepository('AppBundle:Enterprise')->listPage($data['page'], $pageLimit, $data);
+            $enterprises = [];
+            $loans = [];
+            foreach ($pageData['data'] as $enterprise) {
+                $loan = [
+                    'id' => rand(1, 100),
+                    'moreData' => [],
+                    'progress' => 0,
+                    'state' => 1,
+                    'created' => (new \DateTime())->format('Y-m-d H:i:s'),
+                    'modified' => (new \DateTime())->format('Y-m-d H:i:s'),
+                    'enterprise' => $enterprise->toArray()
+                ];
+                $loans[] = $loan;
+            }
+            return new ApiJsonResponse(0, 'ok', [
+                'count' => $pageData['count'],
+                'page_limit' => $pageLimit,
+                'page_count' => $pageData['pageCount'],
+                'loans' => $loans
+            ]);
         }
         if (!empty($data['progress'])) {
             if (strpos($data['progress'], ',') === false) {

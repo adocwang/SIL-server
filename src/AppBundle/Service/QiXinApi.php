@@ -45,8 +45,9 @@ class QiXinApi
     }
 
     /**
-     * @param $companyName string
+     * @param $qixinId
      * @return array|null
+     * @internal param string $companyName
      */
     public function getGongShangInfoById($qixinId)
     {
