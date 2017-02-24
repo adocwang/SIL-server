@@ -13,6 +13,7 @@ use Symfony\Component\Security\Core\Role\RoleInterface;
 class Role implements RoleInterface
 {
     const ROLE_ADMIN = 'ROLE_ADMIN';
+    const CENTER_CHAIRMAN = 'CENTER_CHAIRMAN';
     const ROLE_BRANCH_PRESIDENT = 'ROLE_BRANCH_PRESIDENT';
     const ROLE_CHANNEL_MANAGER = 'ROLE_CHANNEL_MANAGER';
     const ROLE_END_PRESIDENT = 'ROLE_END_PRESIDENT';
@@ -22,6 +23,7 @@ class Role implements RoleInterface
 
     public static $roleName = [
         'ROLE_ADMIN' => '管理员',
+        'CENTER_CHAIRMAN' => '中心主任',
         'ROLE_BRANCH_PRESIDENT' => '分行行长',
         'ROLE_CHANNEL_MANAGER' => '渠道管理员',
         'ROLE_END_PRESIDENT' => '支行行长',
