@@ -165,7 +165,14 @@ class LoanDecisionHelper
         if (empty($configure)) {
             return [];
         }
-        return json_decode($configure->getConfigValue(), true);
+        $configureArr = json_decode($configure->getConfigValue(), true);
+        $conditions = [];
+        foreach ($configureArr as $configSection) {
+            foreach ($configSection['condition_list'] as $condition) {
+                $conditions[] = $condition;
+            }
+        }
+        return $conditions;
     }
 
     public function findDetailValue($fieldName, $detail)
