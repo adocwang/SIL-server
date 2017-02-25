@@ -43,6 +43,14 @@ class ClientConfig
      */
     private $type = 0;
 
+    public function toArray()
+    {
+        return [
+            'key' => $this->getConfigKey(),
+            'value' => $this->getConfigValue()
+        ];
+    }
+
     /**
      * Get id
      *
