@@ -98,7 +98,7 @@ class ClientConfigController extends Controller
         $config = $this->getDoctrine()->getRepository('AppBundle:ClientConfig')->findOneByConfigKey($key);
 
         if (empty($config)) {
-            return new ApiJsonResponse(0,'ok',[]);
+            return new ApiJsonResponse(0, 'ok', []);
 //            return new ApiJsonResponse(2007, 'key not exist');
         }
         return new ApiJsonResponse(0, 'ok', $config->getConfigValue());
@@ -148,7 +148,7 @@ class ClientConfigController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($config);
         $em->flush();
-        $this->get('app.op_logger')->logUpdateAction('client_config', $config->toArray());
-        return new ApiJsonResponse(0, 'ok');
+        $this->get('app.op_logger')->logUpdateAction('client_config', ['key' => $config->getConfigKey()]);
+        return new ApiJsonResponse(0, 'ok', $config->toArray());
     }
 }
