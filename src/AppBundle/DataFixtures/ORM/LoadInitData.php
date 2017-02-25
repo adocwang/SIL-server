@@ -43,7 +43,7 @@ class LoadInitData extends AbstractFixture implements OrderedFixtureInterface, C
 
         $cmRole = Role::createRole(Role::ROLE_CUSTOMER_MANAGER);
 
-        //银行
+        //机构
         $bank = new Bank();
         $bank->setName('科技金融中心');
         $manager->persist($bank);

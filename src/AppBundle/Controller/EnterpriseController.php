@@ -29,7 +29,7 @@ class EnterpriseController extends Controller
      *         {"name"="page", "dataType"="string", "required"=false, "description"="页码"},
      *         {"name"="page_limit", "dataType"="integer", "required"=false, "description"="每页size"},
      *         {"name"="name", "dataType"="string", "required"=false, "description"="企业名称"},
-     *         {"name"="bank_name", "dataType"="string", "required"=false, "description"="所属银行名称"},
+     *         {"name"="bank_name", "dataType"="string", "required"=false, "description"="所属机构名称"},
      *         {"name"="role_a_disable", "dataType"="boolean", "required"=false, "description"="roleA是否不可用：1，0"},
      *         {"name"="state", "dataType"="integer", "required"=false, "description"="状态"},
      *         {"name"="only_mine", "dataType"="integer", "required"=false, "description"="只列出我的企业,0,1"},
@@ -205,7 +205,7 @@ class EnterpriseController extends Controller
      *     description="修改企业",
      *     parameters={
      *         {"name"="id", "dataType"="integer", "required"=true, "description"="企业id"},
-     *         {"name"="bank_id", "dataType"="integer", "required"=false, "description"="银行id"},
+     *         {"name"="bank_id", "dataType"="integer", "required"=false, "description"="机构id"},
      *         {"name"="role_a_id", "dataType"="integer", "required"=false, "description"="A角user_id"},
      *         {"name"="role_b_id", "dataType"="integer", "required"=false, "description"="B角user_id"},
      *         {"name"="state", "dataType"="integer", "required"=false, "description"="企业状态"},
@@ -218,7 +218,7 @@ class EnterpriseController extends Controller
      *     },
      *     statusCodes={
      *         1003="缺少参数",
-     *         2007="银行不存在",
+     *         2007="机构不存在",
      *         2008="角不存在",
      *         2009="角不是客户经理",
      *         407="无权限",
@@ -281,8 +281,8 @@ class EnterpriseController extends Controller
             foreach ($managers as $manager) {
                 $this->get('app.message_sender')->sendSysMessage(
                     $manager,
-                    '有一个企业已被分配到您的银行',
-                    $enterprise->getName() . '已被分配到您的银行！请处理！',
+                    '有一个企业已被分配到您的机构',
+                    $enterprise->getName() . '已被分配到您的机构！请处理！',
                     ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
                 );
             }
@@ -359,7 +359,7 @@ class EnterpriseController extends Controller
      *     },
      *     statusCodes={
      *         1003="缺少参数",
-     *         2007="银行不存在",
+     *         2007="机构不存在",
      *         407="无权限",
      *     }
      * )
@@ -411,7 +411,7 @@ class EnterpriseController extends Controller
      *     },
      *     statusCodes={
      *         1003="缺少参数",
-     *         2007="银行不存在",
+     *         2007="机构不存在",
      *         2008="角不存在",
      *         2009="角不是客户经理",
      *         407="无权限",

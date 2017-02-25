@@ -76,7 +76,7 @@ class ImportController extends Controller
             if (!empty($line[2])) {
                 $bank = $bankRepository->findOneByName($line[2]);
                 if (empty($bank)) {
-                    $errorLines[] = ['data' => $line, 'reason' => '所填银行不存在'];
+                    $errorLines[] = ['data' => $line, 'reason' => '所填机构不存在'];
                     continue;
                 }
                 $user->setBank($bank);
@@ -103,9 +103,9 @@ class ImportController extends Controller
     /**
      * @ApiDoc(
      *     section="导入",
-     *     description="导入银行",
+     *     description="导入机构",
      *     parameters={
-     *         {"name"="file", "dataType"="file", "required"=true, "description"="银行列表文件"},
+     *         {"name"="file", "dataType"="file", "required"=true, "description"="机构列表文件"},
      *     },
      *     headers={
      *         {
@@ -145,7 +145,7 @@ class ImportController extends Controller
         foreach ($lines as $line) {
             $bank = new Bank();
             if ($bankRepository->findByName($line[0])) {
-                $errorLines[] = ['data' => $line, 'reason' => '银行已存在'];
+                $errorLines[] = ['data' => $line, 'reason' => '机构已存在'];
                 continue;
             }
             if (empty($line[0])) {
@@ -158,7 +158,7 @@ class ImportController extends Controller
             } else {
                 $superior = $bankRepository->findOneByName($line[1]);
                 if (empty($superior)) {
-                    $errorLines[] = ['data' => $line, 'reason' => '上级银行不存在'];
+                    $errorLines[] = ['data' => $line, 'reason' => '上级机构不存在'];
                     continue;
                 }
             }

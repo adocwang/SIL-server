@@ -24,7 +24,7 @@ class UserController extends Controller
      *         {"name"="page_limit", "dataType"="integer", "required"=false, "description"="每页size"},
      *         {"name"="phone", "dataType"="string", "required"=false, "description"="手机号码"},
      *         {"name"="true_name", "dataType"="string", "required"=false, "description"="真实姓名"},
-     *         {"name"="bank_name", "dataType"="string", "required"=false, "description"="银行名称(非管理员用户会自动通过当前用户的银行覆盖这个字段)"},
+     *         {"name"="bank_name", "dataType"="string", "required"=false, "description"="机构名称(非管理员用户会自动通过当前用户的机构覆盖这个字段)"},
      *         {"name"="role_en_name", "dataType"="string", "required"=false, "description"="角色的英文名称"},
      *         {"name"="state", "dataType"="string", "required"=false, "description"="状态"},
      *     },
@@ -170,7 +170,7 @@ class UserController extends Controller
      *         {"name"="true_name", "dataType"="string", "required"=true, "description"="真实姓名"},
      *         {"name"="phone", "dataType"="string", "required"=true, "description"="手机号码"},
      *         {"name"="role", "dataType"="string", "required"=true, "description"="角色"},
-     *         {"name"="bank_id", "dataType"="string", "required"=false, "description"="银行id"}
+     *         {"name"="bank_id", "dataType"="string", "required"=false, "description"="机构id"}
      *     },
      *     headers={
      *         {
@@ -261,7 +261,7 @@ class UserController extends Controller
      *         {"name"="true_name", "dataType"="string", "required"=false, "description"="真实姓名"},
      *         {"name"="phone", "dataType"="string", "required"=false, "description"="手机号码"},
      *         {"name"="role", "dataType"="string", "required"=false, "description"="角色英文名称"},
-     *         {"name"="bank_id", "dataType"="string", "required"=false, "description"="所属银行id"},
+     *         {"name"="bank_id", "dataType"="string", "required"=false, "description"="所属机构id"},
      *         {"name"="state", "dataType"="string", "required"=false, "description"="状态"}
      *     },
      *     headers={

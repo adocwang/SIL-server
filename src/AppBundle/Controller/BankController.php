@@ -19,8 +19,8 @@ class BankController extends Controller
     /**
      * state 1:正常,3:已删除
      * @ApiDoc(
-     *     section="银行",
-     *     description="获取银行列表",
+     *     section="机构",
+     *     description="获取机构列表",
      *     parameters={
      *         {"name"="name", "dataType"="string", "required"=true, "description"="名称"},
      *         {"name"="state", "dataType"="string", "required"=true, "description"="状态"},
@@ -76,12 +76,12 @@ class BankController extends Controller
     }
 
     /**
-     * 添加银行
+     * 添加机构
      * @ApiDoc(
-     *     section="银行",
-     *     description="添加银行",
+     *     section="机构",
+     *     description="添加机构",
      *     parameters={
-     *         {"name"="name", "dataType"="string", "required"=true, "description"="银行"},
+     *         {"name"="name", "dataType"="string", "required"=true, "description"="机构"},
      *         {"name"="address", "dataType"="string", "required"=true, "description"="地址"},
      *         {"name"="phone", "dataType"="string", "required"=true, "description"="电话"},
      *     },
@@ -133,14 +133,14 @@ class BankController extends Controller
     }
 
     /**
-     * 修改银行
+     * 修改机构
      * state:1正常, 3已删除
      * @ApiDoc(
-     *     section="银行",
-     *     description="修改银行",
+     *     section="机构",
+     *     description="修改机构",
      *     parameters={
-     *         {"name"="id", "dataType"="integer", "required"=true, "description"="银行"},
-     *         {"name"="name", "dataType"="string", "required"=false, "description"="银行"},
+     *         {"name"="id", "dataType"="integer", "required"=true, "description"="机构"},
+     *         {"name"="name", "dataType"="string", "required"=false, "description"="机构"},
      *         {"name"="address", "dataType"="string", "required"=false, "description"="地址"},
      *         {"name"="coordinates", "dataType"="string", "required"=false, "description"="坐标"},
      *         {"name"="state", "dataType"="string", "required"=false, "description"="状态"},
@@ -154,7 +154,7 @@ class BankController extends Controller
      *     },
      *     statusCodes={
      *         1003="缺少参数",
-     *         2007="银行不存在",
+     *         2007="机构不存在",
      *         407="无权限",
      *     }
      * )

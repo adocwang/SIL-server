@@ -121,7 +121,7 @@ class LoanController extends Controller
 
     /**
      * 发起贷款
-     * progress 0:已受理，1：协理审批中，2：银行审批中，3：审批通过，4：签约，5：放款
+     * progress 0:已受理，1：协理审批中，2：机构审批中，3：审批通过，4：签约，5：放款
      * @ApiDoc(
      *     section="贷款",
      *     description="发起贷款",
@@ -191,12 +191,12 @@ class LoanController extends Controller
     }
 
     /**
-     * 修改银行
+     * 修改机构
      * state:1正常, 3已删除
-     * progress 0:已受理，1：协理审批中，2：银行审批中，3：审批通过，4：签约，5：放款
+     * progress 0:已受理，1：协理审批中，2：机构审批中，3：审批通过，4：签约，5：放款
      * @ApiDoc(
      *     section="贷款",
-     *     description="修改银行",
+     *     description="修改机构",
      *     parameters={
      *         {"name"="loan_id", "dataType"="integer", "required"=true, "description"="loan_id"},
      *         {"name"="pass", "dataType"="boolean", "required"=true, "description"="是否通过"},
@@ -210,7 +210,7 @@ class LoanController extends Controller
      *     },
      *     statusCodes={
      *         1003="缺少参数",
-     *         2007="银行不存在",
+     *         2007="机构不存在",
      *         407="无权限",
      *     }
      * )

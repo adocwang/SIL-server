@@ -43,7 +43,7 @@ class ExportController extends Controller
          */
         $excelIO = $this->get('app.excel_io');
         $name = '用户导入模板';
-        $header = ['手机', '真实姓名', '所属银行', '角色'];
+        $header = ['手机', '真实姓名', '所属机构', '角色'];
         $excelWriter = $excelIO->exportExcel($name, [$header]);
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $name . '.xlsx"');
@@ -60,7 +60,7 @@ class ExportController extends Controller
     /**
      * @ApiDoc(
      *     section="导出",
-     *     description="下载银行导入模板",
+     *     description="下载机构导入模板",
      *     parameters={
      *     },
      *     headers={
