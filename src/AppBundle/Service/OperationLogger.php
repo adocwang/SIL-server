@@ -62,10 +62,23 @@ class OperationLogger
 
     /**
      * @param $module string
-     * @param $data array
+     * @param $id integer
+     * @internal param array $data
      */
-    public function logCreateAction($module, $data)
+    public function logCreateAction($module, $id)
     {
-        $this->writeLog($module, 'create', json_encode($data));
+        $this->writeLog($module, 'create', json_encode(['id' => $id]));
+    }
+
+    /**
+     * @param $module string
+     * @param $action
+     * @param $data
+     * @internal param $id
+     * @internal param array $data
+     */
+    public function logOtherAction($module, $action, $data)
+    {
+        $this->writeLog($module, $action, json_encode($data));
     }
 }

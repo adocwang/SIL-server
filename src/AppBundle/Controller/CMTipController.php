@@ -278,6 +278,7 @@ class CMTipController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($cmTip);
         $em->flush();
+        $this->get('app.op_logger')->logUpdateAction('cm_tip', $cmTip->toArray());
         return new ApiJsonResponse(0, 'update success', $cmTip->toArray());
     }
 

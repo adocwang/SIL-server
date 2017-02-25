@@ -311,6 +311,8 @@ class EnterpriseController extends Controller
                 '您已被分配为 ' . $enterprise->getName() . '的主理！请悉知！',
                 ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
             );
+            $this->get('app.op_logger')->logOtherAction('enterprise', 'assigning',
+                ['id' => $enterprise->getId(), 'role_a' => $roleA->getId()]);
         }
 
         if (!empty($data['role_b_id'])) {
@@ -331,6 +333,8 @@ class EnterpriseController extends Controller
                 '您已被分配为 ' . $enterprise->getName() . '的协理！请悉知！',
                 ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
             );
+            $this->get('app.op_logger')->logOtherAction('enterprise', 'assigning',
+                ['id' => $enterprise->getId(), 'role_b' => $roleB->getId()]);
         }
 
         if (!empty($data['state'])) {
@@ -340,6 +344,7 @@ class EnterpriseController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($enterprise);
         $em->flush();
+        $this->get('app.op_logger')->logUpdateAction('enterprise', $enterprise->toArray());
         return new ApiJsonResponse(0, 'update success', $enterprise->toArray());
     }
 
@@ -390,6 +395,7 @@ class EnterpriseController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($enterprise);
         $em->flush();
+        $this->get('app.op_logger')->logCreateAction('enterprise', $enterprise->getId());
         return new ApiJsonResponse(0, 'add success', $enterprise->toArray());
     }
 
@@ -459,8 +465,12 @@ class EnterpriseController extends Controller
                     ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
                 );
             }
+            $this->get('app.op_logger')->logOtherAction('enterprise', 'refuse',
+                ['id' => $enterprise->getId(), 'role_a' => $enterprise->getRoleA()->getId()]);
         } else {
             $enterprise->setDistributeState(3);
+            $this->get('app.op_logger')->logOtherAction('enterprise', 'accept',
+                ['id' => $enterprise->getId(), 'user' => $this->getUser()->getId()]);
         }
 
         $em = $this->getDoctrine()->getManager();
@@ -530,6 +540,8 @@ class EnterpriseController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($finding);
         $em->flush();
+        $this->get('app.op_logger')->logOtherAction('enterprise', 'update_finding',
+            ['id' => $enterprise->getId(), 'user' => $this->getUser()->getId()]);
         return new ApiJsonResponse(0, 'set success', $finding);
     }
 
@@ -669,12 +681,13 @@ class EnterpriseController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($finding);
         $em->flush();
+        $this->get('app.op_logger')->logOtherAction('enterprise', 'pass_finding', $finding->toArray());
         return new ApiJsonResponse(0, 'set pass success', $finding->toArray());
     }
 
     /**
      *
-     * 设置调查结果是否可以通过
+     * 删除采集结果
      * @ApiDoc(
      *     section="企业",
      *     description="删除采集结果",
@@ -725,6 +738,7 @@ class EnterpriseController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->remove($finding);
         $em->flush();
+        $this->get('app.op_logger')->logOtherAction('enterprise', 'del_finding', $finding->getId());
         return new ApiJsonResponse(0, 'del success');
     }
 }

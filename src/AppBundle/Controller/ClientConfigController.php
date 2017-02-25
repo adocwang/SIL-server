@@ -148,6 +148,7 @@ class ClientConfigController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($config);
         $em->flush();
+        $this->get('app.op_logger')->logUpdateAction('client_config', $config->toArray());
         return new ApiJsonResponse(0, 'ok');
     }
 }

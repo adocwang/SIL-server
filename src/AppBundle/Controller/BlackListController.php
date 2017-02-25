@@ -128,6 +128,7 @@ class BlackListController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($blackItem);
         $em->flush();
+        $this->get('app.op_logger')->logUpdateAction('blacklist', $blackItem->toArray());
         return new ApiJsonResponse(0, 'update success', $blackItem->toArray());
     }
 
@@ -177,6 +178,7 @@ class BlackListController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->remove($blacklist);
         $em->flush();
+        $this->get('app.op_logger')->logDeleteAction('blacklist', $blacklist->getId());
         return new ApiJsonResponse(0, 'delete success');
     }
 

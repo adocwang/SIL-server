@@ -128,7 +128,7 @@ class BankController extends Controller
         $em->persist($bank);
         $em->flush();
 
-        $this->get('app.op_logger')->logCreateAction('bank', $bank->toArrayNoSubordinate());
+        $this->get('app.op_logger')->logCreateAction('bank', $bank->getId());
         return new ApiJsonResponse(0, 'add success', $bank->toArray());
     }
 
@@ -195,6 +195,9 @@ class BankController extends Controller
 
         if (!empty($data['state'])) {
             $bank->setState($data['state']);
+            if ($data['state'] == 3) {
+                $this->get('app.op_logger')->logDeleteAction('bank', $bank->getId());
+            }
         }
 
         if (!empty($data['superior_id'])) {
@@ -223,10 +226,10 @@ class BankController extends Controller
                 return new ApiJsonResponse(407, 'no permission');
             }
         }
-
         $em = $this->getDoctrine()->getManager();
         $em->persist($bank);
         $em->flush();
+        $this->get('app.op_logger')->logUpdateAction('bank', $bank->toArrayNoSubordinate());
         return new ApiJsonResponse(0, 'add success', $bank->toArray());
     }
 }

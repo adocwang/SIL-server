@@ -103,6 +103,7 @@ class LoanDecisionController extends Controller
         $mm = $this->get('doctrine_mongodb')->getManager();
         $mm->persist($historyData);
         $mm->flush();
+        $this->get('app.op_logger')->logUpdateAction('loan_decision', ['id' => $historyData->getId()]);
         return new ApiJsonResponse(0, 'ok');
     }
 }

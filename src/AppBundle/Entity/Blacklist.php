@@ -53,6 +53,8 @@ class Blacklist
         return [
             'id' => $this->getId(),
             'name' => $this->getName(),
+            'source' => $this->getSource(),
+            'note' => $this->getNote(),
             'match_count' => $this->getMatchCount(),
         ];
     }

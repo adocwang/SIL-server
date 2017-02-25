@@ -242,6 +242,7 @@ class AuthController extends Controller
         $em->persist($user);
         try {
             $em->flush();
+            $this->get('app.op_logger')->logOtherAction('user', 'login', $user->getId());
         } catch (Exception $e) {
             return null;
         }
