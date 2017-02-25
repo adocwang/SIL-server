@@ -50,6 +50,7 @@ class BankController extends Controller
         $nowUser = $this->getUser();
         /**
          * @var QueryBuilder $queryBuilder
+         * @var Bank $bank
          */
         $queryBuilder = $this->getDoctrine()->getManager()->createQueryBuilder()
             ->select('a')
@@ -80,7 +81,9 @@ class BankController extends Controller
      *     section="银行",
      *     description="添加银行",
      *     parameters={
-     *         {"name"="name", "dataType"="string", "required"=true, "description"="银行"}
+     *         {"name"="name", "dataType"="string", "required"=true, "description"="银行"},
+     *         {"name"="address", "dataType"="string", "required"=true, "description"="地址"},
+     *         {"name"="phone", "dataType"="string", "required"=true, "description"="电话"},
      *     },
      *     headers={
      *         {
@@ -113,13 +116,19 @@ class BankController extends Controller
 
         $bank = new Bank();
         $bank->setName($data['name']);
+        if (!empty($data['address'])) {
+            $bank->setAddress($data['address']);
+        }
+        if (!empty($data['phone'])) {
+            $bank->setAddress($data['phone']);
+        }
         $bank->setSuperior($this->getUser()->getBank());
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($bank);
         $em->flush();
 
-        $this->get('app.op_logger')->logCreateAction('bank', $bank->getId());
+        $this->get('app.op_logger')->logCreateAction('bank', $bank->toArrayNoSubordinate());
         return new ApiJsonResponse(0, 'add success', $bank->toArray());
     }
 

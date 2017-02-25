@@ -40,7 +40,7 @@ class Bank
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $telephone;
+    private $phone;
 
     /**
      * @var string
@@ -141,7 +141,7 @@ class Bank
             'id' => $this->getId(),
             'name' => $this->getName(),
             'address' => $this->getAddress(),
-            'telephone' => $this->getTelephone(),
+            'phone' => $this->getPhone(),
             'coordinates' => $this->getCoordinates(),
             'state' => $this->getState(),
             'subordinate' => $subordinate,
@@ -155,6 +155,7 @@ class Bank
             'name' => $this->getName(),
             'address' => $this->getAddress(),
             'coordinates' => $this->getCoordinates(),
+            'phone' => $this->getPhone(),
             'state' => $this->getState(),
             'superior_id' => $this->getSuperior() ? $this->getSuperior()->getId() : 0,
             'superior_name' => $this->getSuperior() ? $this->getSuperior()->getName() : "",
@@ -276,26 +277,26 @@ class Bank
     }
 
     /**
-     * Set telephone
+     * Set phone
      *
-     * @param string $telephone
+     * @param string $phone
      *
      * @return Bank
      */
-    public function setTelephone($telephone)
+    public function setPhone($phone)
     {
-        $this->telephone = $telephone;
+        $this->phone = $phone;
 
         return $this;
     }
 
     /**
-     * Get telephone
+     * Get phone
      *
      * @return string
      */
-    public function getTelephone()
+    public function getPhone()
     {
-        return $this->telephone;
+        return $this->phone;
     }
 }

@@ -166,7 +166,7 @@ class ImportController extends Controller
                 $bank->setSuperior($superior);
             }
             $bank->setAddress($line[2]);
-            $bank->setTelephone($line[3]);
+            $bank->setPhone($line[3]);
             $bank->setState(State::STATE_NORMAL);
             $em->persist($bank);
             $em->flush();
