@@ -307,7 +307,7 @@ class EnterpriseController extends Controller
             $enterprise->setDistributeState(2);
             $this->get('app.message_sender')->sendSysMessage(
                 $roleA,
-                '您被分配了一个新的企业',
+                '您被分配为一个新企业的主理',
                 '您已被分配为 ' . $enterprise->getName() . '的主理！请悉知！',
                 ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
             );
@@ -329,7 +329,7 @@ class EnterpriseController extends Controller
             $enterprise->setRoleB($roleB);
             $this->get('app.message_sender')->sendSysMessage(
                 $roleB,
-                '您被分配了一个新的企业',
+                '您被分配为一个新企业的协理',
                 '您已被分配为 ' . $enterprise->getName() . '的协理！请悉知！',
                 ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
             );
@@ -470,7 +470,7 @@ class EnterpriseController extends Controller
         } else {
             $enterprise->setDistributeState(3);
             $this->get('app.op_logger')->logOtherAction('enterprise', 'accept',
-                ['id' => $enterprise->getId(), 'user' => $this->getUser()->getId()]);
+                ['id' => $enterprise->getId(), 'role_a' => $enterprise->getRoleA()->getId()]);
         }
 
         $em = $this->getDoctrine()->getManager();
@@ -541,7 +541,7 @@ class EnterpriseController extends Controller
         $em->persist($finding);
         $em->flush();
         $this->get('app.op_logger')->logOtherAction('enterprise', 'update_finding',
-            ['id' => $enterprise->getId(), 'user' => $this->getUser()->getId()]);
+            ['id' => $enterprise->getId(), 'role_a' => $enterprise->getRoleA()->getId()]);
         return new ApiJsonResponse(0, 'set success', $finding);
     }
 
