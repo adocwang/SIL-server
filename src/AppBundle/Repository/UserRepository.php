@@ -30,7 +30,7 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
             $queryBuilder->setParameter('bank', $condition['bank']);
         }
         if (!empty($condition['role'])) {
-            $queryBuilder->andWhere('u.role = :role');
+            $queryBuilder->andWhere($queryBuilder->expr()->in('u.role', ':role'));
             $queryBuilder->setParameter('role', $condition['role']);
         }
         if (!empty($condition['state'])) {

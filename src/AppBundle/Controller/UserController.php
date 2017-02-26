@@ -83,7 +83,7 @@ class UserController extends Controller
             if (empty($role)) {
                 return new ApiJsonResponse(3001, 'role not exists');
             }
-            $data['role'] = $role;
+            $data['role'] = Role::getRoleExpand($role);
         }
 
 

@@ -48,6 +48,24 @@ class Role implements RoleInterface
         return $list;
     }
 
+    /**
+     * 获取展开后的role列表
+     * @param $roleIn Role
+     * @return array|mixed
+     */
+    public static function getRoleExpand($roleIn)
+    {
+        if (!empty(self::$roleHierarchy[$roleIn->getRoleValue()])) {
+            $list = self::$roleHierarchy[$roleIn->getRoleValue()];
+            $roles = [];
+            foreach ($list as $role_en_name) {
+                $roles[] = Role::createRole($role_en_name);
+            }
+            return $roles;
+        }
+        return [$roleIn];
+    }
+
     public static function createRole($roleEnName)
     {
         $role = new self();

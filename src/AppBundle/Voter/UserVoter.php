@@ -53,6 +53,10 @@ class UserVoter extends Voter
         if ($attribute == 'view') {
             return true;
         } elseif ($attribute == 'edit' || $attribute == 'add') {
+            //管理员干什么都可以
+            if ($nowUser->getRole()->isRole(Role::ROLE_ADMIN)) {
+                return true;
+            }
             //自己能够编辑自己
             if ($subject->getId() == $nowUser->getId()) {
                 return true;
@@ -64,7 +68,7 @@ class UserVoter extends Voter
                 return true;
             }
             //支行行长只有admin和分行才能操作
-            if ($subject->getRole()->isRole(Role::ROLE_END_PRESIDENT) &&
+            if (($subject->getRole()->isRole(Role::ROLE_END_PRESIDENT) || $subject->getRole()->isRole(Role::ROLE_END_PRESIDENT_WITH_CM)) &&
                 ($nowUser->getRole()->isRole(Role::ROLE_BRANCH_PRESIDENT) || $nowUser->getRole()->isRole(Role::ROLE_ADMIN))
             ) {
                 return true;

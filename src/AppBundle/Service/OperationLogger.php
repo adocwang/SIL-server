@@ -52,7 +52,7 @@ class OperationLogger
     public function logDeleteAction($module, $id)
     {
         $data = ['id' => $id];
-        $this->writeLog($module, 'delete', $data);
+        $this->writeLog($module, 'delete', json_encode($data));
     }
 
     /**
