@@ -8,7 +8,7 @@ imports:
 parameters:
     locale: en
     uploaded_directory: '%kernel.root_dir%/../var/uploaded'
-    page_limit: 5
+    page_limit: 20
     qixin_appkey: 'ada44bd0070711e6b8a865678b483fde'
 
 framework:

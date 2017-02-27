@@ -778,7 +778,7 @@ class EnterpriseController extends Controller
         if (empty($finding)) {
             return new ApiJsonResponse(2007, 'finding not exist');
         }
-        $finding->setProgress(0);
+        $finding->setProgress(-1);
         $em = $this->getDoctrine()->getManager();
         $em->persist($finding);
         $em->flush();
