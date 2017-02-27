@@ -573,6 +573,7 @@ class EnterpriseController extends Controller
             $finding->setEnterprise($enterprise);
         }
         $finding->setData($data['data']);
+        $finding->setProgress(0);
 
         //权限判断
         $nowUser = $this->getUser();
