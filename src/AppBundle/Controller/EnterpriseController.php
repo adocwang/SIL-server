@@ -226,7 +226,7 @@ class EnterpriseController extends Controller
             if ($nowUser->getRole()->isRole(Role::ROLE_END_PRESIDENT)) {
                 $enterpriseResult['operation_enable'][] = 'distribute_cm';
             }
-            if ($nowUser->getRole()->isRole(Role::ROLE_CHANNEL_MANAGER)) {
+            if ($nowUser->getRole()->isRole(Role::ROLE_CUSTOMER_MANAGER) && $enterprise->getRoleA() == $nowUser) {
                 $enterpriseResult['operation_enable'][] = 'accept';
                 $enterpriseResult['operation_enable'][] = 'refuse';
             }
