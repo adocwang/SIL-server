@@ -32,7 +32,7 @@ class EnterpriseController extends Controller
      *         {"name"="bank_name", "dataType"="string", "required"=false, "description"="所属机构名称"},
      *         {"name"="role_a_disable", "dataType"="boolean", "required"=false, "description"="roleA是否不可用：1，0"},
      *         {"name"="state", "dataType"="integer", "required"=false, "description"="状态"},
-     *         {"name"="only_mine", "dataType"="integer", "required"=false, "description"="只列出我的企业,0,1"},
+     *         {"name"="only_mine", "dataType"="integer", "required"=false, "description"="只列出我的新增企业,0,1"},
      *         {"name"="only_mine_accepted", "dataType"="integer", "required"=false, "description"="只列出我已认领的企业"},
      *         {"name"="only_my_finding", "dataType"="integer", "required"=false, "description"="列出与我的采集相关的企业"},
      *         {"name"="only_loan_ready", "dataType"="integer", "required"=false, "description"="只列出可以计算贷款辅助信息的企业"},
@@ -90,13 +90,14 @@ class EnterpriseController extends Controller
             }
         }
         if (!empty($data['only_mine_accepted']) && $data['only_mine_accepted'] == 1) {
-            $data['only_mine'] = 1;
+            $data['only_role_ab'] = 1;
             $data['distribute_state'] = 3;
         }
 
         if (!empty($data['only_mine']) && $data['only_mine'] == 1) {
-            if ($this->getUser()->getRole()->isRole(Role::ROLE_CUSTOMER_MANAGER)) {
-                $data['only_user'] = 1;
+            if (!$this->getUser()->getRole()->isRole(Role::ROLE_PRESIDENT)) {
+                $data['only_role_a'] = 1;
+                $data['distribute_state'] = 2;
             } else {
                 $data['bank'] = $nowUser->getBank();
             }
@@ -124,6 +125,23 @@ class EnterpriseController extends Controller
                     'created' => $finding->getCreated()->format('Y-m-d H:i:s'),
                     'modified' => $finding->getModified()->format('Y-m-d H:i:s')
                 ];
+            }
+            if (!empty($data['only_mine']) && $data['only_mine'] == 1) {
+                if ($enterprise->getDistributeState() == 1) {
+                    $enterpriseArr['distribute_state_type'] = "red";
+                    $enterpriseArr['distribute_state_text'] = "待分配";
+                } elseif ($enterprise->getDistributeState() == 2) {
+                    if ($nowUser->getRole()->isRole(Role::ROLE_PRESIDENT)) {
+                        $enterpriseArr['distribute_state_type'] = "green";
+                        $enterpriseArr['distribute_state_text'] = "已分配";
+                    } else {
+                        $enterpriseArr['distribute_state_type'] = "red";
+                        $enterpriseArr['distribute_state_text'] = "待认领";
+                    }
+                } elseif ($enterprise->getDistributeState() == 3) {
+                    $enterpriseArr['distribute_state_type'] = "green";
+                    $enterpriseArr['distribute_state_text'] = "已认领";
+                }
             }
             $enterprises[] = $enterpriseArr;
         }
@@ -169,12 +187,14 @@ class EnterpriseController extends Controller
          * @var \AppBundle\Repository\EnterpriseRepository $enterpriseRepository
          * @var \AppBundle\Entity\Enterprise $enterprise
          * @var Loan $loan
+         * @var User $nowUser
          */
         $enterpriseRepository = $this->getDoctrine()->getRepository('AppBundle:Enterprise');
         $enterprise = $enterpriseRepository->find($id);
         if (empty($enterprise)) {
             return new ApiJsonResponse(2007, 'enterprise not exists');
         }
+        $nowUser = $this->getUser();
         $enterpriseResult = $enterprise->toArray();
         $enterpriseResult['link_map'] = 'http://apph5.qixin.com/new-network/' . $enterprise->getQixinId() . '.html?eid=' . $enterprise->getQixinId() . '&serviceType=c&version=3.6.1&client_type=ios&from=app';
         $enterpriseResult['relation_map'] = 'http://apph5.qixin.com/new-relation/' . $enterprise->getQixinId() . '.html?eid=' . $enterprise->getQixinId() . '&serviceType=c&version=3.6.1&client_type=ios&from=app';
@@ -191,6 +211,29 @@ class EnterpriseController extends Controller
         if (!empty($loans)) {
             $loan = $loans[0];
             $enterpriseResult['loan'] = $loan->toArray();
+            $enterpriseResult['operation_enable'] = [];
+            if ($enterprise->getDistributeState() == 1) {
+                if ($nowUser->getRole()->isRole(Role::ROLE_PRESIDENT)) {
+                    $enterpriseResult['operation_enable'][] = 'distribute_cm';
+                }
+                if ($nowUser->getRole()->isRole(Role::ROLE_BRANCH_PRESIDENT) ||
+                    $nowUser->getRole()->isRole(Role::ROLE_CHANNEL_MANAGER)
+                ) {
+                    $enterpriseResult['operation_enable'][] = 'distribute_bank';
+                }
+            } elseif ($enterprise->getDistributeState() == 2) {
+                if ($nowUser->getRole()->isRole(Role::ROLE_END_PRESIDENT)) {
+                    $enterpriseResult['operation_enable'][] = 'distribute_cm';
+                }
+                if ($nowUser->getRole()->isRole(Role::ROLE_CHANNEL_MANAGER)) {
+                    $enterpriseResult['operation_enable'][] = 'accept';
+                    $enterpriseResult['operation_enable'][] = 'refuse';
+                }
+            } elseif ($enterprise->getDistributeState() == 3) {
+                if ($nowUser->getRole()->isRole(Role::ROLE_END_PRESIDENT) && $enterprise->getRoleA()->getState() != 1) {
+                    $enterpriseResult['operation_enable'][] = 'distribute_cm';
+                }
+            }
         }
 
         return new ApiJsonResponse(0, 'ok', $enterpriseResult);
@@ -690,7 +733,7 @@ class EnterpriseController extends Controller
      * 删除采集结果
      * @ApiDoc(
      *     section="企业",
-     *     description="删除采集结果",
+     *     description="重新采集",
      *     parameters={
      *         {"name"="id", "dataType"="integer", "required"=true, "description"="企业id"}
      *     },
@@ -708,12 +751,12 @@ class EnterpriseController extends Controller
      *     }
      * )
      *
-     * @Route("/enterprise/del_finding")
+     * @Route("/enterprise/re_finding")
      * @Method("POST")
      * @param JsonRequest $request
      * @return ApiJsonResponse
      */
-    public function delEnterpriseFindingAction(JsonRequest $request)
+    public function enterpriseReFindingAction(JsonRequest $request)
     {
         $data = $request->getData();
         //check notnull data fields
@@ -735,10 +778,11 @@ class EnterpriseController extends Controller
         if (empty($finding)) {
             return new ApiJsonResponse(2007, 'finding not exist');
         }
+        $finding->setProgress(0);
         $em = $this->getDoctrine()->getManager();
-        $em->remove($finding);
+        $em->persist($finding);
         $em->flush();
-        $this->get('app.op_logger')->logOtherAction('enterprise', 'del_finding', $finding->getId());
-        return new ApiJsonResponse(0, 'del success');
+        $this->get('app.op_logger')->logOtherAction('enterprise', '重新采集', ['公司名称' => $enterprise->getName()]);
+        return new ApiJsonResponse(0, 're_finding success');
     }
 }

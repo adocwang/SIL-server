@@ -64,7 +64,7 @@ class Finding
 
 
     /**
-     * 0:已受理，1：协理已通过，2：行长已通过, 3:审核不通过
+     * 0:待采集，1：协理已通过，2：行长已通过, 3:审核不通过
      * @var integer
      *
      * @ORM\Column(type="integer")

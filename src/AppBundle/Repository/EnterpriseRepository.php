@@ -39,7 +39,10 @@ class EnterpriseRepository extends \Doctrine\ORM\EntityRepository
         } elseif (!empty($condition['my_bank_finding']) && $condition['my_bank_finding'] == 1) {
             $queryBuilder->leftJoin('a.finding', 'f', 'WITH');
             $queryBuilder->andWhere('f.progress = 1');
-        } elseif (!empty($condition['only_user']) && $condition['now_user'] instanceof User) {
+        } elseif (!empty($condition['only_role_a']) && $condition['now_user'] instanceof User) {
+            $queryBuilder->andWhere('a.roleA = :now_user');
+            $queryBuilder->setParameter('now_user', $condition['now_user']);
+        } elseif (!empty($condition['only_role_ab']) && $condition['now_user'] instanceof User) {
             $queryBuilder->andWhere('a.roleA = :now_user OR a.roleB = :now_user');
             $queryBuilder->setParameter('now_user', $condition['now_user']);
         } elseif (!empty($condition['only_loan_ready']) && $condition['only_loan_ready'] == 1) {
