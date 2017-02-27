@@ -143,6 +143,9 @@ class EnterpriseController extends Controller
                     $enterpriseArr['distribute_state_text'] = "已认领";
                 }
             }
+            if (!empty($data['only_loan_ready']) && $data['only_loan_ready'] == 1) {
+                $enterpriseArr['loan_points'] = rand(0, 100);
+            }
             $enterprises[] = $enterpriseArr;
         }
         return new ApiJsonResponse(0, 'ok', [
@@ -508,18 +511,18 @@ class EnterpriseController extends Controller
                     ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
                 );
             }
-            $this->get('app.op_logger')->logOtherAction('enterprise', 'refuse',
-                ['id' => $enterprise->getId(), 'role_a' => $enterprise->getRoleA()->getId()]);
+            $this->get('app.op_logger')->logOtherAction('enterprise', '拒绝认领',
+                ['企业名称' => $enterprise->getName(), 'user' => $this->getUser()->getTrueName()]);
         } else {
             $enterprise->setDistributeState(3);
-            $this->get('app.op_logger')->logOtherAction('enterprise', 'accept',
-                ['id' => $enterprise->getId(), 'role_a' => $enterprise->getRoleA()->getId()]);
+            $this->get('app.op_logger')->logOtherAction('enterprise', '接受分配',
+                ['企业名称' => $enterprise->getName(), 'user' => $this->getUser()->getTrueName()]);
         }
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($enterprise);
         $em->flush();
-        return new ApiJsonResponse(0, 'update success', $enterprise->toArray());
+        return new ApiJsonResponse(0, 'set_distribute success', $enterprise->toArray());
     }
 
     /**
@@ -646,7 +649,7 @@ class EnterpriseController extends Controller
             ) {
                 $findingArr['operation_enable'] = 'check';
             }
-            if ($finding->getProgress() == 3 && $enterprise->getRoleA() == $nowUser) {
+            if ($finding->getProgress() == 3 && !empty($enterprise->getRoleA()) && $enterprise->getRoleA() == $nowUser) {
                 $findingArr['operation_enable'] = 'refinding';
             }
         }
