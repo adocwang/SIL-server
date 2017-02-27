@@ -211,28 +211,28 @@ class EnterpriseController extends Controller
         if (!empty($loans)) {
             $loan = $loans[0];
             $enterpriseResult['loan'] = $loan->toArray();
-            $enterpriseResult['operation_enable'] = [];
-            if ($enterprise->getDistributeState() == 1) {
-                if ($nowUser->getRole()->isRole(Role::ROLE_PRESIDENT)) {
-                    $enterpriseResult['operation_enable'][] = 'distribute_cm';
-                }
-                if ($nowUser->getRole()->isRole(Role::ROLE_BRANCH_PRESIDENT) ||
-                    $nowUser->getRole()->isRole(Role::ROLE_CHANNEL_MANAGER)
-                ) {
-                    $enterpriseResult['operation_enable'][] = 'distribute_bank';
-                }
-            } elseif ($enterprise->getDistributeState() == 2) {
-                if ($nowUser->getRole()->isRole(Role::ROLE_END_PRESIDENT)) {
-                    $enterpriseResult['operation_enable'][] = 'distribute_cm';
-                }
-                if ($nowUser->getRole()->isRole(Role::ROLE_CHANNEL_MANAGER)) {
-                    $enterpriseResult['operation_enable'][] = 'accept';
-                    $enterpriseResult['operation_enable'][] = 'refuse';
-                }
-            } elseif ($enterprise->getDistributeState() == 3) {
-                if ($nowUser->getRole()->isRole(Role::ROLE_END_PRESIDENT) && $enterprise->getRoleA()->getState() != 1) {
-                    $enterpriseResult['operation_enable'][] = 'distribute_cm';
-                }
+        }
+        $enterpriseResult['operation_enable'] = [];
+        if ($enterprise->getDistributeState() == 1) {
+            if ($nowUser->getRole()->isRole(Role::ROLE_PRESIDENT)) {
+                $enterpriseResult['operation_enable'][] = 'distribute_cm';
+            }
+            if ($nowUser->getRole()->isRole(Role::ROLE_BRANCH_PRESIDENT) ||
+                $nowUser->getRole()->isRole(Role::ROLE_CHANNEL_MANAGER)
+            ) {
+                $enterpriseResult['operation_enable'][] = 'distribute_bank';
+            }
+        } elseif ($enterprise->getDistributeState() == 2) {
+            if ($nowUser->getRole()->isRole(Role::ROLE_END_PRESIDENT)) {
+                $enterpriseResult['operation_enable'][] = 'distribute_cm';
+            }
+            if ($nowUser->getRole()->isRole(Role::ROLE_CHANNEL_MANAGER)) {
+                $enterpriseResult['operation_enable'][] = 'accept';
+                $enterpriseResult['operation_enable'][] = 'refuse';
+            }
+        } elseif ($enterprise->getDistributeState() == 3) {
+            if ($nowUser->getRole()->isRole(Role::ROLE_END_PRESIDENT) && $enterprise->getRoleA()->getState() != 1) {
+                $enterpriseResult['operation_enable'][] = 'distribute_cm';
             }
         }
 
