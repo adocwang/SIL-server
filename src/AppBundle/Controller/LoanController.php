@@ -154,18 +154,18 @@ class LoanController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['enterprise_id'])) {
-            return new ApiJsonResponse(1003, 'need enterprise_id');
+            return new ApiJsonResponse(1003, '缺少企业id');
         }
         $enterprise = $this->getDoctrine()->getRepository('AppBundle:Enterprise')->find($data['enterprise_id']);
         if ($enterprise->getRoleA() != $this->getUser()) {
             return new ApiJsonResponse(407, 'no permission');
         }
         if (empty($enterprise)) {
-            return new ApiJsonResponse(2007, 'enterprise not exists');
+            return new ApiJsonResponse(2007, '企业不存在');
         }
         $loanRepository = $this->getDoctrine()->getRepository('AppBundle:Loan');
         if ($loanRepository->findOneBy(['enterprise' => $enterprise, 'progress' => '!= 5'])) {
-            return new ApiJsonResponse(2008, 'unfinished loan exists');
+            return new ApiJsonResponse(2008, '该企业已经有未走完流程的贷款');
         }
         $loan = new Loan();
         $loan->setEnterprise($enterprise);
@@ -226,7 +226,7 @@ class LoanController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['loan_id']) || empty($data['pass'])) {
-            return new ApiJsonResponse(1003, 'need loan_id pass');
+            return new ApiJsonResponse(1003, '缺少贷款id');
         }
         $loan = $this->getDoctrine()->getRepository('AppBundle:Loan')->find($data['loan_id']);
         $moreData = json_decode($loan->getMoreData(), true);

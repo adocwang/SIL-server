@@ -89,7 +89,7 @@ class ClientConfigController extends Controller
     public function getSpecialConfigAction($key)
     {
         if (empty($key)) {
-            return new ApiJsonResponse(1003, 'need key');
+            return new ApiJsonResponse(1003, '缺少key');
         }
 
         /**
@@ -132,7 +132,7 @@ class ClientConfigController extends Controller
     {
         $data = $request->getData();
         if (empty($data['key']) || empty($data['value'])) {
-            return new ApiJsonResponse(1003, 'need key and value');
+            return new ApiJsonResponse(1003, '缺少key或value');
         }
 
         /**

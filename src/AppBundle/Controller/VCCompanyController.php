@@ -90,7 +90,7 @@ class VCCompanyController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['name']) || empty($data['vc_name'])) {
-            return new ApiJsonResponse(1003, 'need name');
+            return new ApiJsonResponse(1003, '缺少名称');
         }
 
         if (!in_array($this->getUser()->getRole()->getRole(), ['ROLE_ADMIN'])) {
@@ -98,7 +98,7 @@ class VCCompanyController extends Controller
         }
 
         if ($this->getDoctrine()->getRepository('AppBundle:VCCompany')->findByName($data['name'])) {
-            return new ApiJsonResponse(2007, 'vc company exists');
+            return new ApiJsonResponse(2007, '同名公司已存在');
         }
         $vcCompany = new VCCompany();
         $vcCompany->setName($data['name']);
@@ -148,7 +148,7 @@ class VCCompanyController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['id'])) {
-            return new ApiJsonResponse(1003, 'need id');
+            return new ApiJsonResponse(1003, '缺少id');
         }
         $VCCompanyRepository = $this->getDoctrine()->getRepository('AppBundle:VCCompany');
         /**
@@ -156,7 +156,7 @@ class VCCompanyController extends Controller
          */
         $VCCompany = $VCCompanyRepository->find($data['id']);
         if (empty($VCCompany)) {
-            return new ApiJsonResponse(2007, 'bank not exist');
+            return new ApiJsonResponse(2007, '机构不存在');
         }
         if (!in_array($this->getUser()->getRole()->getRole(), ['ROLE_ADMIN'])) {
             return new ApiJsonResponse(407, 'no permission');

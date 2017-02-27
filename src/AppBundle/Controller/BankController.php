@@ -108,10 +108,10 @@ class BankController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['name'])) {
-            return new ApiJsonResponse(1003, 'need name');
+            return new ApiJsonResponse(1003, '缺少名称');
         }
         if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN) && !$this->getUser()->getRole()->isRole(Role::ROLE_BRANCH_PRESIDENT)) {
-            return new ApiJsonResponse(407, 'no permission');
+            return new ApiJsonResponse(407, '无权限');
         }
 
         $bank = new Bank();
@@ -170,11 +170,11 @@ class BankController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['id'])) {
-            return new ApiJsonResponse(1003, 'need id');
+            return new ApiJsonResponse(1003, '缺少机构id');
         }
         $bankRepository = $this->getDoctrine()->getRepository('AppBundle:Bank');
         if (empty($bankRepository->find($data['id']))) {
-            return new ApiJsonResponse(2007, 'bank not exist');
+            return new ApiJsonResponse(2007, '机构不存在');
         }
         if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN) && !$this->getUser()->getRole()->isRole(Role::ROLE_BRANCH_PRESIDENT)) {
             return new ApiJsonResponse(407, 'no permission');
@@ -206,7 +206,7 @@ class BankController extends Controller
              */
             $superior = $bankRepository->find($data['superior_id']);
             if (empty($superior)) {
-                return new ApiJsonResponse(2007, 'superior bank not exist');
+                return new ApiJsonResponse(2007, '上级机构不存在');
             }
             $bank->setSuperior($superior);
             $right = false;

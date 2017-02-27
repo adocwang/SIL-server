@@ -31,7 +31,7 @@ class VCCompany
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=63, nullable=false, unique=false)
+     * @ORM\Column(type="string", length=63, nullable=true, unique=false)
      */
     private $vcName;
 

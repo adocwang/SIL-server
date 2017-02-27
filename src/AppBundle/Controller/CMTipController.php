@@ -94,7 +94,7 @@ class CMTipController extends Controller
     public function searchAction($keyword)
     {
         if (empty($keyword)) {
-            return new ApiJsonResponse(1003, 'need keyword');
+            return new ApiJsonResponse(1003, '缺少关键字');
         }
         $data = ['keyword' => $keyword];
         /**
@@ -143,7 +143,7 @@ class CMTipController extends Controller
     public function getCMTipAction($id)
     {
         if (empty($id)) {
-            return new ApiJsonResponse(1003, 'need id or phone');
+            return new ApiJsonResponse(1003, '缺少id');
         }
         /**
          * @var \AppBundle\Repository\CMTipRepository $cmTipRepository
@@ -152,7 +152,7 @@ class CMTipController extends Controller
         $cmTipRepository = $this->getDoctrine()->getRepository('AppBundle:CMTip');
         $cmTip = $cmTipRepository->find($id);
         if (empty($cmTip)) {
-            return new ApiJsonResponse(2007, 'cm_tip not exists');
+            return new ApiJsonResponse(2007, '话术不存在');
         }
         return new ApiJsonResponse(0, 'ok', [
             'id' => $cmTip->getId(),
@@ -195,7 +195,7 @@ class CMTipController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['title']) || empty($data['content'])) {
-            return new ApiJsonResponse(1003, 'need title , content');
+            return new ApiJsonResponse(1003, '缺少标题或内容');
         }
 
         $cmTip = new CMTip();
@@ -249,7 +249,7 @@ class CMTipController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['id'])) {
-            return new ApiJsonResponse(1003, 'need id');
+            return new ApiJsonResponse(1003, '缺少id');
         }
 
         /**
@@ -261,7 +261,7 @@ class CMTipController extends Controller
             $cmTip = $cmTipRepository->find($data['id']);
         }
         if (empty($cmTip)) {
-            return new ApiJsonResponse(2007, 'cm_tip not exists');
+            return new ApiJsonResponse(2007, '话术不存在');
         }
         if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN)) {
             return new ApiJsonResponse(407, 'no permission');

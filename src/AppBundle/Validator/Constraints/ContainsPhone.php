@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraint;
  */
 class ContainsPhone extends Constraint
 {
-    public $message = 'The string `%string%` is not a legal phone number';
+    public $message = '`%string%` 不是合法的手机号码';
 
     public function validatedBy()
     {

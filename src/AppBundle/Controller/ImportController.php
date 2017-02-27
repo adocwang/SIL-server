@@ -46,7 +46,7 @@ class ImportController extends Controller
         $fileUploader = $this->get('app.file_uploader');
         $file = $fileUploader->upload($request);
         if (empty($file)) {
-            return new ApiJsonResponse(1003, 'file empty');
+            return new ApiJsonResponse(1003, '导入文件为空');
         }
         /**
          * @var ExcelIOService $excelIO
@@ -129,7 +129,7 @@ class ImportController extends Controller
         $fileUploader = $this->get('app.file_uploader');
         $file = $fileUploader->upload($request);
         if (empty($file)) {
-            return new ApiJsonResponse(1003, 'file empty');
+            return new ApiJsonResponse(1003, '导入文件为空');
         }
         /**
          * @var ExcelIOService $excelIO
@@ -207,7 +207,7 @@ class ImportController extends Controller
         $fileUploader = $this->get('app.file_uploader');
         $file = $fileUploader->upload($request);
         if (empty($file)) {
-            return new ApiJsonResponse(1003, 'file empty');
+            return new ApiJsonResponse(1003, '导入文件为空');
         }
         /**
          * @var ExcelIOService $excelIO

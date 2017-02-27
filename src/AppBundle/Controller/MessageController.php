@@ -43,11 +43,11 @@ class MessageController extends Controller
          * @var Message $message
          */
         if (empty($id)) {
-            return new ApiJsonResponse(1003, 'need id');
+            return new ApiJsonResponse(1003, '缺少id');
         }
         $message = $this->getDoctrine()->getRepository('AppBundle:Message')->find($id);
         if (empty($message)) {
-            return new ApiJsonResponse(2007, 'message not exists');
+            return new ApiJsonResponse(2007, '消息不存在');
         }
         if ($message->getToUser() != $this->getUser()) {
             return new ApiJsonResponse(407);
@@ -141,11 +141,11 @@ class MessageController extends Controller
          */
         $data = $request->getData();
         if (empty($data['id'])) {
-            return new ApiJsonResponse(1003, 'need id');
+            return new ApiJsonResponse(1003, '缺少id');
         }
         $message = $this->getDoctrine()->getRepository('AppBundle:Message')->find($data['id']);
         if (empty($message)) {
-            return new ApiJsonResponse(2007, 'message not exists');
+            return new ApiJsonResponse(2007, '消息不存在');
         }
         if ($message->getToUser()->getId() != $this->getUser()->getId()) {
             return new ApiJsonResponse(407);

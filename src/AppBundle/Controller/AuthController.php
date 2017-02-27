@@ -41,7 +41,7 @@ class AuthController extends Controller
     public function getRoleListAction(JsonRequest $request)
     {
         $roleList = Role::getRoleList();
-        return new ApiJsonResponse(0, 'send success', $roleList);
+        return new ApiJsonResponse(0, 'ok', $roleList);
     }
 
     /**
@@ -93,7 +93,7 @@ class AuthController extends Controller
         }
         $user = $this->getDoctrine()->getRepository('AppBundle:User')->findOneByPhone($data['phone']);
         if (empty($user)) {
-            return new ApiJsonResponse(2007, 'phone not exist');
+            return new ApiJsonResponse(2007, '手机号码不存在');
         }
 
         $lastSms = $this->getDoctrine()->getRepository('AppBundle:Sms')->findBy(['phone' => $data['phone']], ['created' => 'desc'], 1);
@@ -102,13 +102,13 @@ class AuthController extends Controller
         }
         if (!empty($lastSms) || $lastSms instanceof Sms) {
             if ($lastSms->getCreated()->getTimestamp() > (time() - 60)) {
-                return new ApiJsonResponse(2004, 'to many sms to one phone');
+                return new ApiJsonResponse(2004, '短信发送频率过高');
             }
         }
         $em = $this->getDoctrine()->getManager();
         $em->persist($newSms);
         $em->flush();
-        return new ApiJsonResponse(0, 'send success');
+        return new ApiJsonResponse(0, '发送成功');
     }
 
     /**
@@ -142,30 +142,30 @@ class AuthController extends Controller
         $data = $request->getData();
         //check notnull data fields
         if (empty($data['phone']) || empty($data['code'])) {
-            return new ApiJsonResponse(1003, 'need phone and code');
+            return new ApiJsonResponse(1003, '缺少手机号码或验证码');
         }
         $sms = $this->getDoctrine()->getRepository('AppBundle:Sms')->findBy(
             ['phone' => $data['phone'], 'code' => $data['code']], ['id' => 'desc'], 1
         );
 
         if (empty($sms)) {
-            return new ApiJsonResponse(2005, 'sms code error');
+            return new ApiJsonResponse(2005, '验证码错误');
         }
         $sms = $sms[0];
         if (!$sms instanceof Sms || strcmp($sms->getType(), 'login') !== 0) {
             return new ApiJsonResponse(2005, 'sms code type error');
         }
         if ($sms->getUsed() != null) {
-            return new ApiJsonResponse(2006, 'sms used');
+            return new ApiJsonResponse(2006, '验证码已被使用过');
         }
         $user = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(['phone' => $data['phone']]);
         if (empty($user) || !($user instanceof User)) {
-            return new ApiJsonResponse(2007, 'user not exist');
+            return new ApiJsonResponse(2007, '用户不存在');
         }
         $user->setPlatform($request->getExtra('platform'));
         $loginResult = $this->loginProcess($user);
         if (!$loginResult) {
-            return new ApiJsonResponse(500, 'login process error');
+            return new ApiJsonResponse(500, '登录过程中遇到服务器错误');
         }
         $sms->setUsed(new \DateTime());
         $em = $this->getDoctrine()->getManager();
@@ -173,7 +173,7 @@ class AuthController extends Controller
         try {
             $em->flush();
         } catch (Exception $e) {
-            return new ApiJsonResponse(500, 'mark code used error');
+            return new ApiJsonResponse(500, '设置验证码状态时出错');
         }
         return new ApiJsonResponse(0, 'login success', $loginResult->getSelfArr());
 
@@ -209,19 +209,19 @@ class AuthController extends Controller
         $data = $request->getData();
         //check notnull data fields
         if (empty($data['phone']) || empty($data['password'])) {
-            return new ApiJsonResponse(1003, 'need phone and password');
+            return new ApiJsonResponse(1003, '缺少手机号码或者密码');
         }
         $user = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(['phone' => $data['phone']]);
         if (empty($user) || !($user instanceof User)) {
-            return new ApiJsonResponse(2007, 'user not exist');
+            return new ApiJsonResponse(2007, '用户不存在');
         }
         if (!$user->checkPassword($data['password'])) {
-            return new ApiJsonResponse(2003, 'password error');
+            return new ApiJsonResponse(2003, '密码错误');
         }
         $user->setPlatform($request->getExtra('platform'));
         $loginResult = $this->loginProcess($user);
         if (!$loginResult) {
-            return new ApiJsonResponse(500, 'login process error');
+            return new ApiJsonResponse(500, '登录过程中遇到未知错误');
         }
         return new ApiJsonResponse(0, 'login success', $loginResult->getSelfArr());
 

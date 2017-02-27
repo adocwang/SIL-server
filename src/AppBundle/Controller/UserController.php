@@ -81,7 +81,7 @@ class UserController extends Controller
         if (!empty($data['role_en_name'])) {
             $role = Role::createRole($data['role_en_name']);
             if (empty($role)) {
-                return new ApiJsonResponse(3001, 'role not exists');
+                return new ApiJsonResponse(3001, '角色不存在');
             }
             $data['role'] = Role::getRoleExpand($role);
         }
@@ -134,7 +134,7 @@ class UserController extends Controller
     {
         $data = $request->getData();
         if (empty($data['id']) && empty($data['phone'])) {
-            return new ApiJsonResponse(1003, 'need id or phone');
+            return new ApiJsonResponse(1003, '缺少id和手机号码');
         }
         /**
          * @var \AppBundle\Repository\UserRepository $userRespository
@@ -148,7 +148,7 @@ class UserController extends Controller
             $user = $userRepository->findOneByPhone($data['phone']);
         }
         if (empty($user)) {
-            return new ApiJsonResponse(2007, 'user not exists');
+            return new ApiJsonResponse(2007, '用户不存在');
         }
         if ($this->getUser()->getId() == $user->getId()) {
             return new ApiJsonResponse(0, 'ok', $user->getSelfArr());
@@ -198,11 +198,11 @@ class UserController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['phone']) || empty($data['true_name']) || empty($data['role'])) {
-            return new ApiJsonResponse(1003, 'need phone , true_name , role');
+            return new ApiJsonResponse(1003, '缺少手机号码或真实姓名或角色');
         }
 
         if ($this->getDoctrine()->getRepository('AppBundle:User')->findOneByPhone($data['phone'])) {
-            return new ApiJsonResponse(2008, 'phone already exists');
+            return new ApiJsonResponse(2008, '手机号码已存在');
         }
 
         $targetUser = new User();
@@ -213,12 +213,12 @@ class UserController extends Controller
 
 
         if (empty($role)) {
-            return new ApiJsonResponse(2009, 'role not exist');
+            return new ApiJsonResponse(2009, '角色不存在');
         }
         if (!empty($data['bank_id'])) {
             $bank = $this->getDoctrine()->getRepository('AppBundle:Bank')->find($data['bank_id']);
             if (empty($bank)) {
-                return new ApiJsonResponse(1003, 'bank not exist');
+                return new ApiJsonResponse(1003, '机构不存在');
             }
             $targetUser->setBank($bank);
         }
@@ -288,12 +288,12 @@ class UserController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['user_id'])) {
-            return new ApiJsonResponse(1003, 'need user_id');
+            return new ApiJsonResponse(1003, '缺少用户id');
         }
 
         $targetUser = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(['id' => $data['user_id']]);
         if (empty($targetUser) || !$targetUser instanceof User) {
-            return new ApiJsonResponse(2007, 'user not exist');
+            return new ApiJsonResponse(2007, '用户不存在');
         }
 
         if (!$this->isGranted('edit', $targetUser)) {

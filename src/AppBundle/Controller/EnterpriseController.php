@@ -184,7 +184,7 @@ class EnterpriseController extends Controller
     public function getEnterpriseAction($id)
     {
         if (empty($id)) {
-            return new ApiJsonResponse(1003, 'need id');
+            return new ApiJsonResponse(1003, '缺少企业id');
         }
         /**
          * @var \AppBundle\Repository\EnterpriseRepository $enterpriseRepository
@@ -195,7 +195,7 @@ class EnterpriseController extends Controller
         $enterpriseRepository = $this->getDoctrine()->getRepository('AppBundle:Enterprise');
         $enterprise = $enterpriseRepository->find($id);
         if (empty($enterprise)) {
-            return new ApiJsonResponse(2007, 'enterprise not exists');
+            return new ApiJsonResponse(2007, '企业不存在');
         }
         $nowUser = $this->getUser();
         $enterpriseResult = $enterprise->toArray();
@@ -282,12 +282,12 @@ class EnterpriseController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['id'])) {
-            return new ApiJsonResponse(1003, 'need id');
+            return new ApiJsonResponse(1003, '缺少企业id');
         }
 
         $enterprise = $this->getDoctrine()->getRepository('AppBundle:Enterprise')->findOneBy(['id' => $data['id']]);
         if (empty($enterprise) || !$enterprise instanceof Enterprise) {
-            return new ApiJsonResponse(2007, 'enterprise not exist');
+            return new ApiJsonResponse(2007, '企业不存在');
         }
 
         if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN) && !$this->getUser()->getRole()->isRole(Role::ROLE_END_PRESIDENT)) {
@@ -301,7 +301,7 @@ class EnterpriseController extends Controller
              */
             $bank = $this->getDoctrine()->getRepository('AppBundle:Bank')->find($data['bank_id']);
             if (empty($bank)) {
-                return new ApiJsonResponse(2007, 'bank not exists');
+                return new ApiJsonResponse(2007, '机构不存在');
             }
 
             $right = false;
@@ -341,13 +341,13 @@ class EnterpriseController extends Controller
         if (!empty($data['role_a_id'])) {
             $roleA = $this->getDoctrine()->getRepository('AppBundle:User')->find($data['role_a_id']);
             if (empty($roleA)) {
-                return new ApiJsonResponse(2008, 'role_a not exists');
+                return new ApiJsonResponse(2008, '主理不是系统中的用户');
             }
             if ($roleA->getBank() != $nowUserBank && $this->getUser()->getRole()->getRole() != 'ROLE_ADMIN') {
                 return new ApiJsonResponse(407, 'no permission to set role_a');
             }
             if (!$roleA->getRole()->isRole(Role::ROLE_CUSTOMER_MANAGER)) {
-                return new ApiJsonResponse(2009, 'role a not customer manager');
+                return new ApiJsonResponse(2009, '当前设置的主理不是客户经理');
             }
             $enterprise->setRoleA($roleA);
             $enterprise->setDistributeState(2);
@@ -364,13 +364,13 @@ class EnterpriseController extends Controller
         if (!empty($data['role_b_id'])) {
             $roleB = $this->getDoctrine()->getRepository('AppBundle:User')->find($data['role_b_id']);
             if (empty($roleB)) {
-                return new ApiJsonResponse(2008, 'role_b not exists');
+                return new ApiJsonResponse(2008, '协理不是系统中的用户');
             }
             if ($roleB->getBank() != $nowUserBank && $this->getUser()->getRole()->getRole() != 'ROLE_ADMIN') {
                 return new ApiJsonResponse(407, 'no permission to set role_b');
             }
             if (!$roleB->getRole()->isRole(Role::ROLE_CUSTOMER_MANAGER)) {
-                return new ApiJsonResponse(2009, 'role b not customer manager');
+                return new ApiJsonResponse(2009, '当前设置的协理不是客户经理');
             }
             $enterprise->setRoleB($roleB);
             $this->get('app.message_sender')->sendSysMessage(
@@ -426,12 +426,12 @@ class EnterpriseController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['name'])) {
-            return new ApiJsonResponse(1003, 'need name');
+            return new ApiJsonResponse(1003, '缺少企业名称');
         }
 
         $enterprise = $this->getDoctrine()->getRepository('AppBundle:Enterprise')->findOneByName($data['name']);
         if (!empty($enterprise)) {
-            return new ApiJsonResponse(2007, 'enterprise name exist');
+            return new ApiJsonResponse(2007, '同名企业已存在');
         }
         $enterprise = new Enterprise();
         $enterprise->setName($data['name']);
@@ -481,12 +481,12 @@ class EnterpriseController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['id']) || empty($data['accept'])) {
-            return new ApiJsonResponse(1003, 'need id and accept');
+            return new ApiJsonResponse(1003, '缺少企业id或选择');
         }
 
         $enterprise = $this->getDoctrine()->getRepository('AppBundle:Enterprise')->findOneBy(['id' => $data['id']]);
         if (empty($enterprise) || !$enterprise instanceof Enterprise) {
-            return new ApiJsonResponse(2007, 'enterprise not exist');
+            return new ApiJsonResponse(2007, '企业不存在');
         }
 
         if ($enterprise->getRoleA() != $this->getUser()) {
@@ -559,7 +559,7 @@ class EnterpriseController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['id']) || empty($data['data'])) {
-            return new ApiJsonResponse(1003, 'need id and data');
+            return new ApiJsonResponse(1003, '缺少id或数据');
         }
 
         /**
@@ -567,7 +567,7 @@ class EnterpriseController extends Controller
          */
         $enterprise = $this->getDoctrine()->getRepository('AppBundle:Enterprise')->find($data['id']);
         if (empty($enterprise) || !$enterprise instanceof Enterprise) {
-            return new ApiJsonResponse(2007, 'enterprise not exist');
+            return new ApiJsonResponse(2007, '企业不存在');
         }
 
         $finding = $enterprise->getFinding();
@@ -581,7 +581,7 @@ class EnterpriseController extends Controller
         //权限判断
         $nowUser = $this->getUser();
         if ($nowUser != $enterprise->getRoleA()) {
-            return new ApiJsonResponse(407, 'only role A can set finding');
+            return new ApiJsonResponse(407, '只有主理可以设置采集结果');
         }
 
         $em = $this->getDoctrine()->getManager();
@@ -619,7 +619,7 @@ class EnterpriseController extends Controller
     public function getEnterpriseFindingAction($enterprise_id)
     {
         if (empty($enterprise_id)) {
-            return new ApiJsonResponse(1003, 'need enterprise_id');
+            return new ApiJsonResponse(1003, '缺少企业id');
         }
         /**
          * @var \AppBundle\Repository\EnterpriseRepository $enterpriseRepository
@@ -629,7 +629,7 @@ class EnterpriseController extends Controller
         $enterpriseRepository = $this->getDoctrine()->getRepository('AppBundle:Enterprise');
         $enterprise = $enterpriseRepository->find($enterprise_id);
         if (empty($enterprise)) {
-            return new ApiJsonResponse(2007, 'enterprise not exists');
+            return new ApiJsonResponse(2007, '企业不存在');
         }
         $finding = $enterprise->getFinding();
         $findingArr = new \stdClass();
@@ -692,7 +692,7 @@ class EnterpriseController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['id']) || empty($data['pass'])) {
-            return new ApiJsonResponse(1003, 'need id and pass');
+            return new ApiJsonResponse(1003, '缺少企业id或选择');
         }
 
         /**
@@ -700,18 +700,18 @@ class EnterpriseController extends Controller
          */
         $enterprise = $this->getDoctrine()->getRepository('AppBundle:Enterprise')->find($data['id']);
         if (empty($enterprise) || !$enterprise instanceof Enterprise) {
-            return new ApiJsonResponse(2007, 'enterprise not exist');
+            return new ApiJsonResponse(2007, '企业不存在');
         }
 
         $finding = $enterprise->getFinding();
         if (empty($finding)) {
-            return new ApiJsonResponse(2007, 'finding not exist');
+            return new ApiJsonResponse(2007, '采集结果不存在');
         }
         if ($data['pass'] == '-1') {
             $newProgress = 3;
             $finding->setProgress($newProgress);
             if (empty($data['un_pass_reason'])) {
-                return new ApiJsonResponse(1003, 'need unpass reason');
+                return new ApiJsonResponse(1003, '缺少拒绝通过的理由');
             }
             $finding->setUnPassReason($this->getUser()->getTrueName() . '设置为未通过，原因：' . $data['un_pass_reason'] .
                 '，时间：' . (new \DateTime())->format('Y-m-d H:i:s') . "\n" . $finding->getUnPassReason());
@@ -766,7 +766,7 @@ class EnterpriseController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['id'])) {
-            return new ApiJsonResponse(1003, 'need id');
+            return new ApiJsonResponse(1003, '缺少采集结果id');
         }
 
         /**
@@ -775,12 +775,12 @@ class EnterpriseController extends Controller
          */
         $enterprise = $this->getDoctrine()->getRepository('AppBundle:Enterprise')->find($data['id']);
         if (empty($enterprise) || !$enterprise instanceof Enterprise) {
-            return new ApiJsonResponse(2007, 'enterprise not exist');
+            return new ApiJsonResponse(2007, '企业不存在');
         }
 
         $finding = $this->getDoctrine()->getRepository('AppBundle:Finding')->findOneByEnterprise($enterprise);
         if (empty($finding)) {
-            return new ApiJsonResponse(2007, 'finding not exist');
+            return new ApiJsonResponse(2007, '采集结果不存在');
         }
         $finding->setProgress(-1);
         $em = $this->getDoctrine()->getManager();

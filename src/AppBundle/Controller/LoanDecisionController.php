@@ -90,7 +90,7 @@ class LoanDecisionController extends Controller
     {
         $data = $request->getData();
         if (empty($data['id']) || empty($data['data'])) {
-            return new ApiJsonResponse(1003, 'need id and data');
+            return new ApiJsonResponse(1003, '缺少id或者数据');
         }
         $data['data'] = json_decode($data['data'], true);
         $historyData = $this->get('doctrine_mongodb')->

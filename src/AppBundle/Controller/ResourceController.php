@@ -46,7 +46,7 @@ class ResourceController extends Controller
         $fileUploader = $this->get('app.file_uploader');
         $file = $fileUploader->upload($request);
         if (empty($file)) {
-            return new ApiJsonResponse(1003, 'file empty');
+            return new ApiJsonResponse(1003, '文件为空');
         }
         $em = $this->getDoctrine()->getManager();
         $em->persist($file);

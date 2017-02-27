@@ -113,7 +113,7 @@ class BlackListController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['name'])) {
-            return new ApiJsonResponse(1003, 'need name');
+            return new ApiJsonResponse(1003, '缺少黑名单项目名称');
         }
 
         if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN)) {
@@ -164,7 +164,7 @@ class BlackListController extends Controller
         //check notnull data fields
 //        print_r($data);exit;
         if (empty($data['id'])) {
-            return new ApiJsonResponse(1003, 'need id');
+            return new ApiJsonResponse(1003, '缺少id');
         }
 
         /**
@@ -172,7 +172,7 @@ class BlackListController extends Controller
          */
         $blacklist = $this->getDoctrine()->getRepository('AppBundle:Blacklist')->find($data['id']);
         if (empty($blacklist) || !$blacklist instanceof Blacklist) {
-            return new ApiJsonResponse(2007, 'blacklist not exist');
+            return new ApiJsonResponse(2007, '黑名单不存在');
         }
 
         $em = $this->getDoctrine()->getManager();
