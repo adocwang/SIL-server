@@ -35,26 +35,45 @@ class VCCompanyController extends Controller
      * )
      *
      * @Route("/vc_company/list")
-     * @Method("GET")
+     * @Method("POST|GET")
+     * @param JsonRequest $request
      * @return ApiJsonResponse
      */
-    public function list()
+    public function list(JsonRequest $request)
     {
         /**
          * @var User $nowUser
          */
         $nowUser = $this->getUser();
+        $data = $request->getData();
 
         if ($nowUser->getRole()->getRole() != 'ROLE_ADMIN') {
             return new ApiJsonResponse('403');
         }
-
-        $cvCompanyList = $this->getDoctrine()->getRepository('AppBundle:VCCompany')->findAll();
-        $list = [];
-        foreach ($cvCompanyList as $VCCompany) {
-            $list[] = $VCCompany->toArray();
+        if (empty($data['page']) || $data['page'] < 1) {
+            $data['page'] = 1;
         }
-        return new ApiJsonResponse(0, 'ok', $list);
+        $pageLimit = $this->getParameter('page_limit');
+        if (!empty($data['page_limit']) && $data['page_limit'] > 0) {
+            $pageLimit = $data['page_limit'];
+        }
+
+        /**
+         * @var \Doctrine\ORM\Tools\Pagination\Paginator $paginator
+         * @var \AppBundle\Entity\VCCompany $vcCompany
+         */
+        $pageData = $this->getDoctrine()->getRepository('AppBundle:VCCompany')->listPage($data['page'], $pageLimit, $data);
+        $vcCompanies = [];
+        foreach ($pageData['data'] as $vcCompany) {
+            $vcCompanies[] = $vcCompany->toArray();
+        }
+        return new ApiJsonResponse(0, 'ok', $vcCompanies);
+        return new ApiJsonResponse(0, 'ok', [
+            'count' => $pageData['count'],
+            'page_limit' => $pageLimit,
+            'page_count' => $pageData['pageCount'],
+            'vc_companies' => $vcCompanies
+        ]);
     }
 
     /**

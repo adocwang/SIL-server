@@ -139,9 +139,10 @@ class BankController extends Controller
      *     section="机构",
      *     description="修改机构",
      *     parameters={
-     *         {"name"="id", "dataType"="integer", "required"=true, "description"="机构"},
+     *         {"name"="id", "dataType"="integer", "required"=true, "description"="id"},
      *         {"name"="name", "dataType"="string", "required"=false, "description"="机构"},
      *         {"name"="address", "dataType"="string", "required"=false, "description"="地址"},
+     *         {"name"="phone", "dataType"="string", "required"=false, "description"="电话"},
      *         {"name"="coordinates", "dataType"="string", "required"=false, "description"="坐标"},
      *         {"name"="state", "dataType"="string", "required"=false, "description"="状态"},
      *         {"name"="superior_id", "dataType"="integer", "required"=false, "description"="上级id"}
@@ -188,6 +189,9 @@ class BankController extends Controller
         }
         if (!empty($data['address'])) {
             $bank->setAddress($data['address']);
+        }
+        if (!empty($data['phone'])) {
+            $bank->setPhone($data['phone']);
         }
         if (!empty($data['coordinates'])) {
             $bank->setCoordinates($data['coordinates']);

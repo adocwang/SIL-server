@@ -1,6 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
  * VCCompanyRepository
@@ -10,4 +11,26 @@ namespace AppBundle\Repository;
  */
 class VCCompanyRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function listPage($page, $pageLimit = 20, $condition)
+    {
+        $queryBuilder = $this->_em->createQueryBuilder()
+            ->select('c')
+            ->from('AppBundle:VCCompany', 'c');
+        if (!empty($condition['name'])) {
+            $queryBuilder->orWhere($queryBuilder->expr()->like('c.name', ':name'));
+            $queryBuilder->setParameter('name', '%' . $condition['name'] . '%');
+        }
+        $query = $queryBuilder->getQuery();
+        $query->setFirstResult(($page - 1) * $pageLimit)
+            ->setMaxResults($pageLimit);
+        $paginator = new Paginator($query, $fetchJoinCollection = true);
+
+        $result = [
+            'count' => $paginator->count(),
+            'pageCount' => ceil($paginator->count() / $pageLimit),
+            'data' => $paginator->getIterator()
+        ];
+        return $result;
+
+    }
 }
