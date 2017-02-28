@@ -67,7 +67,7 @@ class VCCompanyController extends Controller
         foreach ($pageData['data'] as $vcCompany) {
             $vcCompanies[] = $vcCompany->toArray();
         }
-        return new ApiJsonResponse(0, 'ok', $vcCompanies);
+//        return new ApiJsonResponse(0, 'ok', $vcCompanies);
         return new ApiJsonResponse(0, 'ok', [
             'count' => $pageData['count'],
             'page_limit' => $pageLimit,
