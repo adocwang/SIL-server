@@ -8,7 +8,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 /**
  * Log
  *
- * @ORM\Table(name="log")
+ * @ORM\Table(indexes={@ORM\Index(name="module", columns={"module"})})
  * @ORM\Entity(repositoryClass="AppBundle\Repository\LogRepository")
  */
 class Log

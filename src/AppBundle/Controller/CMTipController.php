@@ -210,7 +210,7 @@ class CMTipController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($cmTip);
         $em->flush();
-        $this->get('app.op_logger')->logCreateAction('cm_tip', $cmTip->getId());
+        $this->get('app.op_logger')->logCreateAction('话术', ['话术id' => $cmTip->getId()]);
         return new ApiJsonResponse(0, 'add success', $cmTip->toArray());
     }
 
@@ -274,11 +274,14 @@ class CMTipController extends Controller
         }
         if (!empty($data['state'])) {
             $cmTip->setState($data['state']);
+            if ($data['state'] == 3) {
+                $this->get('app.op_logger')->logDeleteAction('话术', ['话术id' => $cmTip->getId()]);
+            }
         }
         $em = $this->getDoctrine()->getManager();
         $em->persist($cmTip);
         $em->flush();
-        $this->get('app.op_logger')->logUpdateAction('cm_tip', $cmTip->toArray());
+        $this->get('app.op_logger')->logUpdateAction('话术', ['话术id' => $cmTip->getId()]);
         return new ApiJsonResponse(0, 'update success', $cmTip->toArray());
     }
 

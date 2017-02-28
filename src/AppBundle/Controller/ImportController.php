@@ -92,7 +92,7 @@ class ImportController extends Controller
             $user->setState(State::STATE_UN_ACTIVE);
             $em->persist($user);
             $em->flush();
-            $this->get('app.op_logger')->logCreateAction('user', $user->getId());
+            $this->get('app.op_logger')->logCreateAction('用户', ['手机' => $user->getPhone()]);
         }
         return new ApiJsonResponse(0, 'saved', [
             "successCount" => (count($lines) - count($errorLines)),
@@ -171,7 +171,7 @@ class ImportController extends Controller
             $bank->setState(State::STATE_NORMAL);
             $em->persist($bank);
             $em->flush();
-            $this->get('app.op_logger')->logCreateAction('bank', $bank->getId());
+            $this->get('app.op_logger')->logCreateAction('机构', ['名称' => $bank->getName()]);
         }
         return new ApiJsonResponse(0, 'saved', [
             "successCount" => (count($lines) - count($errorLines)),
@@ -235,7 +235,7 @@ class ImportController extends Controller
             $VCCompany->setVcName($line[1]);
             $em->persist($VCCompany);
             $em->flush();
-            $this->get('app.op_logger')->logCreateAction('vc_company', $VCCompany->getId());
+            $this->get('app.op_logger')->logCreateAction('投资公司', ['名称' => $VCCompany->getName()]);
         }
         return new ApiJsonResponse(0, 'saved', [
             "successCount" => (count($lines) - count($errorLines)),

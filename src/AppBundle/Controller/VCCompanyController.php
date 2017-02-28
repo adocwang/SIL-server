@@ -108,7 +108,7 @@ class VCCompanyController extends Controller
         $em->persist($vcCompany);
         $em->flush();
 
-        $this->get('app.op_logger')->logCreateAction('vc_company', $vcCompany->getId());
+        $this->get('app.op_logger')->logCreateAction('投资公司', ['名称' => $vcCompany->getName()]);
         return new ApiJsonResponse(0, 'add success', $vcCompany->toArray());
     }
 
@@ -171,12 +171,15 @@ class VCCompanyController extends Controller
 
         if (!empty($data['state'])) {
             $VCCompany->setState($data['state']);
+            if ($data['state'] == 3) {
+                $this->get('app.op_logger')->logDeleteAction('投资公司', ['名称' => $VCCompany->getName()]);
+            }
         }
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($VCCompany);
         $em->flush();
-        $this->get('app.op_logger')->logUpdateAction('vc_company', $VCCompany->toArray());
+        $this->get('app.op_logger')->logUpdateAction('投资公司', ['名称' => $VCCompany->getName()]);
         return new ApiJsonResponse(0, 'add success', $VCCompany->toArray());
     }
 }

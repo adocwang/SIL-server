@@ -128,7 +128,7 @@ class BankController extends Controller
         $em->persist($bank);
         $em->flush();
 
-        $this->get('app.op_logger')->logCreateAction('bank', $bank->getId());
+        $this->get('app.op_logger')->logCreateAction('银行', ['名称' => $bank->getName()]);
         return new ApiJsonResponse(0, 'add success', $bank->toArray());
     }
 
@@ -196,7 +196,7 @@ class BankController extends Controller
         if (!empty($data['state'])) {
             $bank->setState($data['state']);
             if ($data['state'] == 3) {
-                $this->get('app.op_logger')->logDeleteAction('bank', $bank->getId());
+                $this->get('app.op_logger')->logDeleteAction('银行', ['名称' => $bank->getName()]);
             }
         }
 
@@ -229,7 +229,7 @@ class BankController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($bank);
         $em->flush();
-        $this->get('app.op_logger')->logUpdateAction('bank', $bank->toArrayNoSubordinate());
+        $this->get('app.op_logger')->logUpdateAction('银行', ['名称' => $bank->getName()]);
         return new ApiJsonResponse(0, 'add success', $bank->toArray());
     }
 }

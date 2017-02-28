@@ -357,8 +357,8 @@ class EnterpriseController extends Controller
                 '您已被分配为 ' . $enterprise->getName() . '的主理！请悉知！',
                 ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
             );
-            $this->get('app.op_logger')->logOtherAction('enterprise', 'assigning',
-                ['id' => $enterprise->getId(), 'role_a' => $roleA->getId()]);
+            $this->get('app.op_logger')->logOtherAction('企业', '分配',
+                ['名称' => $enterprise->getName(), '主理' => $roleA->getPhone()]);
         }
 
         if (!empty($data['role_b_id'])) {
@@ -379,18 +379,21 @@ class EnterpriseController extends Controller
                 '您已被分配为 ' . $enterprise->getName() . '的协理！请悉知！',
                 ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
             );
-            $this->get('app.op_logger')->logOtherAction('enterprise', 'assigning',
-                ['id' => $enterprise->getId(), 'role_b' => $roleB->getId()]);
+            $this->get('app.op_logger')->logOtherAction('企业', '分配',
+                ['名称' => $enterprise->getName(), '协理' => $roleB->getPhone()]);
         }
 
         if (!empty($data['state'])) {
             $enterprise->setState($data['state']);
+            if ($data['state'] == 3) {
+                $this->get('app.op_logger')->logDeleteAction('企业', ['企业名称' => $enterprise->getName()]);
+            }
         }
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($enterprise);
         $em->flush();
-        $this->get('app.op_logger')->logUpdateAction('enterprise', $enterprise->toArray());
+        $this->get('app.op_logger')->logUpdateAction('企业', ['企业名称' => $enterprise->getName()]);
         return new ApiJsonResponse(0, 'update success', $enterprise->toArray());
     }
 
@@ -441,7 +444,7 @@ class EnterpriseController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($enterprise);
         $em->flush();
-        $this->get('app.op_logger')->logCreateAction('enterprise', $enterprise->getId());
+        $this->get('app.op_logger')->logCreateAction('企业', ['企业名称' => $enterprise->getId()]);
         return new ApiJsonResponse(0, 'add success', $enterprise->toArray());
     }
 
@@ -511,12 +514,12 @@ class EnterpriseController extends Controller
                     ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
                 );
             }
-            $this->get('app.op_logger')->logOtherAction('enterprise', '拒绝认领',
-                ['企业名称' => $enterprise->getName(), 'user' => $this->getUser()->getTrueName()]);
+            $this->get('app.op_logger')->logOtherAction('企业', '拒绝认领',
+                ['企业名称' => $enterprise->getName(), '用户' => $this->getUser()->getTrueName()]);
         } else {
             $enterprise->setDistributeState(3);
-            $this->get('app.op_logger')->logOtherAction('enterprise', '接受分配',
-                ['企业名称' => $enterprise->getName(), 'user' => $this->getUser()->getTrueName()]);
+            $this->get('app.op_logger')->logOtherAction('企业', '接受分配',
+                ['企业名称' => $enterprise->getName(), '用户' => $this->getUser()->getTrueName()]);
         }
 
         $em = $this->getDoctrine()->getManager();
@@ -587,8 +590,7 @@ class EnterpriseController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($finding);
         $em->flush();
-        $this->get('app.op_logger')->logOtherAction('enterprise', 'update_finding',
-            ['id' => $enterprise->getId(), 'role_a' => $enterprise->getRoleA()->getId()]);
+        $this->get('app.op_logger')->logOtherAction('采集结果', '添加或修改', ['企业名称' => $enterprise->getName()]);
         return new ApiJsonResponse(0, 'set success', $finding);
     }
 
@@ -715,6 +717,7 @@ class EnterpriseController extends Controller
             }
             $finding->setUnPassReason($this->getUser()->getTrueName() . '设置为未通过，原因：' . $data['un_pass_reason'] .
                 '，时间：' . (new \DateTime())->format('Y-m-d H:i:s') . "\n" . $finding->getUnPassReason());
+            $this->get('app.op_logger')->logOtherAction('采集结果', '不通过', ['企业名称' => $enterprise->getName()]);
         } elseif ($data['pass'] == '1') {
             $newProgress = $finding->getProgress() + 1;
             if ($newProgress > 2) {
@@ -723,12 +726,12 @@ class EnterpriseController extends Controller
             $finding->setProgress($newProgress);
             $finding->setUnPassReason($this->getUser()->getTrueName() . '设置为通过，时间：' .
                 (new \DateTime())->format('Y-m-d H:i:s') . "\n" . $finding->getUnPassReason());
+            $this->get('app.op_logger')->logOtherAction('采集结果', '通过', ['企业名称' => $enterprise->getName()]);
         }
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($finding);
         $em->flush();
-        $this->get('app.op_logger')->logOtherAction('enterprise', 'pass_finding', $finding->toArray());
         return new ApiJsonResponse(0, 'set pass success', $finding->toArray());
     }
 
@@ -786,7 +789,7 @@ class EnterpriseController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($finding);
         $em->flush();
-        $this->get('app.op_logger')->logOtherAction('enterprise', '重新采集', ['公司名称' => $enterprise->getName()]);
+        $this->get('app.op_logger')->logOtherAction('采集结果', '重新采集', ['公司名称' => $enterprise->getName()]);
         return new ApiJsonResponse(0, 're_finding success');
     }
 }

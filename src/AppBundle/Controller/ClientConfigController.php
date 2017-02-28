@@ -148,7 +148,7 @@ class ClientConfigController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($config);
         $em->flush();
-        $this->get('app.op_logger')->logUpdateAction('client_config', ['key' => $config->getConfigKey()]);
+        $this->get('app.op_logger')->logUpdateAction('系统配置', ['key' => $config->getConfigKey()]);
         return new ApiJsonResponse(0, 'ok', $config->toArray());
     }
 }

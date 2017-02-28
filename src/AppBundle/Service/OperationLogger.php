@@ -47,12 +47,11 @@ class OperationLogger
 
     /**
      * @param $module string
-     * @param $id integer
+     * @param $data array
      */
-    public function logDeleteAction($module, $id)
+    public function logDeleteAction($module, $data)
     {
-        $data = ['id' => $id];
-        $this->writeLog($module, 'delete', json_encode($data));
+        $this->writeLog($module, '删除', json_encode($data));
     }
 
     /**
@@ -61,17 +60,17 @@ class OperationLogger
      */
     public function logUpdateAction($module, $data)
     {
-        $this->writeLog($module, 'update', json_encode($data));
+        $this->writeLog($module, '修改', json_encode($data));
     }
 
     /**
      * @param $module string
-     * @param $id integer
+     * @param $data array
      * @internal param array $data
      */
-    public function logCreateAction($module, $id)
+    public function logCreateAction($module, $data)
     {
-        $this->writeLog($module, 'create', json_encode(['id' => $id]));
+        $this->writeLog($module, '添加', json_encode($data));
     }
 
     /**

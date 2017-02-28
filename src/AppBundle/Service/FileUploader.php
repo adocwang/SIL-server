@@ -34,13 +34,14 @@ class FileUploader
         if (empty($file)) {
             return;
         }
+        $dateDir = (new \DateTime())->format('Y') . DIRECTORY_SEPARATOR . (new \DateTime())->format('m') . DIRECTORY_SEPARATOR;
         $fileName = md5(uniqid()) . '.' . $file->getClientOriginalExtension();
         $fileEntity = new File();
         $fileEntity->setOriginalName($file->getClientOriginalName());
-        $fileEntity->setPath($fileName);
+        $fileEntity->setPath($dateDir . $fileName);
         $fileEntity->setMimeType($file->getMimeType());
 
-        $file->move($this->targetDir, $fileName);
+        $file->move($this->targetDir . DIRECTORY_SEPARATOR . $dateDir, $fileName);
         return $fileEntity;
     }
 }

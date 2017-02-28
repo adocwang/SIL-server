@@ -128,7 +128,7 @@ class BlackListController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($blackItem);
         $em->flush();
-        $this->get('app.op_logger')->logUpdateAction('blacklist', $blackItem->toArray());
+        $this->get('app.op_logger')->logUpdateAction('黑名单', ['名称' => $blackItem->getName()]);
         return new ApiJsonResponse(0, 'update success', $blackItem->toArray());
     }
 
@@ -176,9 +176,9 @@ class BlackListController extends Controller
         }
 
         $em = $this->getDoctrine()->getManager();
+        $this->get('app.op_logger')->logDeleteAction('黑名单', ['名称' => $blacklist->getName()]);
         $em->remove($blacklist);
         $em->flush();
-        $this->get('app.op_logger')->logDeleteAction('blacklist', $blacklist->getId());
         return new ApiJsonResponse(0, 'delete success');
     }
 
