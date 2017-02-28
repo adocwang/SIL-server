@@ -51,7 +51,7 @@ class OperationLogger
      */
     public function logDeleteAction($module, $data)
     {
-        $this->writeLog($module, '删除', json_encode($data));
+        $this->writeLog($module, '删除', json_encode($data, JSON_UNESCAPED_UNICODE));
     }
 
     /**
@@ -60,7 +60,7 @@ class OperationLogger
      */
     public function logUpdateAction($module, $data)
     {
-        $this->writeLog($module, '修改', json_encode($data));
+        $this->writeLog($module, '修改', json_encode($data, JSON_UNESCAPED_UNICODE));
     }
 
     /**
@@ -70,7 +70,7 @@ class OperationLogger
      */
     public function logCreateAction($module, $data)
     {
-        $this->writeLog($module, '添加', json_encode($data));
+        $this->writeLog($module, '添加', json_encode($data, JSON_UNESCAPED_UNICODE));
     }
 
     /**
@@ -83,6 +83,6 @@ class OperationLogger
      */
     public function logOtherAction($module, $action, $data, User $user = null)
     {
-        $this->writeLog($module, $action, json_encode($data), $user);
+        $this->writeLog($module, $action, json_encode($data, JSON_UNESCAPED_UNICODE), $user);
     }
 }
