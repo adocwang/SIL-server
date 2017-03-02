@@ -404,7 +404,7 @@ class EnterpriseController extends Controller
         $em->persist($enterprise);
         $em->flush();
         $this->get('app.op_logger')->logUpdateAction('企业', ['企业名称' => $enterprise->getName()]);
-        return new ApiJsonResponse(0, 'update success', $enterprise->toArray());
+        return new ApiJsonResponse(0, 'update success');
     }
 
     /**
