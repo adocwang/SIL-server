@@ -57,14 +57,9 @@ class LoanController extends Controller
         }
         //TODO 整个progress==0都是为了给企业那边临时打补丁，以后要删掉
         if ($data['progress'] == 0) {
-            $data['only_mine'] = 1;
+            $data['only_role_ab'] = 1;
             $data['distribute_state'] = 3;
             $data['now_user'] = $this->getUser();
-            if ($this->getUser()->getRole()->isRole(Role::ROLE_CUSTOMER_MANAGER)) {
-                $data['only_user'] = 1;
-            } else {
-                $data['bank'] = $this->getUser()->getBank();
-            }
 
             /**
              * @var \Doctrine\ORM\Tools\Pagination\Paginator $paginator
