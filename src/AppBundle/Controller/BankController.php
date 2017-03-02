@@ -69,6 +69,7 @@ class BankController extends Controller
         }
         $banks = $queryBuilder->getQuery()->getResult();
         $bankList = [];
+        $bankList[] = $nowUser->getBank();
         foreach ($banks as $bank) {
             $bankList[] = $bank->toArrayNoSubordinate();
         }
@@ -110,7 +111,10 @@ class BankController extends Controller
         if (empty($data['name'])) {
             return new ApiJsonResponse(1003, '缺少名称');
         }
-        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN) && !$this->getUser()->getRole()->isRole(Role::ROLE_BRANCH_PRESIDENT)) {
+        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN)
+            && !$this->getUser()->getRole()->isRole(Role::ROLE_BRANCH_PRESIDENT)
+            && !$this->getUser()->getRole()->isRole(Role::ROLE_CHANNEL_MANAGER)
+        ) {
             return new ApiJsonResponse(407, '无权限');
         }
 
@@ -120,7 +124,7 @@ class BankController extends Controller
             $bank->setAddress($data['address']);
         }
         if (!empty($data['phone'])) {
-            $bank->setAddress($data['phone']);
+            $bank->setPhone($data['phone']);
         }
         $bank->setSuperior($this->getUser()->getBank());
 
@@ -209,23 +213,23 @@ class BankController extends Controller
              * @var Bank $superior
              */
             $superior = $bankRepository->find($data['superior_id']);
-            if (empty($superior)) {
+            if (empty($superior) || $superior->getState() != 1) {//上级机构不存在或者被冻结
                 return new ApiJsonResponse(2007, '上级机构不存在');
             }
             $bank->setSuperior($superior);
             $right = false;
             $nowUserBank = $this->getUser()->getBank();
-            $nowSuperior = $superior->getSuperior();
+            $tmpSuperior = $superior;
             do {
-                if (!empty($nowSuperior)) {
-                    if ($nowSuperior == $nowUserBank) {
+                if (!empty($tmpSuperior)) {
+                    if ($tmpSuperior == $nowUserBank) {
                         $right = true;
                         break;
                     }
                 } else {
                     break;
                 }
-            } while ($nowSuperior = $nowSuperior->getSuperior());
+            } while ($tmpSuperior = $tmpSuperior->getSuperior());
             if (!$right) {
                 return new ApiJsonResponse(407, 'no permission');
             }

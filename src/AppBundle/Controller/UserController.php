@@ -223,8 +223,6 @@ class UserController extends Controller
             $targetUser->setBank($bank);
         }
         $targetUser->setRole($role);
-
-        $targetUser->setBank($this->getUser()->getBank());
         $targetUser->setToken(md5(uniqid()));
         $targetUser->setState(State::STATE_UN_ACTIVE);
         /**
@@ -273,6 +271,7 @@ class UserController extends Controller
      *     statusCodes={
      *         1003="缺少参数",
      *         2007="用户不存在",
+     *         2008="机构不存在",
      *         407="无权限",
      *     }
      * )
@@ -329,8 +328,10 @@ class UserController extends Controller
 
         if (!empty($data['bank_id'])) {
             $bank = $this->getDoctrine()->getRepository('AppBundle:Bank')->find($data['bank_id']);
-            if (!empty($bank)) {
+            if (!empty($bank) && $bank->getState() == 1) {
                 $targetUser->setBank($bank);
+            } else {
+                return new ApiJsonResponse(2008, '机构不存在');
             }
         }
 

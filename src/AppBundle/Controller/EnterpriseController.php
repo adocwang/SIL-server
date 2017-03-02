@@ -319,18 +319,20 @@ class EnterpriseController extends Controller
             if (!$right) {
                 return new ApiJsonResponse(407, 'no permission to set bank');
             }
-            $enterprise->setBank($bank);
-            $presidentRoles = [];
-            $presidentRoles[] = Role::createRole(Role::ROLE_BRANCH_PRESIDENT);
-            $presidentRoles[] = Role::createRole(Role::ROLE_END_PRESIDENT);
-            $managers = $this->getDoctrine()->getRepository('AppBundle:User')->findBy(['bank' => $bank, 'role' => $presidentRoles]);
-            foreach ($managers as $manager) {
-                $this->get('app.message_sender')->sendSysMessage(
-                    $manager,
-                    '有一个企业已被分配到您的机构',
-                    $enterprise->getName() . '已被分配到您的机构！请处理！',
-                    ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
-                );
+            if ($bank != $enterprise->getBank()) {
+                $enterprise->setBank($bank);
+                $presidentRoles = [];
+                $presidentRoles[] = Role::createRole(Role::ROLE_BRANCH_PRESIDENT);
+                $presidentRoles[] = Role::createRole(Role::ROLE_END_PRESIDENT);
+                $managers = $this->getDoctrine()->getRepository('AppBundle:User')->findBy(['bank' => $bank, 'role' => $presidentRoles]);
+                foreach ($managers as $manager) {
+                    $this->get('app.message_sender')->sendSysMessage(
+                        $manager,
+                        '有一个企业已被分配到您的机构',
+                        $enterprise->getName() . '已被分配到您的机构！请处理！',
+                        ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
+                    );
+                }
             }
         }
 
@@ -349,16 +351,18 @@ class EnterpriseController extends Controller
             if (!$roleA->getRole()->isRole(Role::ROLE_CUSTOMER_MANAGER)) {
                 return new ApiJsonResponse(2009, '当前设置的主理不是客户经理');
             }
-            $enterprise->setRoleA($roleA);
-            $enterprise->setDistributeState(2);
-            $this->get('app.message_sender')->sendSysMessage(
-                $roleA,
-                '您被分配为一个新企业的主理',
-                '您已被分配为 ' . $enterprise->getName() . '的主理！请悉知！',
-                ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
-            );
-            $this->get('app.op_logger')->logOtherAction('企业', '分配',
-                ['名称' => $enterprise->getName(), '主理' => $roleA->getPhone()]);
+            if ($enterprise->getRoleA() != $roleA) {
+                $enterprise->setRoleA($roleA);
+                $enterprise->setDistributeState(2);
+                $this->get('app.message_sender')->sendSysMessage(
+                    $roleA,
+                    '您被分配为一个新企业的主理',
+                    '您已被分配为 ' . $enterprise->getName() . '的主理！请悉知！',
+                    ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
+                );
+                $this->get('app.op_logger')->logOtherAction('企业', '分配',
+                    ['名称' => $enterprise->getName(), '主理' => $roleA->getPhone()]);
+            }
         }
 
         if (!empty($data['role_b_id'])) {
@@ -372,15 +376,17 @@ class EnterpriseController extends Controller
             if (!$roleB->getRole()->isRole(Role::ROLE_CUSTOMER_MANAGER)) {
                 return new ApiJsonResponse(2009, '当前设置的协理不是客户经理');
             }
-            $enterprise->setRoleB($roleB);
-            $this->get('app.message_sender')->sendSysMessage(
-                $roleB,
-                '您被分配为一个新企业的协理',
-                '您已被分配为 ' . $enterprise->getName() . '的协理！请悉知！',
-                ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
-            );
-            $this->get('app.op_logger')->logOtherAction('企业', '分配',
-                ['名称' => $enterprise->getName(), '协理' => $roleB->getPhone()]);
+            if ($enterprise->getRoleB() != $roleB) {
+                $enterprise->setRoleB($roleB);
+                $this->get('app.message_sender')->sendSysMessage(
+                    $roleB,
+                    '您被分配为一个新企业的协理',
+                    '您已被分配为 ' . $enterprise->getName() . '的协理！请悉知！',
+                    ['page' => 'enterprise_operation', 'param' => ['id' => $enterprise->getId()]]
+                );
+                $this->get('app.op_logger')->logOtherAction('企业', '分配',
+                    ['名称' => $enterprise->getName(), '协理' => $roleB->getPhone()]);
+            }
         }
 
         if (!empty($data['state'])) {

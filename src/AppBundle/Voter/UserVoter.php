@@ -61,6 +61,23 @@ class UserVoter extends Voter
             if ($subject->getId() == $nowUser->getId()) {
                 return true;
             }
+
+            //银行只能是自己银行和下级银行
+            $right = false;
+            $nowSuperior = $subject->getBank();
+            do {
+                if (!empty($nowSuperior)) {
+                    if ($nowSuperior == $nowUser->getBank()) {
+                        $right = true;
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            } while ($nowSuperior = $nowSuperior->getSuperior());
+            if (!$right) {
+                return false;
+            }
             //客户经理只有行长和管理员能操作
             if ($subject->getRole()->isRole(Role::ROLE_CUSTOMER_MANAGER) &&
                 ($nowUser->getRole()->isRole(Role::ROLE_PRESIDENT) || $nowUser->getRole()->isRole(Role::ROLE_ADMIN))
