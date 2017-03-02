@@ -303,6 +303,9 @@ class EnterpriseController extends Controller
             if (empty($bank)) {
                 return new ApiJsonResponse(2007, '机构不存在');
             }
+            if ($bank->getState() != 1) {
+                return new ApiJsonResponse(2007, '机构当前状态为不可用');
+            }
 
             $right = false;
             $nowSuperior = $bank;

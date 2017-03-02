@@ -220,6 +220,9 @@ class UserController extends Controller
             if (empty($bank)) {
                 return new ApiJsonResponse(1003, '机构不存在');
             }
+            if ($bank->getState() != 1) {
+                return new ApiJsonResponse(2007, '机构当前状态为不可用');
+            }
             $targetUser->setBank($bank);
         }
         $targetUser->setRole($role);
@@ -328,11 +331,13 @@ class UserController extends Controller
 
         if (!empty($data['bank_id'])) {
             $bank = $this->getDoctrine()->getRepository('AppBundle:Bank')->find($data['bank_id']);
-            if (!empty($bank) && $bank->getState() == 1) {
-                $targetUser->setBank($bank);
-            } else {
+            if (empty($bank)) {
                 return new ApiJsonResponse(2008, '机构不存在');
             }
+            if ($bank->getState() != 1) {
+                return new ApiJsonResponse(2007, '机构当前状态为不可用');
+            }
+            $targetUser->setBank($bank);
         }
 
         if (!empty($data['phone'])) {

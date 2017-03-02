@@ -68,6 +68,7 @@ class BankController extends Controller
             $queryBuilder->setParameter('superior', $nowUser->getBank());
             $queryBuilder->andWhere('a.state = 1');
         }
+        $queryBuilder->orderBy('a.id', 'ASC');
         $banks = $queryBuilder->getQuery()->getResult();
         array_push($banks, $nowUser->getBank());
         $bankList = [];
