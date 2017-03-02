@@ -242,7 +242,7 @@ class AuthController extends Controller
         $em->persist($user);
         try {
             $em->flush();
-            $this->get('app.op_logger')->logOtherAction('用户', '登录', ['手机号码' => $user->getPhone()], $user);
+            $this->get('app.op_logger')->logOtherAction('用户', '登录', ['目标用户' => $user->getPhone()], $user);
         } catch (Exception $e) {
             return null;
         }

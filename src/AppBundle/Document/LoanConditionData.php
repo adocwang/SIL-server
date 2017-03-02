@@ -20,8 +20,14 @@ class LoanConditionData
 
     /**
      * @MongoDB\Field(type="integer")
+     * @MongoDB\Index(unique=true, order="asc")
      */
     protected $enterpriseId;
+
+    /**
+     * @MongoDB\Field(type="integer")
+     */
+    protected $points = 0;
 
     /**
      * @MongoDB\Hash
@@ -80,5 +86,27 @@ class LoanConditionData
     public function getData()
     {
         return $this->data;
+    }
+
+    /**
+     * Set points
+     *
+     * @param integer $points
+     * @return self
+     */
+    public function setPoints($points)
+    {
+        $this->points = $points;
+        return $this;
+    }
+
+    /**
+     * Get points
+     *
+     * @return integer $points
+     */
+    public function getPoints()
+    {
+        return $this->points;
     }
 }

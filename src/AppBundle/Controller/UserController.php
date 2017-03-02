@@ -245,7 +245,7 @@ class UserController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($targetUser);
         $em->flush();
-        $this->get('app.op_logger')->logCreateAction('用户', ['手机' => $targetUser->getPhone()]);
+        $this->get('app.op_logger')->logCreateAction('用户', ['用户' => $targetUser->getPhone()]);
         return new ApiJsonResponse(0, 'update success', $targetUser->getSelfArr());
     }
 
@@ -351,14 +351,14 @@ class UserController extends Controller
         if (!empty($data['state'])) {
             $targetUser->setState($data['state']);
             if ($data['state'] == 3) {
-                $this->get('app.op_logger')->logDeleteAction('用户', ['手机' => $targetUser->getPhone()]);
+                $this->get('app.op_logger')->logDeleteAction('用户', ['用户' => $targetUser->getPhone()]);
             }
         }
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($targetUser);
         $em->flush();
-        $this->get('app.op_logger')->logUpdateAction('用户', ['手机' => $targetUser->getPhone()]);
+        $this->get('app.op_logger')->logUpdateAction('用户', ['用户' => $targetUser->getPhone()]);
         return new ApiJsonResponse(0, 'update success', $targetUser->getSelfArr());
     }
 

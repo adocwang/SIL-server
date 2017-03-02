@@ -144,7 +144,14 @@ class EnterpriseController extends Controller
                 }
             }
             if (!empty($data['only_loan_ready']) && $data['only_loan_ready'] == 1) {
-                $enterpriseArr['loan_points'] = rand(0, 100);
+
+                $historyData = $this->get('doctrine_mongodb')->
+                getRepository('AppBundle:LoanConditionData')->findOneBy(['enterpriseId' => intval($enterprise->getId())]);
+                if (!empty($historyData) && $historyData->getPoints() > 0) {
+                    $enterpriseArr['loan_points'] = $historyData->getPoints();
+                } else {
+                    $enterpriseArr['loan_points'] = 0;
+                }
             }
             $enterprises[] = $enterpriseArr;
         }
@@ -396,14 +403,14 @@ class EnterpriseController extends Controller
         if (!empty($data['state'])) {
             $enterprise->setState($data['state']);
             if ($data['state'] == 3) {
-                $this->get('app.op_logger')->logDeleteAction('企业', ['企业名称' => $enterprise->getName()]);
+                $this->get('app.op_logger')->logDeleteAction('企业', ['企业' => $enterprise->getName()]);
             }
         }
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($enterprise);
         $em->flush();
-        $this->get('app.op_logger')->logUpdateAction('企业', ['企业名称' => $enterprise->getName()]);
+        $this->get('app.op_logger')->logUpdateAction('企业', ['企业' => $enterprise->getName()]);
         return new ApiJsonResponse(0, 'update success');
     }
 
@@ -454,7 +461,7 @@ class EnterpriseController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($enterprise);
         $em->flush();
-        $this->get('app.op_logger')->logCreateAction('企业', ['企业名称' => $enterprise->getId()]);
+        $this->get('app.op_logger')->logCreateAction('企业', ['企业' => $enterprise->getId()]);
         return new ApiJsonResponse(0, 'add success', $enterprise->toArray());
     }
 
@@ -600,7 +607,7 @@ class EnterpriseController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($finding);
         $em->flush();
-        $this->get('app.op_logger')->logOtherAction('采集结果', '添加或修改', ['企业名称' => $enterprise->getName()]);
+        $this->get('app.op_logger')->logOtherAction('采集结果', '添加或修改', ['企业' => $enterprise->getName()]);
         return new ApiJsonResponse(0, 'set success', $finding);
     }
 
@@ -728,7 +735,7 @@ class EnterpriseController extends Controller
             }
             $finding->setUnPassReason($this->getUser()->getTrueName() . '设置为未通过，原因：' . $data['un_pass_reason'] .
                 '，时间：' . (new \DateTime())->format('Y-m-d H:i:s') . "\n" . $finding->getUnPassReason());
-            $this->get('app.op_logger')->logOtherAction('采集结果', '不通过', ['企业名称' => $enterprise->getName()]);
+            $this->get('app.op_logger')->logOtherAction('采集结果', '不通过', ['企业' => $enterprise->getName()]);
 
             $this->get('app.message_sender')->sendSysMessage(
                 $enterprise->getRoleA(),
@@ -753,7 +760,7 @@ class EnterpriseController extends Controller
             $finding->setProgress($newProgress);
             $finding->setUnPassReason($this->getUser()->getTrueName() . '设置为通过，时间：' .
                 (new \DateTime())->format('Y-m-d H:i:s') . "\n" . $finding->getUnPassReason());
-            $this->get('app.op_logger')->logOtherAction('采集结果', '通过', ['企业名称' => $enterprise->getName()]);
+            $this->get('app.op_logger')->logOtherAction('采集结果', '通过', ['企业' => $enterprise->getName()]);
             $this->get('app.message_sender')->sendSysMessage(
                 $enterprise->getRoleA(),
                 $enterprise->getName() . '的采集结果已通过',
@@ -830,7 +837,7 @@ class EnterpriseController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($finding);
         $em->flush();
-        $this->get('app.op_logger')->logOtherAction('采集结果', '重新采集', ['公司名称' => $enterprise->getName()]);
+        $this->get('app.op_logger')->logOtherAction('采集结果', '重新采集', ['企业' => $enterprise->getName()]);
         return new ApiJsonResponse(0, 're_finding success');
     }
 }

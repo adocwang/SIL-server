@@ -92,7 +92,7 @@ class ImportController extends Controller
             $user->setState(State::STATE_UN_ACTIVE);
             $em->persist($user);
             $em->flush();
-            $this->get('app.op_logger')->logCreateAction('用户', ['手机' => $user->getPhone()]);
+            $this->get('app.op_logger')->logCreateAction('用户', ['用户' => $user->getPhone()]);
         }
         return new ApiJsonResponse(0, 'saved', [
             "successCount" => (count($lines) - count($errorLines)),

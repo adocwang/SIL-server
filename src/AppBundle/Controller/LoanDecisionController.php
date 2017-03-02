@@ -99,7 +99,13 @@ class LoanDecisionController extends Controller
             $historyData = new LoanConditionData();
             $historyData->setEnterpriseId($data['id']);
         }
-        $historyData->setData($data['data']);
+        $results = $this->get('app.loan_decision_helper')->getDataForm($data['id'], $historyData);
+        $historyData->setData($results);
+        $points = 0;
+        foreach ($results as $field) {
+            $points += $field['point'];
+        }
+        $historyData->setPoints($points);
         $mm = $this->get('doctrine_mongodb')->getManager();
         $mm->persist($historyData);
         $mm->flush();
