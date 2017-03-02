@@ -721,6 +721,7 @@ class EnterpriseController extends Controller
         }
         if ($data['pass'] == '-1') {
             $newProgress = 3;
+            $lastProgress = $finding->getProgress();
             $finding->setProgress($newProgress);
             if (empty($data['un_pass_reason'])) {
                 return new ApiJsonResponse(1003, '缺少拒绝通过的理由');
@@ -728,15 +729,45 @@ class EnterpriseController extends Controller
             $finding->setUnPassReason($this->getUser()->getTrueName() . '设置为未通过，原因：' . $data['un_pass_reason'] .
                 '，时间：' . (new \DateTime())->format('Y-m-d H:i:s') . "\n" . $finding->getUnPassReason());
             $this->get('app.op_logger')->logOtherAction('采集结果', '不通过', ['企业名称' => $enterprise->getName()]);
+
+            $this->get('app.message_sender')->sendSysMessage(
+                $enterprise->getRoleA(),
+                $enterprise->getName() . '的采集结果未通过',
+                $enterprise->getName() . '的采集结果未通过！请处理！',
+                ['page' => 'enterprise_finding', 'param' => ['id' => $enterprise->getId()]]
+            );
+            if ($lastProgress == 1) {
+                $this->get('app.message_sender')->sendSysMessage(
+                    $enterprise->getRoleB(),
+                    $enterprise->getName() . '的采集结果未通过',
+                    $enterprise->getName() . '的采集结果未通过！已退回至主理处重新采集，请您悉知！',
+                    ['page' => 'enterprise_finding', 'param' => ['id' => $enterprise->getId()]]
+                );
+            }
         } elseif ($data['pass'] == '1') {
             $newProgress = $finding->getProgress() + 1;
             if ($newProgress > 2) {
                 $newProgress = 2;
             }
+            $lastProgress = $finding->getProgress();
             $finding->setProgress($newProgress);
             $finding->setUnPassReason($this->getUser()->getTrueName() . '设置为通过，时间：' .
                 (new \DateTime())->format('Y-m-d H:i:s') . "\n" . $finding->getUnPassReason());
             $this->get('app.op_logger')->logOtherAction('采集结果', '通过', ['企业名称' => $enterprise->getName()]);
+            $this->get('app.message_sender')->sendSysMessage(
+                $enterprise->getRoleA(),
+                $enterprise->getName() . '的采集结果已通过',
+                $enterprise->getName() . '的采集结果未通过！请悉知！',
+                ['page' => 'enterprise_finding', 'param' => ['id' => $enterprise->getId()]]
+            );
+            if ($lastProgress == 1) {
+                $this->get('app.message_sender')->sendSysMessage(
+                    $enterprise->getRoleB(),
+                    $enterprise->getName() . '的采集结果已通过',
+                    $enterprise->getName() . '的采集结果已通过！请悉知！',
+                    ['page' => 'enterprise_finding', 'param' => ['id' => $enterprise->getId()]]
+                );
+            }
         }
 
         $em = $this->getDoctrine()->getManager();
