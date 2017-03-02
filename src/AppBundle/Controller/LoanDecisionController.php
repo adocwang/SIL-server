@@ -99,7 +99,7 @@ class LoanDecisionController extends Controller
             $historyData = new LoanConditionData();
             $historyData->setEnterpriseId($data['id']);
         }
-        $results = $this->get('app.loan_decision_helper')->getDataForm($data['id'], $historyData);
+        $results = $this->get('app.loan_decision_helper')->getDataForm($data['id'], $data['data']);
         $historyData->setData($results);
         $points = 0;
         foreach ($results as $field) {
