@@ -290,7 +290,7 @@ class EnterpriseController extends Controller
             return new ApiJsonResponse(2007, '企业不存在');
         }
 
-        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN) && !$this->getUser()->getRole()->isRole(Role::ROLE_END_PRESIDENT)) {
+        if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN) && !$this->getUser()->getRole()->isRole(Role::ROLE_PRESIDENT)) {
             return new ApiJsonResponse(407, 'no permission');
         }
 
