@@ -63,15 +63,15 @@ class BankController extends Controller
             $queryBuilder->andWhere('a.state = :state');
             $queryBuilder->setParameter('state', $data['state']);
         }
+        $bankList = [];
         if (!$this->getUser()->getRole()->isRole(Role::ROLE_ADMIN)) {
             $queryBuilder->andWhere('a.superior = :superior');
             $queryBuilder->setParameter('superior', $nowUser->getBank());
             $queryBuilder->andWhere('a.state = 1');
+            $bankList[] = $nowUser->getBank()->toArrayNoSubordinate();
         }
         $queryBuilder->orderBy('a.id', 'ASC');
         $banks = $queryBuilder->getQuery()->getResult();
-        array_push($banks, $nowUser->getBank());
-        $bankList = [];
         foreach ($banks as $bank) {
             $bankList[] = $bank->toArrayNoSubordinate();
         }
