@@ -110,6 +110,6 @@ class LoanDecisionController extends Controller
         $mm->persist($historyData);
         $mm->flush();
         $this->get('app.op_logger')->logUpdateAction('贷款决策数据', ['企业id' => $historyData->getEnterpriseId()]);
-        return new ApiJsonResponse(0, 'ok');
+        return new ApiJsonResponse(0, 'ok', $results);
     }
 }
