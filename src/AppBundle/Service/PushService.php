@@ -26,8 +26,8 @@ class PushService
 
     public static function pushIos($title, $payload, $aliasList)
     {
-        $app_key = "dd19b8ba0c66d03e1ccc23cb";
-        $master_secret = "2f7554707b2c3efa4ff097e9";
+        $app_key = "fb3e46f0c4cb7ee18df527b7";
+        $master_secret = "59d491b4dc008817216957bf";
         $client = new JPushClient($app_key, $master_secret, null);
         $push = $client->push();
         $push->setPlatform('ios');

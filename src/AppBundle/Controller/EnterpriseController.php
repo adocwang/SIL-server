@@ -327,6 +327,7 @@ class EnterpriseController extends Controller
                 $presidentRoles = [];
                 $presidentRoles[] = Role::createRole(Role::ROLE_BRANCH_PRESIDENT);
                 $presidentRoles[] = Role::createRole(Role::ROLE_END_PRESIDENT);
+                $presidentRoles[] = Role::createRole(Role::ROLE_END_PRESIDENT_WITH_CM);
                 $managers = $this->getDoctrine()->getRepository('AppBundle:User')->findBy(['bank' => $bank, 'role' => $presidentRoles]);
                 foreach ($managers as $manager) {
                     $this->get('app.message_sender')->sendSysMessage(
